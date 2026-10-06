@@ -57,7 +57,7 @@ with tempfile.TemporaryDirectory(prefix='bruce-cli-reference-') as directory:
         'nanocell-context.txt': 'nanocell-reference-context-v1',
     }.items():
         (work / name).write_text(text)
-    inputs = {p.name: p.read_text() for p in work.iterdir()}
+    inputs = {p.name: p.read_text() for p in sorted(work.iterdir())}
     version = call('version', ['--version'])
     assert version['version'] == '0.102.0'
     call('rules-propose', ['rules-propose', 'old.rules', 'rules.txt', 'change.proposal'], expected={'approved': False})

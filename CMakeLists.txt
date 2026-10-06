@@ -267,6 +267,8 @@ if(BUILD_TESTING)
     add_test(NAME core_contracts COMMAND bruce_core_tests)
     add_test(NAME cli_workflows COMMAND ${Python3_EXECUTABLE}
         ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/test_cli.py $<TARGET_FILE:bruce>)
+    add_test(NAME cli_documentation_determinism COMMAND ${Python3_EXECUTABLE}
+        ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/test_cli_docs.py $<TARGET_FILE:bruce>)
     add_test(NAME compatibility_workflows COMMAND ${Python3_EXECUTABLE}
         ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/test_compatibility.py $<TARGET_FILE:bruce>)
     add_executable(bruce_compatibility_tests tests/unit/compatibility_tests.cpp)
