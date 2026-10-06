@@ -1,0 +1,6 @@
+BRUCE Core
+Copyright 2026 Christopher Flegel
+
+Diese Distribution bündelt keine Laufzeitbibliotheken Dritter. Die verwendeten
+Systemabhängigkeiten und ihre getrennten Lizenzbedingungen sind in
+DEPENDENCIES.md dokumentiert.

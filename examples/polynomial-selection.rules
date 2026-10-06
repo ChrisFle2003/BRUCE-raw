@@ -1,0 +1,3 @@
+BRUCE_RULES_V1
+snapshot polynomial-demo-v1
+rule expected_projection positive value eq 7 0 5 manual -

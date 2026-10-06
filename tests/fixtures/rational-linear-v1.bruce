@@ -1,0 +1,27 @@
+BRUCE_RATIONAL_LINEAR_BUNDLE_V1
+2336be3b4dd3a25ffd49aaeb8c54a8170a3a4142b7c8036fe7f6c465db26d9ec
+engine bruce-rational-linear-v1
+rule monic-linear-fraction-v1
+policy defined-samples-v1
+planner linear-system-v1
+checkpoint none
+domain rational
+max_bits 4096
+max_denominator 8
+minimum -8
+maximum 8
+candidates 100000
+operations 1000000
+trace 100002
+results 128
+trace_bytes 1048576
+cancel none
+training 3
+0 1
+1 1/2
+2 1/3
+holdout 2
+-2 -1
+3 1/4
+RESULT
+{"engine":"bruce-rational-linear-v1","rule_version":"monic-linear-fraction-v1","policy_version":"defined-samples-v1","strategy":"rational-linear","planner":"linear-system-v1","domain":"rational","max_bits":4096,"max_denominator":8,"minimum":"-8","maximum":"8","status":"VERIFIED_ON_SAMPLES","stop_reason":"Completed","general_proof":false,"learn_gate":false,"publish_gate":false,"claim_scope":"Bounded (a*x+b)/(x+c), x!=-c; exact supplied-sample checks, no general proof","explanation":"Eine Bruchfunktion besteht Lern- und Hold-out-Pruefung mit getrennten Rechenwegen. Der ausgeschlossene Definitionspunkt bleibt erhalten; kein allgemeiner Beweis.","raw_parameter_combinations":2515456,"candidates_executed":1,"operations_used":101,"planning_operations":41,"plans_completed":1,"checkpoints":2,"trace_bytes":170,"training_samples":3,"holdout_samples":2,"hypotheses":[{"id":1193608,"a":"0","b":"1","c":"1","numerator":["1","0"],"denominator":["1","1"],"excluded_x":"-1","formula":"(0*x+(1))/(x+(1)), x != -1","status":"VERIFIED_ON_SAMPLES"}],"trace":["START linear-system-v1: training-only equations, explicit excluded pole","PLAN rank=3 rows=3 derived","CANDIDATE id=1193608 VERIFIED_ON_SAMPLES","END VERIFIED_ON_SAMPLES Completed"]}

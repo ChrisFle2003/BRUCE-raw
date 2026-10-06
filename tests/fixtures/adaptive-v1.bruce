@@ -1,0 +1,28 @@
+BRUCE_ADAPTIVE_BUNDLE_V1
+e0ca72f4f053f3996b8e7bb8db08075b5757ee8f80406e9f6de23bb79ae53b29
+engine bruce-adaptive-v1
+rule power-affine-v1
+policy adaptive-samples-v1
+planner two-point-v1
+max_power 4
+checkpoint none
+domain bigint
+max_bits 4096
+max_denominator 1
+minimum -8
+maximum 8
+candidates 100000
+operations 1000000
+trace 100002
+results 128
+trace_bytes 1048576
+cancel none
+training 3
+0 3
+1 5
+2 11
+holdout 2
+-3 21
+5 53
+RESULT
+{"engine":"bruce-adaptive-v1","rule_version":"power-affine-v1","policy_version":"adaptive-samples-v1","strategy":"power-affine","planner":"two-point-v1","max_power":4,"plans_completed":4,"planning_operations":68,"checkpoints":8,"domain":"bigint","max_bits":4096,"max_denominator":1,"minimum":"-8","maximum":"8","status":"VERIFIED_ON_SAMPLES","stop_reason":"Completed","general_proof":false,"learn_gate":false,"publish_gate":false,"claim_scope":"Exact arithmetic on supplied samples in the declared bounded a*x^p+b family; no general proof","explanation":"Ein Kandidat besteht Lern- und Hold-out-Pruefung samt Rueckrechnung. Kein allgemeiner Beweis.","raw_parameter_combinations":1156,"candidates_executed":4,"operations_used":226,"trace_bytes":503,"training_samples":3,"holdout_samples":2,"hypotheses":[{"id":470,"a_index":27,"b_index":11,"a":"2","b":"3","power":2,"formula":"(2)*x^2+(3)","status":"VERIFIED_ON_SAMPLES"}],"trace":["START two-point-v1: training-only coefficient planning, power ascending","PLAN power=1 derived training[0,1] slots=10,11","CANDIDATE 181 a=2 b=3 power=1 training[2] contradiction","PLAN power=2 derived training[0,1] slots=10,11","CANDIDATE 470 a=2 b=3 power=2 VERIFIED_ON_SAMPLES","PLAN power=3 derived training[0,1] slots=10,11","CANDIDATE 759 a=2 b=3 power=3 training[2] contradiction","PLAN power=4 derived training[0,1] slots=10,11","CANDIDATE 1048 a=2 b=3 power=4 training[2] contradiction","END VERIFIED_ON_SAMPLES Completed"]}

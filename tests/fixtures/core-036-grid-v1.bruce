@@ -1,0 +1,17 @@
+BRUCE_GRID_BUNDLE_V1
+7bc1c95a0c37e871f551e3672f6dbe122975b0aa5155fa56bd88f3e59a2bfe7b
+engine bruce-grid-v1
+rule LEAF_LOCAL_POWER_V1
+policy local-u64-single-leaf-v1
+path 02,06/4,3
+mode exact
+max_bits 64
+modulus none
+zero_zero one
+TRACE
+PATH_VALIDATED depth=2
+LEAF x=4 y=3
+CONFIG mode=exact max_bits=64 modulus=none zero_zero=one
+EVALUATED evaluations=1
+RESULT
+{"rule":"LEAF_LOCAL_POWER_V1","path":"02,06/4,3","depth":2,"theoretical_space":"64^2","evaluations":1,"mode":"exact","status":"EVALUATED","stop_scope":"NONE","stop_reason":"Completed","value":"64"}

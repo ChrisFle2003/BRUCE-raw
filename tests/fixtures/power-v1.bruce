@@ -1,0 +1,26 @@
+BRUCE_POWER_BUNDLE_V1
+cc606b587c74297fac35746259e20ddca1f2c4e9dc9fd2e4caf0ab7280485c60
+engine bruce-power-v1
+rule power-affine-v1
+policy power-samples-v1
+max_power 4
+domain bigint
+max_bits 4096
+max_denominator 1
+minimum 0
+maximum 3
+candidates 100000
+operations 1000000
+trace 100002
+results 128
+trace_bytes 1048576
+cancel none
+training 3
+0 3
+1 5
+2 11
+holdout 2
+-3 21
+5 53
+RESULT
+{"engine":"bruce-power-v1","rule_version":"power-affine-v1","policy_version":"power-samples-v1","strategy":"power-affine","max_power":4,"domain":"bigint","max_bits":4096,"max_denominator":1,"minimum":"0","maximum":"3","status":"VERIFIED_ON_SAMPLES","stop_reason":"Completed","general_proof":false,"learn_gate":false,"publish_gate":false,"claim_scope":"Exact arithmetic on supplied samples in the declared bounded a*x^p+b family; no general proof","explanation":"Ein Kandidat besteht Lern- und Hold-out-Pruefung samt Rueckrechnung. Kein allgemeiner Beweis.","raw_parameter_combinations":64,"candidates_executed":52,"operations_used":791,"trace_bytes":2925,"training_samples":3,"holdout_samples":2,"hypotheses":[{"id":27,"a_index":6,"b_index":3,"a":"2","b":"3","power":2,"formula":"(2)*x^2+(3)","status":"VERIFIED_ON_SAMPLES"}],"trace":["START power-affine-v1: power ascending, canonical coefficients, numerator then denominator ascending","CANDIDATE 0 a=0 b=0 power=1 training[0] contradiction","CANDIDATE 1 a=0 b=1 power=1 training[0] contradiction","CANDIDATE 2 a=0 b=2 power=1 training[0] contradiction","CANDIDATE 3 a=0 b=3 power=1 training[1] contradiction","CANDIDATE 4 a=1 b=0 power=1 training[0] contradiction","CANDIDATE 5 a=1 b=1 power=1 training[0] contradiction","CANDIDATE 6 a=1 b=2 power=1 training[0] contradiction","CANDIDATE 7 a=1 b=3 power=1 training[1] contradiction","CANDIDATE 8 a=2 b=0 power=1 training[0] contradiction","CANDIDATE 9 a=2 b=1 power=1 training[0] contradiction","CANDIDATE 10 a=2 b=2 power=1 training[0] contradiction","CANDIDATE 11 a=2 b=3 power=1 training[2] contradiction","CANDIDATE 12 a=3 b=0 power=1 training[0] contradiction","CANDIDATE 13 a=3 b=1 power=1 training[0] contradiction","CANDIDATE 14 a=3 b=2 power=1 training[0] contradiction","CANDIDATE 15 a=3 b=3 power=1 training[1] contradiction","CANDIDATE 20 a=1 b=0 power=2 training[0] contradiction","CANDIDATE 21 a=1 b=1 power=2 training[0] contradiction","CANDIDATE 22 a=1 b=2 power=2 training[0] contradiction","CANDIDATE 23 a=1 b=3 power=2 training[1] contradiction","CANDIDATE 24 a=2 b=0 power=2 training[0] contradiction","CANDIDATE 25 a=2 b=1 power=2 training[0] contradiction","CANDIDATE 26 a=2 b=2 power=2 training[0] contradiction","CANDIDATE 27 a=2 b=3 power=2 VERIFIED_ON_SAMPLES","CANDIDATE 28 a=3 b=0 power=2 training[0] contradiction","CANDIDATE 29 a=3 b=1 power=2 training[0] contradiction","CANDIDATE 30 a=3 b=2 power=2 training[0] contradiction","CANDIDATE 31 a=3 b=3 power=2 training[1] contradiction","CANDIDATE 36 a=1 b=0 power=3 training[0] contradiction","CANDIDATE 37 a=1 b=1 power=3 training[0] contradiction","CANDIDATE 38 a=1 b=2 power=3 training[0] contradiction","CANDIDATE 39 a=1 b=3 power=3 training[1] contradiction","CANDIDATE 40 a=2 b=0 power=3 training[0] contradiction","CANDIDATE 41 a=2 b=1 power=3 training[0] contradiction","CANDIDATE 42 a=2 b=2 power=3 training[0] contradiction","CANDIDATE 43 a=2 b=3 power=3 training[2] contradiction","CANDIDATE 44 a=3 b=0 power=3 training[0] contradiction","CANDIDATE 45 a=3 b=1 power=3 training[0] contradiction","CANDIDATE 46 a=3 b=2 power=3 training[0] contradiction","CANDIDATE 47 a=3 b=3 power=3 training[1] contradiction","CANDIDATE 52 a=1 b=0 power=4 training[0] contradiction","CANDIDATE 53 a=1 b=1 power=4 training[0] contradiction","CANDIDATE 54 a=1 b=2 power=4 training[0] contradiction","CANDIDATE 55 a=1 b=3 power=4 training[1] contradiction","CANDIDATE 56 a=2 b=0 power=4 training[0] contradiction","CANDIDATE 57 a=2 b=1 power=4 training[0] contradiction","CANDIDATE 58 a=2 b=2 power=4 training[0] contradiction","CANDIDATE 59 a=2 b=3 power=4 training[2] contradiction","CANDIDATE 60 a=3 b=0 power=4 training[0] contradiction","CANDIDATE 61 a=3 b=1 power=4 training[0] contradiction","CANDIDATE 62 a=3 b=2 power=4 training[0] contradiction","CANDIDATE 63 a=3 b=3 power=4 training[1] contradiction","END VERIFIED_ON_SAMPLES Completed"]}

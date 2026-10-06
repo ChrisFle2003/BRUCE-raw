@@ -1,0 +1,30 @@
+BRUCE_PORTFOLIO_BUNDLE_V1
+7a1c3d33dca7746316d18b2d48545c9afd46f0003a90da0a891934ba0f48fcb3
+engine bruce-portfolio-v1
+rule portfolio-union-v1
+policy shared-budget-v1
+planner power-then-polynomial-v1
+max_power 4
+max_degree 3
+checkpoint none
+domain bigint
+max_bits 4096
+max_denominator 1
+minimum -8
+maximum 8
+candidates 100000
+operations 1000000
+trace 100002
+results 128
+trace_bytes 1048576
+cancel none
+training 4
+0 3
+1 5
+2 11
+3 21
+holdout 2
+-3 21
+5 53
+RESULT
+{"engine":"bruce-portfolio-v1","rule_version":"portfolio-union-v1","policy_version":"shared-budget-v1","strategy":"portfolio","planner":"power-then-polynomial-v1","domain":"bigint","max_power":4,"max_degree":3,"max_bits":4096,"max_denominator":1,"minimum":"-8","maximum":"8","status":"VERIFIED_ON_SAMPLES","stop_reason":"Completed","general_proof":false,"learn_gate":false,"publish_gate":false,"claim_scope":"Union of bounded power and polynomial families on supplied samples; repeated inputs do not create independent evidence","explanation":"Eine kanonische Formel besteht die angegebenen Pruefpaare. Mehrere Strategien sind keine zusaetzlichen unabhaengigen Datenbelege.","operations_used":436,"planning_operations":134,"candidates_executed":7,"stored_source_hypotheses":2,"plans_completed":8,"checkpoints":15,"trace_bytes":990,"trace_events_used":21,"hypotheses":[{"id":940,"degree":2,"coefficients":["3","0","2"],"formula":"(3)+(0)*x^1+(2)*x^2","status":"VERIFIED_ON_SAMPLES","origins":[{"strategy":"power-affine","id":470,"status":"VERIFIED_ON_SAMPLES"},{"strategy":"polynomial","id":2,"status":"VERIFIED_ON_SAMPLES"}]}],"strategy_runs":[{"engine":"bruce-adaptive-v1","rule_version":"power-affine-v1","policy_version":"adaptive-samples-v1","strategy":"power-affine","planner":"two-point-v1","max_power":4,"plans_completed":4,"planning_operations":68,"checkpoints":8,"domain":"bigint","max_bits":4096,"max_denominator":1,"minimum":"-8","maximum":"8","status":"VERIFIED_ON_SAMPLES","stop_reason":"Completed","general_proof":false,"learn_gate":false,"publish_gate":false,"claim_scope":"Exact arithmetic on supplied samples in the declared bounded a*x^p+b family; no general proof","explanation":"Ein Kandidat besteht Lern- und Hold-out-Pruefung samt Rueckrechnung. Kein allgemeiner Beweis.","raw_parameter_combinations":1156,"candidates_executed":4,"operations_used":236,"trace_bytes":503,"training_samples":4,"holdout_samples":2,"hypotheses":[{"id":470,"a_index":27,"b_index":11,"a":"2","b":"3","power":2,"formula":"(2)*x^2+(3)","status":"VERIFIED_ON_SAMPLES"}],"trace":["START two-point-v1: training-only coefficient planning, power ascending","PLAN power=1 derived training[0,1] slots=10,11","CANDIDATE 181 a=2 b=3 power=1 training[2] contradiction","PLAN power=2 derived training[0,1] slots=10,11","CANDIDATE 470 a=2 b=3 power=2 VERIFIED_ON_SAMPLES","PLAN power=3 derived training[0,1] slots=10,11","CANDIDATE 759 a=2 b=3 power=3 training[2] contradiction","PLAN power=4 derived training[0,1] slots=10,11","CANDIDATE 1048 a=2 b=3 power=4 training[2] contradiction","END VERIFIED_ON_SAMPLES Completed"]},{"engine":"bruce-polynomial-v1","rule_version":"polynomial-v1","policy_version":"polynomial-samples-v1","strategy":"polynomial","planner":"newton-v1","domain":"bigint","max_degree":3,"max_bits":4096,"max_denominator":1,"minimum":"-8","maximum":"8","status":"VERIFIED_ON_SAMPLES","stop_reason":"Completed","general_proof":false,"learn_gate":false,"publish_gate":false,"claim_scope":"Bounded polynomial interpolation and independent evaluation on supplied samples; no general proof","explanation":"Ein Polynom besteht Lern- und Hold-out-Pruefung mit getrennten Rechenwegen. Interpolation ist kein allgemeiner Beweis.","candidates_executed":3,"operations_used":200,"planning_operations":66,"plans_completed":4,"checkpoints":7,"trace_bytes":380,"training_samples":4,"holdout_samples":2,"hypotheses":[{"id":2,"degree":2,"coefficients":["3","0","2"],"formula":"(3)+(0)*x^1+(2)*x^2","status":"VERIFIED_ON_SAMPLES"}],"trace":["START newton-v1: ascending degree, training-only interpolation","PLAN degree=0 training[0..0] derived","CANDIDATE degree=0 training[1] contradiction","PLAN degree=1 training[0..1] derived","CANDIDATE degree=1 training[2] contradiction","PLAN degree=2 training[0..2] derived","CANDIDATE degree=2 VERIFIED_ON_SAMPLES","PLAN degree=3 training[0..3] duplicate_lower_degree","END VERIFIED_ON_SAMPLES Completed"]}],"trace":["START power-then-polynomial-v1: shared budgets, union of declared families","END VERIFIED_ON_SAMPLES Completed"]}

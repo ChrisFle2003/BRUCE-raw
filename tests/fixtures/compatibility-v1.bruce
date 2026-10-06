@@ -1,0 +1,26 @@
+BRUCE_COMPATIBILITY_BUNDLE_V1
+d875980ba498a949e94cd781bea9c82a2d593a8f2945278c1e41f3f72e142e1c
+engine z-compatibility-v1
+snapshot_digest fca2ba52bf6497d1bdd167238e2eaac6ae54d15f44b5b7abbd801fd478197c78
+candidates_budget 4096
+checks_budget 1048576
+trace_budget 65536
+cancel none
+at 0
+rules_bytes 275
+BRUCE_RULES_V1
+snapshot numeric-demo-v1
+rule prefer_even positive value mod_eq 2 0 5 manual -
+rule outside_range reject value gt 100 0 0 manual -
+rule known_counterexample negative value eq 6 0 0 manual example-counterexample-6
+rule local_context context x le 7 0 0 manual -
+candidate_bytes 104
+id,domain,layer,x,y,value
+3,math,0,1,0,2
+5,math,0,3,0,6
+7,math,0,4,0,102
+9,math,0,2,0,4
+11,math,0,8,0,8
+origin_bytes 0
+RESULT
+{"engine":"z-compatibility-v1","snapshot_digest":"fca2ba52bf6497d1bdd167238e2eaac6ae54d15f44b5b7abbd801fd478197c78","snapshot_id":"numeric-demo-v1","input_fingerprint":"195074e5bd073806dbcdef5349f40b57ebf8c640fafff6f93b07cc47c8576446","origin_digest":"","origin_status":"","projection_at":"0","status":"AMBIGUOUS","stop_reason":"Completed","general_proof":false,"learn_gate":false,"publish_gate":false,"explanation":"Mehrere zulaessige Kandidaten haben denselben besten Score. IDs ordnen nur die Anzeige.","candidates_started":5,"checks_used":20,"rules":[{"id":"prefer_even","kind":"positive","field":"value","operator":"mod_eq","argument":"2","remainder":"0","weight":5,"source":"manual","evidence_ref":"-"},{"id":"outside_range","kind":"reject","field":"value","operator":"gt","argument":"100","remainder":"0","weight":0,"source":"manual","evidence_ref":"-"},{"id":"known_counterexample","kind":"negative","field":"value","operator":"eq","argument":"6","remainder":"0","weight":0,"source":"manual","evidence_ref":"example-counterexample-6"},{"id":"local_context","kind":"context","field":"x","operator":"le","argument":"7","remainder":"0","weight":0,"source":"manual","evidence_ref":"-"}],"selected_ids":["3","9"],"candidates":[{"id":"3","domain":"math","layer":"0","x":"1","y":"0","z":"1","value":"2","score":5,"rules_checked":4,"complete":true,"hard_rejected":false,"negative_evidence":false,"context_matches":true},{"id":"5","domain":"math","layer":"0","x":"3","y":"0","z":"6","value":"6","score":5,"rules_checked":4,"complete":true,"hard_rejected":false,"negative_evidence":true,"context_matches":true},{"id":"7","domain":"math","layer":"0","x":"4","y":"0","z":"10","value":"102","score":5,"rules_checked":4,"complete":true,"hard_rejected":true,"negative_evidence":false,"context_matches":true},{"id":"9","domain":"math","layer":"0","x":"2","y":"0","z":"3","value":"4","score":5,"rules_checked":4,"complete":true,"hard_rejected":false,"negative_evidence":false,"context_matches":true},{"id":"11","domain":"math","layer":"0","x":"8","y":"0","z":"36","value":"8","score":5,"rules_checked":4,"complete":true,"hard_rejected":false,"negative_evidence":false,"context_matches":false}],"groups":[{"group":0,"candidate_ids":["3","5","7","9","11"],"positive_match_mask":"0x000000000000001f","hard_reject_mask":"0x0000000000000004","negative_evidence_mask":"0x0000000000000002","context_role_mask":"0x000000000000000f","complete_mask":"0x000000000000001f","eligible_mask":"0x0000000000000009"}],"trace":[{"candidate_id":"3","rule_id":"prefer_even","matched":true,"effect":"score"},{"candidate_id":"3","rule_id":"outside_range","matched":false,"effect":"no_change"},{"candidate_id":"3","rule_id":"known_counterexample","matched":false,"effect":"no_change"},{"candidate_id":"3","rule_id":"local_context","matched":true,"effect":"no_change"},{"candidate_id":"5","rule_id":"prefer_even","matched":true,"effect":"score"},{"candidate_id":"5","rule_id":"outside_range","matched":false,"effect":"no_change"},{"candidate_id":"5","rule_id":"known_counterexample","matched":true,"effect":"negative_evidence"},{"candidate_id":"5","rule_id":"local_context","matched":true,"effect":"no_change"},{"candidate_id":"7","rule_id":"prefer_even","matched":true,"effect":"score"},{"candidate_id":"7","rule_id":"outside_range","matched":true,"effect":"hard_reject"},{"candidate_id":"7","rule_id":"known_counterexample","matched":false,"effect":"no_change"},{"candidate_id":"7","rule_id":"local_context","matched":true,"effect":"no_change"},{"candidate_id":"9","rule_id":"prefer_even","matched":true,"effect":"score"},{"candidate_id":"9","rule_id":"outside_range","matched":false,"effect":"no_change"},{"candidate_id":"9","rule_id":"known_counterexample","matched":false,"effect":"no_change"},{"candidate_id":"9","rule_id":"local_context","matched":true,"effect":"no_change"},{"candidate_id":"11","rule_id":"prefer_even","matched":true,"effect":"score"},{"candidate_id":"11","rule_id":"outside_range","matched":false,"effect":"no_change"},{"candidate_id":"11","rule_id":"known_counterexample","matched":false,"effect":"no_change"},{"candidate_id":"11","rule_id":"local_context","matched":false,"effect":"context_reject"}]}

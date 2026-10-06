@@ -1,0 +1,80 @@
+BRUCE_GRID_RESEARCH_BUNDLE_V1
+06e16ea90909063456a3e78d95f29be7e3b34637871763f89d2cfacfddd1b8b9
+engine bruce-grid-research-v1
+projection fixed-slice-leaf-x-v1
+training_bytes 2220
+BRUCE_GRID_BATCH_BUNDLE_V1
+2034bf886d69bb5bd0c12e26f06e76e0ec783b58fd6d12661e4b09b5a29d448c
+spec grid-spec-v1
+engine bruce-grid-v1
+address_rule local-8y-plus-x-path-v1
+value_rule LEAF_LOCAL_POWER_V1
+policy local-u64-single-leaf-v1
+domain uint64
+cache_policy fifo-64-canonical-evidence-bytes-v1
+mode exact
+max_bits 64
+modulus none
+zero_zero one
+cache_bytes 65536
+query_count 3
+path 0,2
+path 1,2
+path 2,2
+TRACE
+QUERY index=0 key=d232b880af848bbab689e1a39bdecf872fdf0561831100c1ba0598d7f4277755 cache=MISS_INSERT bytes=847 evictions=0
+QUERY index=1 key=a5ba122219a7e442ed0896fe8a9dc6ffad88be0db498d7cfcc4ea091a28fa2b3 cache=MISS_INSERT bytes=1694 evictions=0
+QUERY index=2 key=3e0eeeafbbe33c62824b02e968d12974c4a20a7b04fda8cab6e64a24019f07c3 cache=MISS_INSERT bytes=2541 evictions=0
+RESULT
+{"spec":{"version":"grid-spec-v1","engine":"bruce-grid-v1","address_rule":"local-8y-plus-x-path-v1","value_rule":"LEAF_LOCAL_POWER_V1","policy":"local-u64-single-leaf-v1","domain":"uint64","local_extent":8,"max_depth":64,"mode":"exact","max_bits":64,"modulus":null,"zero_zero":"one"},"cache_policy":"fifo-64-canonical-evidence-bytes-v1","cache_byte_limit":65536,"status":"COMPLETED","evaluations":3,"cache":{"hits":0,"misses":3,"inserts":3,"evictions":0,"bypasses":0,"entries":3,"bytes":2541,"peak_bytes":2541},"queries":[{"key":"d232b880af848bbab689e1a39bdecf872fdf0561831100c1ba0598d7f4277755","cache_event":"MISS_INSERT","result":{"rule":"LEAF_LOCAL_POWER_V1","path":"0,2","depth":1,"theoretical_space":"64^1","evaluations":1,"mode":"exact","status":"EVALUATED","stop_scope":"NONE","stop_reason":"Completed","value":"0"}},{"key":"a5ba122219a7e442ed0896fe8a9dc6ffad88be0db498d7cfcc4ea091a28fa2b3","cache_event":"MISS_INSERT","result":{"rule":"LEAF_LOCAL_POWER_V1","path":"1,2","depth":1,"theoretical_space":"64^1","evaluations":1,"mode":"exact","status":"EVALUATED","stop_scope":"NONE","stop_reason":"Completed","value":"1"}},{"key":"3e0eeeafbbe33c62824b02e968d12974c4a20a7b04fda8cab6e64a24019f07c3","cache_event":"MISS_INSERT","result":{"rule":"LEAF_LOCAL_POWER_V1","path":"2,2","depth":1,"theoretical_space":"64^1","evaluations":1,"mode":"exact","status":"EVALUATED","stop_scope":"NONE","stop_reason":"Completed","value":"4"}}]}
+holdout_bytes 1346
+BRUCE_GRID_BATCH_BUNDLE_V1
+1c93f672b7b2201c5b93b76e7312a3a271a6886a4bdff189876e9434fbe5c2c8
+spec grid-spec-v1
+engine bruce-grid-v1
+address_rule local-8y-plus-x-path-v1
+value_rule LEAF_LOCAL_POWER_V1
+policy local-u64-single-leaf-v1
+domain uint64
+cache_policy fifo-64-canonical-evidence-bytes-v1
+mode exact
+max_bits 64
+modulus none
+zero_zero one
+cache_bytes 65536
+query_count 1
+path 3,2
+TRACE
+QUERY index=0 key=f02c1aaf2dc9f7d51aaba33bee10013a2f3df7b25dc36e6e6d2b70c7c0b3b74a cache=MISS_INSERT bytes=847 evictions=0
+RESULT
+{"spec":{"version":"grid-spec-v1","engine":"bruce-grid-v1","address_rule":"local-8y-plus-x-path-v1","value_rule":"LEAF_LOCAL_POWER_V1","policy":"local-u64-single-leaf-v1","domain":"uint64","local_extent":8,"max_depth":64,"mode":"exact","max_bits":64,"modulus":null,"zero_zero":"one"},"cache_policy":"fifo-64-canonical-evidence-bytes-v1","cache_byte_limit":65536,"status":"COMPLETED","evaluations":1,"cache":{"hits":0,"misses":1,"inserts":1,"evictions":0,"bypasses":0,"entries":1,"bytes":847,"peak_bytes":847},"queries":[{"key":"f02c1aaf2dc9f7d51aaba33bee10013a2f3df7b25dc36e6e6d2b70c7c0b3b74a","cache_event":"MISS_INSERT","result":{"rule":"LEAF_LOCAL_POWER_V1","path":"3,2","depth":1,"theoretical_space":"64^1","evaluations":1,"mode":"exact","status":"EVALUATED","stop_scope":"NONE","stop_reason":"Completed","value":"9"}}]}
+research_bytes 1696
+BRUCE_POLYNOMIAL_BUNDLE_V1
+2f31ae14054b16560671130aac6df4854d829c6caccbd30e2be934f7fd038aef
+engine bruce-polynomial-v1
+rule polynomial-v1
+policy polynomial-samples-v1
+planner newton-v1
+max_degree 2
+checkpoint none
+domain rational
+max_bits 4096
+max_denominator 8
+minimum -8
+maximum 8
+candidates 100000
+operations 1000000
+trace 100002
+results 128
+trace_bytes 1048576
+cancel none
+training 3
+0 0
+1 1
+2 4
+holdout 1
+3 9
+RESULT
+{"engine":"bruce-polynomial-v1","rule_version":"polynomial-v1","policy_version":"polynomial-samples-v1","strategy":"polynomial","planner":"newton-v1","domain":"rational","max_degree":2,"max_bits":4096,"max_denominator":8,"minimum":"-8","maximum":"8","status":"VERIFIED_ON_SAMPLES","stop_reason":"Completed","general_proof":false,"learn_gate":false,"publish_gate":false,"claim_scope":"Bounded polynomial interpolation and independent evaluation on supplied samples; no general proof","explanation":"Ein Polynom besteht Lern- und Hold-out-Pruefung mit getrennten Rechenwegen. Interpolation ist kein allgemeiner Beweis.","candidates_executed":3,"operations_used":129,"planning_operations":27,"plans_completed":3,"checkpoints":6,"trace_bytes":329,"training_samples":3,"holdout_samples":1,"hypotheses":[{"id":2,"degree":2,"coefficients":["0","0","1"],"formula":"(0)+(0)*x^1+(1)*x^2","status":"VERIFIED_ON_SAMPLES"}],"trace":["START newton-v1: ascending degree, training-only interpolation","PLAN degree=0 training[0..0] derived","CANDIDATE degree=0 training[1] contradiction","PLAN degree=1 training[0..1] derived","CANDIDATE degree=1 training[2] contradiction","PLAN degree=2 training[0..2] derived","CANDIDATE degree=2 VERIFIED_ON_SAMPLES","END VERIFIED_ON_SAMPLES Completed"]}
+RESULT
+{"status":"VERIFIED_ON_SAMPLES","grid_origin":{"projection":"fixed-slice-leaf-x-v1","prefix":"","exponent":2,"input_min":0,"input_max":7,"training_digest":"811d3ce723e3e584421f09c02d0f3e20f329227f020abdb056d51d9f6b46811e","holdout_digest":"0ea2aff165653518b39cf87ee16b9e0797815f6c24e6e6149b5db64d656a9beb"},"research":{"engine":"bruce-polynomial-v1","rule_version":"polynomial-v1","policy_version":"polynomial-samples-v1","strategy":"polynomial","planner":"newton-v1","domain":"rational","max_degree":2,"max_bits":4096,"max_denominator":8,"minimum":"-8","maximum":"8","status":"VERIFIED_ON_SAMPLES","stop_reason":"Completed","general_proof":false,"learn_gate":false,"publish_gate":false,"claim_scope":"Bounded polynomial interpolation and independent evaluation on supplied samples; no general proof","explanation":"Ein Polynom besteht Lern- und Hold-out-Pruefung mit getrennten Rechenwegen. Interpolation ist kein allgemeiner Beweis.","candidates_executed":3,"operations_used":129,"planning_operations":27,"plans_completed":3,"checkpoints":6,"trace_bytes":329,"training_samples":3,"holdout_samples":1,"hypotheses":[{"id":2,"degree":2,"coefficients":["0","0","1"],"formula":"(0)+(0)*x^1+(1)*x^2","status":"VERIFIED_ON_SAMPLES"}],"trace":["START newton-v1: ascending degree, training-only interpolation","PLAN degree=0 training[0..0] derived","CANDIDATE degree=0 training[1] contradiction","PLAN degree=1 training[0..1] derived","CANDIDATE degree=1 training[2] contradiction","PLAN degree=2 training[0..2] derived","CANDIDATE degree=2 VERIFIED_ON_SAMPLES","END VERIFIED_ON_SAMPLES Completed"]}}

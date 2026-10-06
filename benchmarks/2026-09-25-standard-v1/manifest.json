@@ -1,0 +1,924 @@
+{
+  "metadata": {
+    "contract": "bruce-benchmark-v1",
+    "profile": "standard",
+    "repeats": 10,
+    "seed": 20260925,
+    "utc": "2026-09-25T15:59:47.438399+00:00",
+    "binary": "/tmp/bruce072-owner-p8uriP/bruce",
+    "binary_sha256": "27ebd5bacc80f9a56561cddbd8b8566a37571beb047f9ccbffe9af797c9a840d",
+    "platform": "Linux-6.12.107+deb13-amd64-x86_64-with-glibc2.41",
+    "python": "3.13.5",
+    "cpu_count": 24,
+    "cpu_affinity": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23
+    ],
+    "cpuinfo": "processor\t: 0\nvendor_id\t: GenuineIntel\ncpu family\t: 15\nmodel\t\t: 107\nmodel name\t: QEMU Virtual CPU version 2.5+\nstepping\t: 1\nmicrocode\t: 0x1\ncpu MHz\t\t: 2599.998\ncache size\t: 16384 KB\nphysical id\t: 0\nsiblings\t: 12\ncore id\t\t: 0\ncpu cores\t: 12\napicid\t\t: 0\ninitial apicid\t: 0\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 13\nwp\t\t: yes\nflags\t\t: fpu de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx lm constant_tsc nopl xtopology cpuid tsc_known_freq pni ssse3 cx16 sse4_1 sse4_2 x2apic popcnt aes hypervisor lahf_lm cpuid_fault pti\nbugs\t\t: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds swapgs itlb_multihit mmio_unknown bhi its\nbogomips\t: 5199.99\nclflush size\t: 64\ncache_alignment\t: 128\naddress sizes\t: 40 bits physical, 48 bits virtual\npower management:\n\nprocessor\t: 1\nvendor_id\t: GenuineIntel\ncpu family\t: 15\nmodel\t\t: 107\nmodel name\t: QEMU Virtual CPU version 2.5+\nstepping\t: 1\nmicrocode\t: 0x1\ncpu MHz\t\t: 2599.998\ncache size\t: 16384 KB\nphysical id\t: 0\nsiblings\t: 12\ncore id\t\t: 1\ncpu cores\t: 12\napicid\t\t: 1\ninitial apicid\t: 1\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 13\nwp\t\t: yes\nflags\t\t: fpu de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx lm constant_tsc nopl xtopology cpuid tsc_known_freq pni ssse3 cx16 sse4_1 sse4_2 x2apic popcnt aes hypervisor lahf_lm cpuid_fault pti\nbugs\t\t: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds swapgs itlb_multihit mmio_unknown bhi its\nbogomips\t: 5199.99\nclflush size\t: 64\ncache_alignment\t: 128\naddress sizes\t: 40 bits physical, 48 bits virtual\npower management:\n\nprocessor\t: 2\nvendor_id\t: GenuineIntel\ncpu family\t: 15\nmodel\t\t: 107\nmodel name\t: QEMU Virtual CPU version 2.5+\nstepping\t: 1\nmicrocode\t: 0x1\ncpu MHz\t\t: 2599.998\ncache size\t: 16384 KB\nphysical id\t: 0\nsiblings\t: 12\ncore id\t\t: 2\ncpu cores\t: 12\napicid\t\t: 2\ninitial apicid\t: 2\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 13\nwp\t\t: yes\nflags\t\t: fpu de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx lm constant_tsc nopl xtopology cpuid tsc_known_freq pni ssse3 cx16 sse4_1 sse4_2 x2apic popcnt aes hypervisor lahf_lm cpuid_fault pti\nbugs\t\t: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds swapgs itlb_multihit mmio_unknown bhi its\nbogomips\t: 5199.99\nclflush size\t: 64\ncache_alignment\t: 128\naddress sizes\t: 40 bits physical, 48 bits virtual\npower management:\n\nprocessor\t: 3\nvendor_id\t: GenuineIntel\ncpu family\t: 15\nmodel\t\t: 107\nmodel name\t: QEMU Virtual CPU version 2.5+\nstepping\t: 1\nmicrocode\t: 0x1\ncpu MHz\t\t: 2599.998\ncache size\t: 16384 KB\nphysical id\t: 0\nsiblings\t: 12\ncore id\t\t: 3\ncpu cores\t: 12\napicid\t\t: 3\ninitial apicid\t: 3\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 13\nwp\t\t: yes\nflags\t\t: fpu de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx lm constant_tsc nopl xtopology cpuid tsc_known_freq pni ssse3 cx16 sse4_1 sse4_2 x2apic popcnt aes hypervisor lahf_lm cpuid_fault pti\nbugs\t\t: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds swapgs itlb_multihit mmio_unknown bhi its\nbogomips\t: 5199.99\nclflush size\t: 64\ncache_alignment\t: 128\naddress sizes\t: 40 bits physical, 48 bits virtual\npower management:\n\nprocessor\t: 4\nvendor_id\t: GenuineIntel\ncpu family\t: 15\nmodel\t\t: 107\nmodel name\t: QEMU Virtual CPU version 2.5+\nstepping\t: 1\nmicrocode\t: 0x1\ncpu MHz\t\t: 2599.998\ncache size\t: 16384 KB\nphysical id\t: 0\nsiblings\t: 12\ncore id\t\t: 4\ncpu cores\t: 12\napicid\t\t: 4\ninitial apicid\t: 4\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 13\nwp\t\t: yes\nflags\t\t: fpu de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx lm constant_tsc nopl xtopology cpuid tsc_known_freq pni ssse3 cx16 sse4_1 sse4_2 x2apic popcnt aes hypervisor lahf_lm cpuid_fault pti\nbugs\t\t: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds swapgs itlb_multihit mmio_unknown bhi its\nbogomips\t: 5199.99\nclflush size\t: 64\ncache_alignment\t: 128\naddress sizes\t: 40 bits physical, 48 bits virtual\npower management:\n\nprocessor\t: 5\nvendor_id\t: GenuineIntel\ncpu family\t: 15\nmodel\t\t: 107\nmodel name\t: QEMU Virtual CPU version 2.5+\nstepping\t: 1\nmicrocode\t: 0x1\ncpu MHz\t\t: 2599.998\ncache size\t: 16384 KB\nphysical id\t: 0\nsiblings\t: 12\ncore id\t\t: 5\ncpu cores\t: 12\napicid\t\t: 5\ninitial apicid\t: 5\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 13\nwp\t\t: yes\nflags\t\t: fpu de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx lm constant_tsc nopl xtopology cpuid tsc_known_freq pni ssse3 cx16 sse4_1 sse4_2 x2apic popcnt aes hypervisor lahf_lm cpuid_fault pti\nbugs\t\t: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds swapgs itlb_multihit mmio_unknown bhi its\nbogomips\t: 5199.99\nclflush size\t: 64\ncache_alignment\t: 128\naddress sizes\t: 40 bits physical, 48 bits virtual\npower management:\n\nprocessor\t: 6\nvendor_id\t: GenuineIntel\ncpu family\t: 15\nmodel\t\t: 107\nmodel name\t: QEMU Virtual CPU version 2.5+\nstepping\t: 1\nmicrocode\t: 0x1\ncpu MHz\t\t: 2599.998\ncache size\t: 16384 KB\nphysical id\t: 0\nsiblings\t: 12\ncore id\t\t: 6\ncpu cores\t: 12\napicid\t\t: 6\ninitial apicid\t: 6\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 13\nwp\t\t: yes\nflags\t\t: fpu de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx lm constant_tsc nopl xtopology cpuid tsc_known_freq pni ssse3 cx16 sse4_1 sse4_2 x2apic popcnt aes hypervisor lahf_lm cpuid_fault pti\nbugs\t\t: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds swapgs itlb_multihit mmio_unknown bhi its\nbogomips\t: 5199.99\nclflush size\t: 64\ncache_alignment\t: 128\naddress sizes\t: 40 bits physical, 48 bits virtual\npower management:\n\nprocessor\t: 7\nvendor_id\t: GenuineIntel\ncpu family\t: 15\nmodel\t\t: 107\nmodel name\t: QEMU Virtual CPU version 2.5+\nstepping\t: 1\nmicrocode\t: 0x1\ncpu MHz\t\t: 2599.998\ncache size\t: 16384 KB\nphysical id\t: 0\nsiblings\t: 12\ncore id\t\t: 7\ncpu cores\t: 12\napicid\t\t: 7\ninitial apicid\t: 7\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 13\nwp\t\t: yes\nflags\t\t: fpu de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx lm constant_tsc nopl xtopology cpuid tsc_known_freq pni ssse3 cx16 sse4_1 sse4_2 x2apic popcnt aes hypervisor lahf_lm cpuid_fault pti\nbugs\t\t: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds swapgs itlb_multihit mmio_unknown bhi its\nbogomips\t: 5199.99\nclflush size\t: 64\ncache_alignment\t: 128\naddress sizes\t: 40 bits physical, 48 bits virtual\npower management:\n\nprocessor\t: 8\nvendor_id\t: GenuineIntel\ncpu family\t: 15\nmodel\t\t: 107\nmodel name\t: QEMU Virtual CPU version 2.5+\nstepping\t: 1\nmicrocode\t: 0x1\ncpu MHz\t\t: 2599.998\ncache size\t: 16384 KB\nphysical id\t: 0\nsiblings\t: 12\ncore id\t\t: 8\ncpu cores\t: 12\napicid\t\t: 8\ninitial apicid\t: 8\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 13\nwp\t\t: yes\nflags\t\t: fpu de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx lm constant_tsc nopl xtopology cpuid tsc_known_freq pni ssse3 cx16 sse4_1 sse4_2 x2apic popcnt aes hypervisor lahf_lm cpuid_fault pti\nbugs\t\t: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds swapgs itlb_multihit mmio_unknown bhi its\nbogomips\t: 5199.99\nclflush size\t: 64\ncache_alignment\t: 128\naddress sizes\t: 40 bits physical, 48 bits virtual\npower management:\n\nprocessor\t: 9\nvendor_id\t: GenuineIntel\ncpu family\t: 15\nmodel\t\t: 107\nmodel name\t: QEMU Virtual CPU version 2.5+\nstepping\t: 1\nmicrocode\t: 0x1\ncpu MHz\t\t: 2599.998\ncache size\t: 16384 KB\nphysical id\t: 0\nsiblings\t: 12\ncore id\t\t: 9\ncpu cores\t: 12\napicid\t\t: 9\ninitial apicid\t: 9\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 13\nwp\t\t: yes\nflags\t\t: fpu de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx lm constant_tsc nopl xtopology cpuid tsc_known_freq pni ssse3 cx16 sse4_1 sse4_2 x2apic popcnt aes hypervisor lahf_lm cpuid_fault pti\nbugs\t\t: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds swapgs itlb_multihit mmio_unknown bhi its\nbogomips\t: 5199.99\nclflush size\t: 64\ncache_alignment\t: 128\naddress sizes\t: 40 bits physical, 48 bits virtual\npower management:\n\nprocessor\t: 10\nvendor_id\t: GenuineIntel\ncpu family\t: 15\nmodel\t\t: 107\nmodel name\t: QEMU Virtual CPU version 2.5+\nstepping\t: 1\nmicrocode\t: 0x1\ncpu MHz\t\t: 2599.998\ncache size\t: 16384 KB\nphysical id\t: 0\nsiblings\t: 12\ncore id\t\t: 10\ncpu cores\t: 12\napicid\t\t: 10\ninitial apicid\t: 10\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 13\nwp\t\t: yes\nflags\t\t: fpu de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx lm constant_tsc nopl xtopology cpuid tsc_known_freq pni ssse3 cx16 sse4_1 sse4_2 x2apic popcnt aes hypervisor lahf_lm cpuid_fault pti\nbugs\t\t: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds swapgs itlb_multihit mmio_unknown bhi its\nbogomips\t: 5199.99\nclflush size\t: 64\ncache_alignment\t: 128\naddress sizes\t: 40 bits physical, 48 bits virtual\npower management:\n\nprocessor\t: 11\nvendor_id\t: GenuineIntel\ncpu family\t: 15\nmodel\t\t: 107\nmodel name\t: QEMU Virtual CPU version 2.5+\nstepping\t: 1\nmicrocode\t: 0x1\ncpu MHz\t\t: 2599.998\ncache size\t: 16384 KB\nphysical id\t: 0\nsiblings\t: 12\ncore id\t\t: 11\ncpu cores\t: 12\napicid\t\t: 11\ninitial apicid\t: 11\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 13\nwp\t\t: yes\nflags\t\t: fpu de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx lm constant_tsc nopl xtopology cpuid tsc_known_freq pni ssse3 cx16 sse4_1 sse4_2 x2apic popcnt aes hypervisor lahf_lm cpuid_fault pti\nbugs\t\t: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds swapgs itlb_multihit mmio_unknown bhi its\nbogomips\t: 5199.99\nclflush size\t: 64\ncache_alignment\t: 128\naddress sizes\t: 40 bits physical, 48 bits virtual\npower management:\n\nprocessor\t: 12\nvendor_id\t: GenuineIntel\ncpu family\t: 15\nmodel\t\t: 107\nmodel name\t: QEMU Virtual CPU version 2.5+\nstepping\t: 1\nmicrocode\t: 0x1\ncpu MHz\t\t: 2599.998\ncache size\t: 16384 KB\nphysical id\t: 1\nsiblings\t: 12\ncore id\t\t: 0\ncpu cores\t: 12\napicid\t\t: 16\ninitial apicid\t: 16\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 13\nwp\t\t: yes\nflags\t\t: fpu de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx lm constant_tsc nopl xtopology cpuid tsc_known_freq pni ssse3 cx16 sse4_1 sse4_2 x2apic popcnt aes hypervisor lahf_lm cpuid_fault pti\nbugs\t\t: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds swapgs itlb_multihit mmio_unknown bhi its\nbogomips\t: 5199.99\nclflush size\t: 64\ncache_alignment\t: 128\naddress sizes\t: 40 bits physical, 48 bits virtual\npower management:\n\nprocessor\t: 13\nvendor_id\t: GenuineIntel\ncpu family\t: 15\nmodel\t\t: 107\nmodel name\t: QEMU Virtual CPU version 2.5+\nstepping\t: 1\nmicrocode\t: 0x1\ncpu MHz\t\t: 2599.998\ncache size\t: 16384 KB\nphysical id\t: 1\nsiblings\t: 12\ncore id\t\t: 1\ncpu cores\t: 12\napicid\t\t: 17\ninitial apicid\t: 17\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 13\nwp\t\t: yes\nflags\t\t: fpu de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx lm constant_tsc nopl xtopology cpuid tsc_known_freq pni ssse3 cx16 sse4_1 sse4_2 x2apic popcnt aes hypervisor lahf_lm cpuid_fault pti\nbugs\t\t: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds swapgs itlb_multihit mmio_unknown bhi its\nbogomips\t: 5199.99\nclflush size\t: 64\ncache_alignment\t: 128\naddress sizes\t: 40 bits physical, 48 bits virtual\npower management:\n\nprocessor\t: 14\nvendor_id\t: GenuineIntel\ncpu family\t: 15\nmodel\t\t: 107\nmodel name\t: QEMU Virtual CPU version 2.5+\nstepping\t: 1\nmicrocode\t: 0x1\ncpu MHz\t\t: 2599.998\ncache size\t: 16384 KB\nphysical id\t: 1\nsiblings\t: 12\ncore id\t\t: 2\ncpu cores\t: 12\napicid\t\t: 18\ninitial apicid\t: 18\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 13\nwp\t\t: yes\nflags\t\t: fpu de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx lm constant_tsc nopl xtopology cpuid tsc_known_freq pni ssse3 cx16 sse4_1 sse4_2 x2apic popcnt aes hypervisor lahf_lm cpuid_fault pti\nbugs\t\t: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds swapgs itlb_multihit mmio_unknown bhi its\nbogomips\t: 5199.99\nclflush size\t: 64\ncache_alignment\t: 128\naddress sizes\t: 40 bits physical, 48 bits virtual\npower management:\n\nprocessor\t: 15\nvendor_id\t: GenuineIntel\ncpu family\t: 15\nmodel\t\t: 107\nmodel name\t: QEMU Virtual CPU version 2.5+\nstepping\t: 1\nmicrocode\t: 0x1\ncpu MHz\t\t: 2599.998\ncache size\t: 16384 KB\nphysical id\t: 1\nsiblings\t: 12\ncore id\t\t: 3\ncpu cores\t: 12\napicid\t\t: 19\ninitial apicid\t: 19\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 13\nwp\t\t: yes\nflags\t\t: fpu de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx lm constant_tsc nopl xtopology cpuid tsc_known_freq pni ssse3 cx16 sse4_1 sse4_2 x2apic popcnt aes hypervisor lahf_lm cpuid_fault pti\nbugs\t\t: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds swapgs itlb_multihit mmio_unknown bhi its\nbogomips\t: 5199.99\nclflush size\t: 64\ncache_alignment\t: 128\naddress sizes\t: 40 bits physical, 48 bits virtual\npower management:\n\nprocessor\t: 16\nvendor_id\t: GenuineIntel\ncpu family\t: 15\nmodel\t\t: 107\nmodel name\t: QEMU Virtual CPU version 2.5+\nstepping\t: 1\nmicrocode\t: 0x1\ncpu MHz\t\t: 2599.998\ncache size\t: 16384 KB\nphysical id\t: 1\nsiblings\t: 12\ncore id\t\t: 4\ncpu cores\t: 12\napicid\t\t: 20\ninitial apicid\t: 20\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 13\nwp\t\t: yes\nflags\t\t: fpu de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx lm constant_tsc nopl xtopology cpuid tsc_known_freq pni ssse3 cx16 sse4_1 sse4_2 x2apic popcnt aes hypervisor lahf_lm cpuid_fault pti\nbugs\t\t: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds swapgs itlb_multihit mmio_unknown bhi its\nbogomips\t: 5199.99\nclflush size\t: 64\ncache_alignment\t: 128\naddress sizes\t: 40 bits physical, 48 bits virtual\npower management:\n\nprocessor\t: 17\nvendor_id\t: GenuineIntel\ncpu family\t: 15\nmodel\t\t: 107\nmodel name\t: QEMU Virtual CPU version 2.5+\nstepping\t: 1\nmicrocode\t: 0x1\ncpu MHz\t\t: 2599.998\ncache size\t: 16384 KB\nphysical id\t: 1\nsiblings\t: 12\ncore id\t\t: 5\ncpu cores\t: 12\napicid\t\t: 21\ninitial apicid\t: 21\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 13\nwp\t\t: yes\nflags\t\t: fpu de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx lm constant_tsc nopl xtopology cpuid tsc_known_freq pni ssse3 cx16 sse4_1 sse4_2 x2apic popcnt aes hypervisor lahf_lm cpuid_fault pti\nbugs\t\t: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds swapgs itlb_multihit mmio_unknown bhi its\nbogomips\t: 5199.99\nclflush size\t: 64\ncache_alignment\t: 128\naddress sizes\t: 40 bits physical, 48 bits virtual\npower management:\n\nprocessor\t: 18\nvendor_id\t: GenuineIntel\ncpu family\t: 15\nmodel\t\t: 107\nmodel name\t: QEMU Virtual CPU version 2.5+\nstepping\t: 1\nmicrocode\t: 0x1\ncpu MHz\t\t: 2599.998\ncache size\t: 16384 KB\nphysical id\t: 1\nsiblings\t: 12\ncore id\t\t: 6\ncpu cores\t: 12\napicid\t\t: 22\ninitial apicid\t: 22\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 13\nwp\t\t: yes\nflags\t\t: fpu de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx lm constant_tsc nopl xtopology cpuid tsc_known_freq pni ssse3 cx16 sse4_1 sse4_2 x2apic popcnt aes hypervisor lahf_lm cpuid_fault pti\nbugs\t\t: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds swapgs itlb_multihit mmio_unknown bhi its\nbogomips\t: 5199.99\nclflush size\t: 64\ncache_alignment\t: 128\naddress sizes\t: 40 bits physical, 48 bits virtual\npower management:\n\nprocessor\t: 19\nvendor_id\t: GenuineIntel\ncpu family\t: 15\nmodel\t\t: 107\nmodel name\t: QEMU Virtual CPU version 2.5+\nstepping\t: 1\nmicrocode\t: 0x1\ncpu MHz\t\t: 2599.998\ncache size\t: 16384 KB\nphysical id\t: 1\nsiblings\t: 12\ncore id\t\t: 7\ncpu cores\t: 12\napicid\t\t: 23\ninitial apicid\t: 23\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 13\nwp\t\t: yes\nflags\t\t: fpu de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx lm constant_tsc nopl xtopology cpuid tsc_known_freq pni ssse3 cx16 sse4_1 sse4_2 x2apic popcnt aes hypervisor lahf_lm cpuid_fault pti\nbugs\t\t: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds swapgs itlb_multihit mmio_unknown bhi its\nbogomips\t: 5199.99\nclflush size\t: 64\ncache_alignment\t: 128\naddress sizes\t: 40 bits physical, 48 bits virtual\npower management:\n\nprocessor\t: 20\nvendor_id\t: GenuineIntel\ncpu family\t: 15\nmodel\t\t: 107\nmodel name\t: QEMU Virtual CPU version 2.5+\nstepping\t: 1\nmicrocode\t: 0x1\ncpu MHz\t\t: 2599.998\ncache size\t: 16384 KB\nphysical id\t: 1\nsiblings\t: 12\ncore id\t\t: 8\ncpu cores\t: 12\napicid\t\t: 24\ninitial apicid\t: 24\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 13\nwp\t\t: yes\nflags\t\t: fpu de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx lm constant_tsc nopl xtopology cpuid tsc_known_freq pni ssse3 cx16 sse4_1 sse4_2 x2apic popcnt aes hypervisor lahf_lm cpuid_fault pti\nbugs\t\t: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds swapgs itlb_multihit mmio_unknown bhi its\nbogomips\t: 5199.99\nclflush size\t: 64\ncache_alignment\t: 128\naddress sizes\t: 40 bits physical, 48 bits virtual\npower management:\n\nprocessor\t: 21\nvendor_id\t: GenuineIntel\ncpu family\t: 15\nmodel\t\t: 107\nmodel name\t: QEMU Virtual CPU version 2.5+\nstepping\t: 1\nmicrocode\t: 0x1\ncpu MHz\t\t: 2599.998\ncache size\t: 16384 KB\nphysical id\t: 1\nsiblings\t: 12\ncore id\t\t: 9\ncpu cores\t: 12\napicid\t\t: 25\ninitial apicid\t: 25\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 13\nwp\t\t: yes\nflags\t\t: fpu de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx lm constant_tsc nopl xtopology cpuid tsc_known_freq pni ssse3 cx16 sse4_1 sse4_2 x2apic popcnt aes hypervisor lahf_lm cpuid_fault pti\nbugs\t\t: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds swapgs itlb_multihit mmio_unknown bhi its\nbogomips\t: 5199.99\nclflush size\t: 64\ncache_alignment\t: 128\naddress sizes\t: 40 bits physical, 48 bits virtual\npower management:\n\nprocessor\t: 22\nvendor_id\t: GenuineIntel\ncpu family\t: 15\nmodel\t\t: 107\nmodel name\t: QEMU Virtual CPU version 2.5+\nstepping\t: 1\nmicrocode\t: 0x1\ncpu MHz\t\t: 2599.998\ncache size\t: 16384 KB\nphysical id\t: 1\nsiblings\t: 12\ncore id\t\t: 10\ncpu cores\t: 12\napicid\t\t: 26\ninitial apicid\t: 26\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 13\nwp\t\t: yes\nflags\t\t: fpu de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx lm constant_tsc nopl xtopology cpuid tsc_known_freq pni ssse3 cx16 sse4_1 sse4_2 x2apic popcnt aes hypervisor lahf_lm cpuid_fault pti\nbugs\t\t: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds swapgs itlb_multihit mmio_unknown bhi its\nbogomips\t: 5199.99\nclflush size\t: 64\ncache_alignment\t: 128\naddress sizes\t: 40 bits physical, 48 bits virtual\npower management:\n\nprocessor\t: 23\nvendor_id\t: GenuineIntel\ncpu family\t: 15\nmodel\t\t: 107\nmodel name\t: QEMU Virtual CPU version 2.5+\nstepping\t: 1\nmicrocode\t: 0x1\ncpu MHz\t\t: 2599.998\ncache size\t: 16384 KB\nphysical id\t: 1\nsiblings\t: 12\ncore id\t\t: 11\ncpu cores\t: 12\napicid\t\t: 27\ninitial apicid\t: 27\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 13\nwp\t\t: yes\nflags\t\t: fpu de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx lm constant_tsc nopl xtopology cpuid tsc_known_freq pni ssse3 cx16 sse4_1 sse4_2 x2apic popcnt aes hypervisor lahf_lm cpuid_fault pti\nbugs\t\t: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds swapgs itlb_multihit mmio_unknown bhi its\nbogomips\t: 5199.99\nclflush size\t: 64\ncache_alignment\t: 128\naddress sizes\t: 40 bits physical, 48 bits virtual\npower management:\n\n",
+    "memory": "MemTotal:       263929548 kB\nMemFree:        257391284 kB\nMemAvailable:   260129236 kB\nBuffers:           88664 kB\nCached:          4749336 kB\nSwapCached:            0 kB\nActive:          1976608 kB\nInactive:        4031764 kB\nActive(anon):    1363508 kB\nInactive(anon):        0 kB\nActive(file):     613100 kB\nInactive(file):  4031764 kB\nUnevictable:        5684 kB\nMlocked:            5684 kB\nSwapTotal:       2097148 kB\nSwapFree:        2097148 kB\nZswap:                 0 kB\nZswapped:              0 kB\nDirty:              1820 kB\nWriteback:            28 kB\nAnonPages:       1175924 kB\nMapped:           401416 kB\nShmem:            188160 kB\nKReclaimable:     108308 kB\nSlab:             225384 kB\nSReclaimable:     108308 kB\nSUnreclaim:       117076 kB\nKernelStack:       13648 kB\nPageTables:        17912 kB\nSecPageTables:         0 kB\nNFS_Unstable:          0 kB\nBounce:                0 kB\nWritebackTmp:          0 kB\nCommitLimit:    134061920 kB\nCommitted_AS:    5629908 kB\nVmallocTotal:   34359738367 kB\nVmallocUsed:       30272 kB\nVmallocChunk:          0 kB\nPercpu:            16128 kB\nHardwareCorrupted:     0 kB\nAnonHugePages:    845824 kB\nShmemHugePages:        0 kB\nShmemPmdMapped:        0 kB\nFileHugePages:         0 kB\nFilePmdMapped:         0 kB\nUnaccepted:            0 kB\nHugePages_Total:       0\nHugePages_Free:        0\nHugePages_Rsvd:        0\nHugePages_Surp:        0\nHugepagesize:       2048 kB\nHugetlb:               0 kB\nDirectMap4k:      159592 kB\nDirectMap2M:    268275712 kB\n",
+    "timeout_seconds": 30,
+    "address_space_limit_mib": 1024,
+    "measurement": "sequential fresh CLI processes; OS caches uncontrolled; no excluded warmup",
+    "setup_commands": [
+      [
+        "research",
+        "--strategy",
+        "portfolio-rational",
+        "--train",
+        "fraction.csv",
+        "--holdout",
+        "fraction-hold.csv",
+        "--min",
+        -3,
+        "--max",
+        3,
+        "--max-degree",
+        2,
+        "--max-power",
+        2,
+        "--max-denominator",
+        1,
+        "--output",
+        "source.bruce"
+      ],
+      [
+        "experience",
+        "add",
+        "--from-run",
+        "source.bruce",
+        "--output",
+        "routing.experience"
+      ],
+      [
+        "grid-batch",
+        "--paths",
+        "2,6;4,3;2,6",
+        "--output",
+        "grid.bruce"
+      ],
+      [
+        "grid-batch",
+        "--paths",
+        "2,6;4,3;2,6",
+        "--max-query-steps",
+        1,
+        "--output",
+        "partial.bruce"
+      ]
+    ],
+    "inputs": {
+      "setup-0.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "train.csv": "2fdd87c54f18c236714d79e7dcfd3c453960bbedcdc9e16dcce4b599ce096c65",
+      "hold.csv": "9b8f575ad2d8073c6f38d467a56c0a3fc3bbbab78538721c075ebff57f06f5f4",
+      "setup-3.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "candidates.csv": "a7c3106863710e40bb0e79753c670b35871fe3a8be801274879c6cc9f6754b9a",
+      "setup-2.stdout": "f8f2d57b9cc528a9f0a16414311c22c5a17343993bee1d040886b098ce9478b0",
+      "target-hold.csv": "83824e304b59f025a2c7a35e40aa5b46dcfdb338785710187e9ac5305d6f7ee6",
+      "setup-2.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "partial.bruce": "f3392b066f39ff24f66a5d9c9828b47ede14d77983bea96e5f9beebed407ab8a",
+      "setup-0.stdout": "f438ae1ae17e76761960ae107ec286053c8223bb8ae7af915c570e3c92a70be9",
+      "corrupt.bruce": "32171438967142c7091a1daf78b7f3d6ae1c5302323054da518fd0debdd10dfb",
+      "expression.csv": "76914d350d93a769acf5aa33ead54f87e59ee90a926bd1d15fdc888dcebdfdb6",
+      "setup-1.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "fraction.csv": "714e3e7a451f09b59236fdaaf8ae45e60b7269ccbb12168a27796409965d6785",
+      "setup-1.stdout": "b7e16704f32090c49a3277f56a3632341e37e083b9d189a02ea8f995855741e3",
+      "grid.bruce": "3c93f529f59a6436ffedaa115429b20582656630c40759d59eaa4ea8d433e06f",
+      "routing.experience": "3129088d97a0fa007fd1ae0bba433f3e1f85e965e18da95a135c5c5e2418d27a",
+      "setup-3.stdout": "f181ef5362fb2e30c43d84474c436e0c22e588f14adf4c2e803ad1c93ce47c11",
+      "rules.txt": "5eb654fc39d0e18e5a6b055ed0684b797d7cc7737312ce8fee3f6b853d074bfa",
+      "target.csv": "9506323f5a2f57509f8de9d4264f01166dfe9ceb374f7841d4c1ff7644ab7aea",
+      "source.bruce": "642ec80fb4b168c2469ac0efee37537ae4a6f527feb2ed4ac8c72c610ad5ed61",
+      "fraction-hold.csv": "11fc164babd2c957df6e666090e7102dff1f436d4577b97deee7c27dca8859b9",
+      "expression-hold.csv": "1beeb89283103f692b5745ea0a411cb2c0257bcdc582139d1f85f7d32744f00d"
+    },
+    "compiler": "c++ (Debian 14.2.0-19) 14.2.0\nCopyright (C) 2024 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n",
+    "libraries": "\tlinux-vdso.so.1 (0x00007f123400b000)\n\tlibcrypto.so.3 => /home/chris/Desktop/Bruce_raw/build-host-deps/root/usr/lib/x86_64-linux-gnu/libcrypto.so.3 (0x00007f1233800000)\n\tlibgmp.so.10 => /home/chris/Desktop/Bruce_raw/build-host-deps/root/usr/lib/x86_64-linux-gnu/libgmp.so.10 (0x00007f1233776000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007f1233400000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f1233749000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f123320c000)\n\tlibz.so.1 => /lib/x86_64-linux-gnu/libz.so.1 (0x00007f1233729000)\n\tlibzstd.so.1 => /lib/x86_64-linux-gnu/libzstd.so.1 (0x00007f1233142000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f1233052000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f123400d000)\n",
+    "runner_sha256": "bf5b292986b53a1143e4ceaf4291b95c88a6869b144b2f8f1d353b467b4c5253",
+    "source_hashes": {
+      "src/application/application_replay.cpp": "d58a3baf627f91b77ed1404134d9f85530f8534bc09b9b23b684bd09bc679665",
+      "src/application/application_task.cpp": "75c41335d25d0c13622595751e274d7fc3a6a7d526bf446dd4ab88af210c61ff",
+      "src/application/compatibility.cpp": "8b29f3dd7258319c5494b95080110414a1b0acf4a5abf447e72750e2e3ae2122",
+      "src/application/exact_planner.cpp": "73aeb1ac814c6fb36441bf0290da868df08aa1d7c03df6826d3f1266046cf7fa",
+      "src/application/exact_replay.cpp": "551aab8d5390657ab6aa31cfb0b5c8d4966ac6668b0355b30b9f1a19d51425d6",
+      "src/application/exact_research.cpp": "d30e2b8335e949116a2ca1482bf83db107eeeb0692b53907ed6fcc6e5e17dd6c",
+      "src/application/execution_session.cpp": "c7c29d4e23a0881b17a6f39d0864c727dd2d067ec170abed98d850bb765b8417",
+      "src/application/expression_research.cpp": "efeb98b74757a58358c65f39a42c5b65a2e4a017bb8f22d5230dec0344a38def",
+      "src/application/fraction_compare.cpp": "9547fe221e1ed7387078ea3cdd97c84a9bc71f69f1d21ea3a81810322e4c4c01",
+      "src/application/grid.cpp": "711a9108e81399889545dc9bc12725b91eb517603b97c1d37f9d691de26025bf",
+      "src/application/grid_batch.cpp": "ac521625bc96369db9c43a8d57f9d43b0bf36d775866efc260072bc6f3a38f97",
+      "src/application/grid_research.cpp": "96403f1dd031c27780e8a00390bd456cce0ec65839b9f0fa132c64138698d73c",
+      "src/application/grid_resume.cpp": "9ecdc7c92b535aa02e8f0958134686a40b5655eb2b92318fe910a841677f17d7",
+      "src/application/grid_spec.cpp": "4aca67ef805bdec9aa14001d437bb8ff1676a66622d885a9e3f99a687c576ccc",
+      "src/application/polynomial_research.cpp": "c12773c9801695e0309496422a9e0979bff52675b00d9e8bcec29b43471712b9",
+      "src/application/portfolio_normalization.cpp": "aa3458c29956e5a5551c2f2757ebef83a7230daebb218c87e8f14c0344c8f3d1",
+      "src/application/portfolio_order.cpp": "4bd5c9edb255629b9ab2a311f267f228327000059414d12c90f09181a7065f60",
+      "src/application/portfolio_research.cpp": "2ab40d2568b275db98c446267e7946e998558b65351a56050e08a27cbd7f1e57",
+      "src/application/portfolio_version.cpp": "3d4f97a1c69aa4ed292731d8c28fc43acabcf1209feeb5abe85881e85a6c5332",
+      "src/application/rational_linear_research.cpp": "77891b92920516ddd130c99295847d55ad790205f8f3f4bfb772f687311a07b5",
+      "src/application/replay.cpp": "10d51861d259c3f20e114dd820cb5c347ad23b81ba22dad547df1e0810081cb5",
+      "src/application/research.cpp": "f6ec29490465d55dc0308868c5193db27d6897b965930496afa4a7be9cf36fe7",
+      "src/application/research_contract.cpp": "c6d52c58d8eec70ee14732d94681546f6f9be5568f90db2ec3005465cbea3574",
+      "src/application/research_gates.cpp": "11aa3035d44d76cc6e74f4dc4bc8348adecefd61c60ff1fd747f0eccb41dbb4e",
+      "src/application/session_budget.cpp": "b8528bb4275c24ca09027434ca827bed203df6540ee807f5b4e323db3bdfa3f6",
+      "src/compatibility/selection.cpp": "608c7b62909faa69d4d55f81155eacadf97a9b54992d8f9890ccd2cea77789b4",
+      "src/compatibility/snapshot.cpp": "a6ad5793df93483e4d869a4e9a2066ea5f7088a3d65d063fe0ff60f024292b03",
+      "src/coordinate/address.cpp": "7e268b3ebe357baffaeb6b1b78aa65dab691ece71a636b546249b062d0c5f199",
+      "src/evidence/bundle.cpp": "25fdc668e09ad88bc6c4b20e9b11d868ba1367324a029859675911468a4f8e02",
+      "src/experience/store.cpp": "a30c1edb0c60d99040595db1a1b8df567bad35d5efd62fd3fa9700824405fec8",
+      "src/math/domain_cache.cpp": "b802d276462cf96c863f115269cd7fe9516a7d5464852d476bca4d8dfb7f4634",
+      "src/math/exact.cpp": "e8c8c556457d583fccc5a052b75af34c4cba9e1db046601f9fa612298bd8cbee",
+      "src/math/expression.cpp": "6752e5ff01da2a76a5fe544b9e7e40b382ace6e79919d90b74292cb2557e5c93",
+      "src/math/expression_normal_form.cpp": "3caaa72f45c143a1092a7677246ef5a491137191aa190603f50beed34fea6a00",
+      "src/math/numbers.cpp": "acb4ce574de08350ba3d6e7255f7949008d70fc829f01d06e8d76e4898ef9213",
+      "src/math/polynomial.cpp": "a180201037c6ef1d4238d0238737ca60fc870ad793b694d556d0ccc4f61cfaa2",
+      "src/math/power_affine.cpp": "5642e9a439bb1a41cd0c1713743fd0e051cbf910f4870e862e0219829a480751",
+      "src/math/rational_linear.cpp": "4a903699b2719bebbe0b8b1ac6993b79beedcf48954cbd0ab415ba596e97d222",
+      "include/bruce/application/application_task.hpp": "328773a6aac859a944a1394c42707bd094c4057ba81eef687fa9867247958309",
+      "include/bruce/application/compatibility.hpp": "586cedb7b31b767538d24f64ca7721c4cb59f2632c690fc2e3ba4a9332ea32ae",
+      "include/bruce/application/exact_planner.hpp": "ff4bab39cad5fd27b1fa8bc0917f46f2fa75f3733012d5567ad93db08561eb71",
+      "include/bruce/application/exact_research.hpp": "1e2530ea64f12f3427debd39522fab68411ad20c3c9017791e977a1775985ebd",
+      "include/bruce/application/execution_session.hpp": "764eea29567c8af5abc4b347b70ad4bc122c84146f7f445ab544f868c18cc059",
+      "include/bruce/application/expression_research.hpp": "cfe203d5e704fb075d7f95b5e5a677c0af187de729e9907bdb0895e2e4a33f40",
+      "include/bruce/application/fraction_compare.hpp": "e8aed4a4c17164db8e0bf1b2027c6e8059e7b442229578e5be16560d9ce6ebd4",
+      "include/bruce/application/grid.hpp": "e451105cd9fef0ea3e909ea9498a5affd8517ec5c62ec74464193aa1144eb171",
+      "include/bruce/application/grid_batch.hpp": "20a149f46b24bec87738771efe3c4a2c169f6b021057a2ecf084d49f14e13e54",
+      "include/bruce/application/grid_research.hpp": "3f7a64e82fe027c91ecff1c394ee14040c469b4081bbbe02c30724f29e4b824e",
+      "include/bruce/application/grid_resume.hpp": "28ad0590ba8869999dbbd8e5823afabfb792aed1bfd19233cd8a4e76545e5d99",
+      "include/bruce/application/grid_spec.hpp": "a87313b9f0b8db28cf3c5b121ddf396ad099da9619f77046a11a3608ff4885a9",
+      "include/bruce/application/polynomial_research.hpp": "1bcd5a82b8ca724d1461557b01416580fca39ca4baf731d54f0082fc73417829",
+      "include/bruce/application/portfolio_normalization.hpp": "2645622a15a9ee54d0492cf13ea4fa7ce3d14b8231e5798af52bf21f3add1c47",
+      "include/bruce/application/portfolio_order.hpp": "871bebb0209d6d8dfdf99975e28307940e99fdfab15d33b36dfc76c89db66d8a",
+      "include/bruce/application/portfolio_research.hpp": "2a4cedbadbcb1361827ce5efebf607c8e1559268bb9c488dfedd3efddec6cc74",
+      "include/bruce/application/portfolio_version.hpp": "fa8c1264e145cbb750c5caf69106d15cec4a4dc63297b03feac2fabdddf43dab",
+      "include/bruce/application/rational_linear_research.hpp": "0867d53f6d78713d64d0786530cacb8a3e0e49392a2f5f80f7e0863ed897939b",
+      "include/bruce/application/research.hpp": "b7bf8f0953b74cf72c12e5c3160aa64b40413d9583c3eab3fb37e2b90f6733b7",
+      "include/bruce/application/research_contract.hpp": "fc35a1f71b604ed29e43e82903be8962311b7fb492447c82924fa0f6ee7b2018",
+      "include/bruce/application/research_gates.hpp": "fbf339437691a6956ccf46b4db63bb43897ba82b3f340360b822497d796e4566",
+      "include/bruce/application/session_budget.hpp": "bcc40e1eaabadaf04c42416755e78a61f0447a62180af3fcae72f7a3df74e51a",
+      "include/bruce/compatibility/selection.hpp": "5189fed71752d05c94104d70a0e5101840adf6a72a581ee702a3eb863b3093a4",
+      "include/bruce/compatibility/snapshot.hpp": "7f39ba00986dc4c5f00f4d2d19f47b2268b1b9420108b578ddc3a59c3ac38f33",
+      "include/bruce/coordinate/address.hpp": "6bd592d7099dd7e2ae4ddf2281a5c8e58f8f5506d8791573d6e5e939aa19a0be",
+      "include/bruce/core/replay_control.hpp": "8584e9b92ebb1d097a18040474537306c9db38417dfd04bae7d29f35edd03fca",
+      "include/bruce/core/types.hpp": "01a02b4c8fa64d25efcdbb075eb4bf6630b1eeb9af99744436cdaafaa933e4c3",
+      "include/bruce/evidence/bundle.hpp": "c2740bbc0ffe538373baf44c4353eb4f7282a33a55923fea2c13d7dfc0e2f66d",
+      "include/bruce/experience/store.hpp": "7d200a0b0c9eb63a8f76067197f169055927810c25f0d20b0c3845822d4aca4d",
+      "include/bruce/math/domain_cache.hpp": "2fe4aa516b784719f593a15764912603e6a555915c05d090d0b75d7795554f42",
+      "include/bruce/math/exact.hpp": "667bf4314ec1aa527f474c2e9e2de2fdc8e652610ac54defed15ea78db30721a",
+      "include/bruce/math/expression.hpp": "fe7c1211f2cde5bb771a7baf095a02c8a0ee583b93ccac16a289c1572741f4bc",
+      "include/bruce/math/expression_normal_form.hpp": "73ad1c6289c4d888c2265a78493ac9caacbb071d4d360edf6167b1bc3f06e3f4",
+      "include/bruce/math/numbers.hpp": "0df802b95b3a0d87a0e2bf595d8e923ea8fd3b855c717c11c8673406bcc2ddd7",
+      "include/bruce/math/polynomial.hpp": "cdd2ea0d0b3fa365520b3cf451200847ea1273f90951d8b737b7d18dcdcdaa2b",
+      "include/bruce/math/power_affine.hpp": "adcff3ce2fa698568a222c13397fe78896ed90dc5d565ac311f7c1087f258eef",
+      "include/bruce/math/rational_linear.hpp": "f89b3e9a4692bcbde1bb5370c7a767a74200aa6eee82cc581ae630d970c2ef75",
+      "apps/bruce_cli.cpp": "c3c295bbe8439359f0808bb8f38e24af3115d87aa1cce363ae9b75747f39ee84",
+      "CMakeLists.txt": "a707bb047467f19e460fada2b4d34985742c15b326cc53cd6c4f67d59ea43650"
+    },
+    "version": {
+      "contract": "bruce-version-v1",
+      "version": "0.72.0"
+    }
+  },
+  "cases": [
+    {
+      "name": "bigint-mul-64",
+      "args": [
+        "calculate",
+        "--op",
+        "mul",
+        "--left",
+        "4611686018427387917",
+        "--right",
+        "2305843009213693959",
+        "--max-bits",
+        "128"
+      ],
+      "expected": {
+        "value": "10633823966279327045488217731012493403"
+      },
+      "code": 0,
+      "formula": null,
+      "replay": false
+    },
+    {
+      "name": "rational-add-64",
+      "args": [
+        "calculate",
+        "--domain",
+        "rational",
+        "--op",
+        "add",
+        "--left",
+        "4611686018427387917/2305843009213693959",
+        "--right",
+        "2305843009213693959/4611686018427387917",
+        "--max-bits",
+        "128"
+      ],
+      "expected": {
+        "value": "26584559915698317610261779813710692570/10633823966279327045488217731012493403"
+      },
+      "code": 0,
+      "formula": null,
+      "replay": false
+    },
+    {
+      "name": "bigint-mul-512",
+      "args": [
+        "calculate",
+        "--op",
+        "mul",
+        "--left",
+        "3351951982485649274893506249551461531869841455148098344430890360930441007518386744200468574541725856922507964546621512713438470702986642486608412251521037",
+        "--right",
+        "1675975991242824637446753124775730765934920727574049172215445180465220503759193372100234287270862928461253982273310756356719235351493321243304206125760519",
+        "--max-bits",
+        "1024"
+      ],
+      "expected": {
+        "value": "5617791046444737211654078721215702292556178059194708039794690036179146118921905097897139916325235500660003558745981042426837180275450519452901482207483611638157010225792257477218813307269620684092553341580306247296064769776803463267106491030157164460423157316414701210419982854931981454199674098866152538203"
+      },
+      "code": 0,
+      "formula": null,
+      "replay": false
+    },
+    {
+      "name": "rational-add-512",
+      "args": [
+        "calculate",
+        "--domain",
+        "rational",
+        "--op",
+        "add",
+        "--left",
+        "3351951982485649274893506249551461531869841455148098344430890360930441007518386744200468574541725856922507964546621512713438470702986642486608412251521037/1675975991242824637446753124775730765934920727574049172215445180465220503759193372100234287270862928461253982273310756356719235351493321243304206125760519",
+        "--right",
+        "1675975991242824637446753124775730765934920727574049172215445180465220503759193372100234287270862928461253982273310756356719235351493321243304206125760519/3351951982485649274893506249551461531869841455148098344430890360930441007518386744200468574541725856922507964546621512713438470702986642486608412251521037",
+        "--max-bits",
+        "1024"
+      ],
+      "expected": {
+        "value": "14044477616111843029135196803039255731390445147986770099486725090447865297304762744742849790813088751650008896864952606067092950688626298632253705518709026581428538700243687522917346104577902807850291992877007295072391226611253019377708077223962004856665201410063343059915422058476926395517320290856192704730/5617791046444737211654078721215702292556178059194708039794690036179146118921905097897139916325235500660003558745981042426837180275450519452901482207483611638157010225792257477218813307269620684092553341580306247296064769776803463267106491030157164460423157316414701210419982854931981454199674098866152538203"
+      },
+      "code": 0,
+      "formula": null,
+      "replay": false
+    },
+    {
+      "name": "bigint-mul-2048",
+      "args": [
+        "calculate",
+        "--op",
+        "mul",
+        "--left",
+        "8079251517827751825178719172167487990111025667428871008032586356881163784716972723299300352880728365922179490230474504873529889787622730273772038096612070780157719341825249022937549437597413026699014409596016892069198054660654939040459523584619042617645411463009076260721893972885266452151888099780982596380478583347417085605171243696641142373714044008831580514519451414832756548177115078537564648216044279181485900929615464339399587788075411476100924403308321807806781421177705052431289275431732830867419635645164174483761499317088249659553881291597359333885900533858307401161329619651238037048388963402764899057677",
+        "--right",
+        "4039625758913875912589359586083743995055512833714435504016293178440581892358486361649650176440364182961089745115237252436764944893811365136886019048306035390078859670912624511468774718798706513349507204798008446034599027330327469520229761792309521308822705731504538130360946986442633226075944049890491298190239291673708542802585621848320571186857022004415790257259725707416378274088557539268782324108022139590742950464807732169699793894037705738050462201654160903903390710588852526215644637715866415433709817822582087241880749658544124829776940645798679666942950266929153700580664809825619018524194481701382449528839",
+        "--max-bits",
+        "4096"
+      ],
+      "expected": {
+        "value": "32637152544161015834117272209894511955623882782730743137007296352623559624111170526525837872968673698152815834826226963687111669943306050226976127745355164935811155516990937448136299691699491197325877187870498319574259963731178523302260458885768331796775247147056365752227626523128706534827124305737438406458966843027555868310840800943445654393736857919775733415719584263845594531749137495866069235677932361246415358947444934826078022940244121019984264846880907542156513033177346677135432829719780377758423461561988011544122906725431150807412127869801773475666202901449003923444562446887885774526956114827881081782103023205279599987944032564451998857307212417453967827430726447620333419693538040512091692869211250912598923583960128798917115715676644719689493486392735895862887738748384347898712634730175529518724921687714818855049580054261447792289418535531126325569867607091866999850109392920039107147195209531509394330096096589453903482166685911835326227153677839440077995067881218978079696812946510585810824309274587120518132446002093750868317897875524987632729553610189997931001559106430344486779183683145530250410537887601059538572623292283914060588446188136985200686418195222446872778269224294605258377973369903072963735847003"
+      },
+      "code": 0,
+      "formula": null,
+      "replay": false
+    },
+    {
+      "name": "rational-add-2048",
+      "args": [
+        "calculate",
+        "--domain",
+        "rational",
+        "--op",
+        "add",
+        "--left",
+        "8079251517827751825178719172167487990111025667428871008032586356881163784716972723299300352880728365922179490230474504873529889787622730273772038096612070780157719341825249022937549437597413026699014409596016892069198054660654939040459523584619042617645411463009076260721893972885266452151888099780982596380478583347417085605171243696641142373714044008831580514519451414832756548177115078537564648216044279181485900929615464339399587788075411476100924403308321807806781421177705052431289275431732830867419635645164174483761499317088249659553881291597359333885900533858307401161329619651238037048388963402764899057677/4039625758913875912589359586083743995055512833714435504016293178440581892358486361649650176440364182961089745115237252436764944893811365136886019048306035390078859670912624511468774718798706513349507204798008446034599027330327469520229761792309521308822705731504538130360946986442633226075944049890491298190239291673708542802585621848320571186857022004415790257259725707416378274088557539268782324108022139590742950464807732169699793894037705738050462201654160903903390710588852526215644637715866415433709817822582087241880749658544124829776940645798679666942950266929153700580664809825619018524194481701382449528839",
+        "--right",
+        "4039625758913875912589359586083743995055512833714435504016293178440581892358486361649650176440364182961089745115237252436764944893811365136886019048306035390078859670912624511468774718798706513349507204798008446034599027330327469520229761792309521308822705731504538130360946986442633226075944049890491298190239291673708542802585621848320571186857022004415790257259725707416378274088557539268782324108022139590742950464807732169699793894037705738050462201654160903903390710588852526215644637715866415433709817822582087241880749658544124829776940645798679666942950266929153700580664809825619018524194481701382449528839/8079251517827751825178719172167487990111025667428871008032586356881163784716972723299300352880728365922179490230474504873529889787622730273772038096612070780157719341825249022937549437597413026699014409596016892069198054660654939040459523584619042617645411463009076260721893972885266452151888099780982596380478583347417085605171243696641142373714044008831580514519451414832756548177115078537564648216044279181485900929615464339399587788075411476100924403308321807806781421177705052431289275431732830867419635645164174483761499317088249659553881291597359333885900533858307401161329619651238037048388963402764899057677",
+        "--max-bits",
+        "4096"
+      ],
+      "expected": {
+        "value": "81592881360402539585293180524736279889059706956826857842518240881558899060277926316314594682421684245382039587065567409217779174858265125567440319363387912339527888792477343620340749229248727993314692969676245798935649909327946308255651147214420829491938117867640914380569066307821766337067810764343596016147417107568889670777102002358614135984342144799439333539298960659613986329372843739665173089194830903116038397368612337065195057350610302549960662117202268855391282582943366692838582074299450944396058653904970028860307266813577877018530319674504433689165507253622509808611406117219714436317390287069702704455251498574560629155991197371750871527275447774384347915320791679283172676395307371737754756908367581007055674342227466118637641871850894751518404687409380686572101057364591932979578424747240764026788043412090034468572051594658128276443201696139351531961434959132410692429732061820433818028874107753937748877954882536124195891212836346815834711103909065593571302283813458884074674621233440155623887287024434591909216689308022778916245053847755910474748190722993753471648811700192582427624492251290026002875779992268775715568737106221968964226450059373764982215631062655723451394802063521774717417147133035130335665324250/32637152544161015834117272209894511955623882782730743137007296352623559624111170526525837872968673698152815834826226963687111669943306050226976127745355164935811155516990937448136299691699491197325877187870498319574259963731178523302260458885768331796775247147056365752227626523128706534827124305737438406458966843027555868310840800943445654393736857919775733415719584263845594531749137495866069235677932361246415358947444934826078022940244121019984264846880907542156513033177346677135432829719780377758423461561988011544122906725431150807412127869801773475666202901449003923444562446887885774526956114827881081782103023205279599987944032564451998857307212417453967827430726447620333419693538040512091692869211250912598923583960128798917115715676644719689493486392735895862887738748384347898712634730175529518724921687714818855049580054261447792289418535531126325569867607091866999850109392920039107147195209531509394330096096589453903482166685911835326227153677839440077995067881218978079696812946510585810824309274587120518132446002093750868317897875524987632729553610189997931001559106430344486779183683145530250410537887601059538572623292283914060588446188136985200686418195222446872778269224294605258377973369903072963735847003"
+      },
+      "code": 0,
+      "formula": null,
+      "replay": false
+    },
+    {
+      "name": "bigint-mul-8192",
+      "args": [
+        "calculate",
+        "--op",
+        "mul",
+        "--left",
+        "272687033904853982365746061183445715612066040499058173107958196547430332962279823804066058631300496805989322949039256318277467705044296015902744941269388699769726574710548247384652456307012051289924212903397909549192971635652331140030322638475471575254475063133949979300002519900006633959200226324451470238087625407548868913477751328091140003711856508823387811460982229688192174069836022013904378923587486351669456285203725154026480064109626144503331623391459011810601845610703061282879439379791224806591435930608069342018756906970761301625448190425236424792124314469920962934262499225240280128913762528890317872873128835526437241657386758196580376432707107555416242581099034658812906602379042001356905858999077230422861545296851598827666351221434858708219357041851873842748377967189089992597529255455904187364655242464251565903020676678852039266643784320256755577731891227569189790130219576158102762341142188730241830745614796190856845947568112109504631744441235268178902895108672706864834997990353560685352649779356515139120940939078631902840664657095842155289498409505219634418886334197478923558608488916578767521803383867563917578001032681373958627089359913457234019270244637644728241976838195013733905390272698961293238528993231869969381934640002051029639732501194437181940463453377623460145465399663052901490077089101485455297428509467181554870374681900913404074714043705603258371359696331006187854854295753070269552432325884343201143593023807175905694090986322717451564605588787126892759904846862407466702047192415703944538269848294773285912085190434645454890750748605697688738765322204577107519912173308044789691479508891304039278850748030069038901968276984369366710382090746927174862538007807965648550771423459736164265336559176058506705275739738737799271769136546655699073634112905189127337754726505943455384883194052169244647432991582577223326166292359046269587660392084236132512859372827824708591816309648851226068363982180987381306796154351091963688652618594254942006394151470259519317676929485555494272596359646461023873029024963134725993663925985993271522732649240840191882491234603649546426490938640374338956953405958322226577251072004330356202165990667833382002308189587718264903529680945355525365049653936846713774224022297295110334889631205716885278303159698418891912585090742507982505849457116329636809561058007003797422415104705744000203859402663063567540898912718858462786780803556816651350895445367272701644117237646915499296626416368928948237",
+        "--right",
+        "136343516952426991182873030591722857806033020249529086553979098273715166481139911902033029315650248402994661474519628159138733852522148007951372470634694349884863287355274123692326228153506025644962106451698954774596485817826165570015161319237735787627237531566974989650001259950003316979600113162225735119043812703774434456738875664045570001855928254411693905730491114844096087034918011006952189461793743175834728142601862577013240032054813072251665811695729505905300922805351530641439719689895612403295717965304034671009378453485380650812724095212618212396062157234960481467131249612620140064456881264445158936436564417763218620828693379098290188216353553777708121290549517329406453301189521000678452929499538615211430772648425799413833175610717429354109678520925936921374188983594544996298764627727952093682327621232125782951510338339426019633321892160128377788865945613784594895065109788079051381170571094365120915372807398095428422973784056054752315872220617634089451447554336353432417498995176780342676324889678257569560470469539315951420332328547921077644749204752609817209443167098739461779304244458289383760901691933781958789000516340686979313544679956728617009635122318822364120988419097506866952695136349480646619264496615934984690967320001025514819866250597218590970231726688811730072732699831526450745038544550742727648714254733590777435187340950456702037357021852801629185679848165503093927427147876535134776216162942171600571796511903587952847045493161358725782302794393563446379952423431203733351023596207851972269134924147386642956042595217322727445375374302848844369382661102288553759956086654022394845739754445652019639425374015034519450984138492184683355191045373463587431269003903982824275385711729868082132668279588029253352637869869368899635884568273327849536817056452594563668877363252971727692441597026084622323716495791288611663083146179523134793830196042118066256429686413912354295908154824425613034181991090493690653398077175545981844326309297127471003197075735129759658838464742777747136298179823230511936514512481567362996831962992996635761366324620420095941245617301824773213245469320187169478476702979161113288625536002165178101082995333916691001154094793859132451764840472677762682524826968423356887112011148647555167444815602858442639151579849209445956292545371253991252924728558164818404780529003501898711207552352872000101929701331531783770449456359429231393390401778408325675447722683636350822058618823457749648313208184464474119",
+        "--max-bits",
+        "16384"
+      ],
+      "expected": {
+        "value": "37179109229913492658929978957125222836357646471765944921021088163539417443140115215765268608519126247347357421401228414340552105665896482071078896823173906440027238573937653047566976613110357713936010803421316745219895233275968274522321280245175441827376385575152691340790214228538629959249996430940823656816275480103774405135116023661384081668964850075542666373445871252783359917883456588613985804868149794738194170371994308113459072229495333048105020301412290099321617739342668915159798629199056040053934000497137958602807266814481851090268746843144472313285052327251621013728791349950091959541917717227335594206056778071531076411668761394310261785564825354555995267924846161576176380991996551402668052648072570019007471220668733614854210618250515366956921413406713989760499309286199916694573429212857551658679945343403938465462175146129784508039379431463219612125107560982978990674939727549674911544186425263734530724101720696313332068751501317181506250064406044802538675745558769608741471027421338701209532751067644791781668293937438771934645699603175156818383205428867696226274966616178400246929383293997843013114027433425125547427873083999627750279507851838342802761381066685805629932636404564147301732965822724607141621721883709222478859275271988451131060237271635775650401071792639958964439505282576829848016626720328380934120838964493747426485852855361671896906724923721795407501032235021359944265443613646752429628456196403166987858412946066306577971186852361145161405745314439095828658895230295751145017791858276161630729779902309751332500112863087164943615939127955086290834485995010315957659437357348988334020925867619393885702511184575479819147904586127281465846527203003907814629895601648790552002046823359145681213251947256575289830767674602026450551567503849246063585195686165283795818676611057210763272178082336050867823632097692032892160163420251254659837365042496124016025267976383495982982940152968317344399837718154350489314228723926302534561451692498483653393222803796978088018285689783171277750680306823075535293652449108111745189143223216513976553240579628915492997529264063207857101560924397131373940088985966309098504166282750374183863643057047916437151629885169979219416103504190043451594414230115871984247405097685131286496162190904226747329359006778034935727167925269971077274773472397347722074888283792298535537923527829368831343082666243596905513529346622645632152466028145444066196478071834605692491162017798141106344661665852889203424698978784892535732921000995821916606388839450942645932485093128617877713687137395988581357351792141499817402355163316624077868652771565545495118476062875881966560045511971598557595544244355046921451203487079229962302181232679188716779424841852796702165028159400479209589047552090301625130103077435814056698195298010261741985152675181637730188458682633429634423781842038084169418117757335252036444494241170684915732747467765980729126338712770104473363214939781991246546286189588847233379089707583228120146635930476246862644512525542634482745489074444061485612962024398373352575505667903348924884932446609778375625772638675805898894226432590352363269265960907352102496089265664093819457234790683521740979459728689422912532650877499798625080542991940681776055926713311774841699945660927537601417179671243422260164317726359213228679106069885270636924659203400956423561600097412152384019248680642645379146698549108637469877387283912234281229772607725968099172987124830611631083358335056874312195184890191721254628477447996672414079829731637109353368994657650265314766834680017337356999746236819820194102861766372663478936257967949465147868443711024951687516099859208289584653991939504292463068589075919793015221796806729539674505805788667629831176629997896955125594641185436886550778443298816481429230958454728093039148424353242701621820738497552516235101828455706195982765149241200041344739446749369818191016079788672419555130850487306627029300884721789592347828543648305765496886365745291927452284095160989930098486900619951309547318071765262928616294721428562938466235658500419313947467716253262052145569894290446179496171705799521314869435965840921417757318108765929543143026575899731411668167301931673938552754146702351827914978859436202140885878969984046113942777151893665418117314893731516615896882961673867091218692678820536603131262545754872076282996399282284465886563173265597143462970266165949052764166630180962237824624666470317395199805402670797671947897215280987939348464348174279647634649654626461267009032156912668193797175022929567583885359468356784760420320434254048440258663054802870954141151455098540088014602269941616222455746031947797194592520537012767342569002356948752773078132193310389039700640401929840927792542614393172945648474785163601841274145438227903656538286122515874270484722126648073659587957543336140045996979582560965421887127100592611103889600200155044971696243159969802894114957831643627981435573876044082754893426223813977178203"
+      },
+      "code": 0,
+      "formula": null,
+      "replay": false
+    },
+    {
+      "name": "rational-add-8192",
+      "args": [
+        "calculate",
+        "--domain",
+        "rational",
+        "--op",
+        "add",
+        "--left",
+        "272687033904853982365746061183445715612066040499058173107958196547430332962279823804066058631300496805989322949039256318277467705044296015902744941269388699769726574710548247384652456307012051289924212903397909549192971635652331140030322638475471575254475063133949979300002519900006633959200226324451470238087625407548868913477751328091140003711856508823387811460982229688192174069836022013904378923587486351669456285203725154026480064109626144503331623391459011810601845610703061282879439379791224806591435930608069342018756906970761301625448190425236424792124314469920962934262499225240280128913762528890317872873128835526437241657386758196580376432707107555416242581099034658812906602379042001356905858999077230422861545296851598827666351221434858708219357041851873842748377967189089992597529255455904187364655242464251565903020676678852039266643784320256755577731891227569189790130219576158102762341142188730241830745614796190856845947568112109504631744441235268178902895108672706864834997990353560685352649779356515139120940939078631902840664657095842155289498409505219634418886334197478923558608488916578767521803383867563917578001032681373958627089359913457234019270244637644728241976838195013733905390272698961293238528993231869969381934640002051029639732501194437181940463453377623460145465399663052901490077089101485455297428509467181554870374681900913404074714043705603258371359696331006187854854295753070269552432325884343201143593023807175905694090986322717451564605588787126892759904846862407466702047192415703944538269848294773285912085190434645454890750748605697688738765322204577107519912173308044789691479508891304039278850748030069038901968276984369366710382090746927174862538007807965648550771423459736164265336559176058506705275739738737799271769136546655699073634112905189127337754726505943455384883194052169244647432991582577223326166292359046269587660392084236132512859372827824708591816309648851226068363982180987381306796154351091963688652618594254942006394151470259519317676929485555494272596359646461023873029024963134725993663925985993271522732649240840191882491234603649546426490938640374338956953405958322226577251072004330356202165990667833382002308189587718264903529680945355525365049653936846713774224022297295110334889631205716885278303159698418891912585090742507982505849457116329636809561058007003797422415104705744000203859402663063567540898912718858462786780803556816651350895445367272701644117237646915499296626416368928948237/136343516952426991182873030591722857806033020249529086553979098273715166481139911902033029315650248402994661474519628159138733852522148007951372470634694349884863287355274123692326228153506025644962106451698954774596485817826165570015161319237735787627237531566974989650001259950003316979600113162225735119043812703774434456738875664045570001855928254411693905730491114844096087034918011006952189461793743175834728142601862577013240032054813072251665811695729505905300922805351530641439719689895612403295717965304034671009378453485380650812724095212618212396062157234960481467131249612620140064456881264445158936436564417763218620828693379098290188216353553777708121290549517329406453301189521000678452929499538615211430772648425799413833175610717429354109678520925936921374188983594544996298764627727952093682327621232125782951510338339426019633321892160128377788865945613784594895065109788079051381170571094365120915372807398095428422973784056054752315872220617634089451447554336353432417498995176780342676324889678257569560470469539315951420332328547921077644749204752609817209443167098739461779304244458289383760901691933781958789000516340686979313544679956728617009635122318822364120988419097506866952695136349480646619264496615934984690967320001025514819866250597218590970231726688811730072732699831526450745038544550742727648714254733590777435187340950456702037357021852801629185679848165503093927427147876535134776216162942171600571796511903587952847045493161358725782302794393563446379952423431203733351023596207851972269134924147386642956042595217322727445375374302848844369382661102288553759956086654022394845739754445652019639425374015034519450984138492184683355191045373463587431269003903982824275385711729868082132668279588029253352637869869368899635884568273327849536817056452594563668877363252971727692441597026084622323716495791288611663083146179523134793830196042118066256429686413912354295908154824425613034181991090493690653398077175545981844326309297127471003197075735129759658838464742777747136298179823230511936514512481567362996831962992996635761366324620420095941245617301824773213245469320187169478476702979161113288625536002165178101082995333916691001154094793859132451764840472677762682524826968423356887112011148647555167444815602858442639151579849209445956292545371253991252924728558164818404780529003501898711207552352872000101929701331531783770449456359429231393390401778408325675447722683636350822058618823457749648313208184464474119",
+        "--right",
+        "136343516952426991182873030591722857806033020249529086553979098273715166481139911902033029315650248402994661474519628159138733852522148007951372470634694349884863287355274123692326228153506025644962106451698954774596485817826165570015161319237735787627237531566974989650001259950003316979600113162225735119043812703774434456738875664045570001855928254411693905730491114844096087034918011006952189461793743175834728142601862577013240032054813072251665811695729505905300922805351530641439719689895612403295717965304034671009378453485380650812724095212618212396062157234960481467131249612620140064456881264445158936436564417763218620828693379098290188216353553777708121290549517329406453301189521000678452929499538615211430772648425799413833175610717429354109678520925936921374188983594544996298764627727952093682327621232125782951510338339426019633321892160128377788865945613784594895065109788079051381170571094365120915372807398095428422973784056054752315872220617634089451447554336353432417498995176780342676324889678257569560470469539315951420332328547921077644749204752609817209443167098739461779304244458289383760901691933781958789000516340686979313544679956728617009635122318822364120988419097506866952695136349480646619264496615934984690967320001025514819866250597218590970231726688811730072732699831526450745038544550742727648714254733590777435187340950456702037357021852801629185679848165503093927427147876535134776216162942171600571796511903587952847045493161358725782302794393563446379952423431203733351023596207851972269134924147386642956042595217322727445375374302848844369382661102288553759956086654022394845739754445652019639425374015034519450984138492184683355191045373463587431269003903982824275385711729868082132668279588029253352637869869368899635884568273327849536817056452594563668877363252971727692441597026084622323716495791288611663083146179523134793830196042118066256429686413912354295908154824425613034181991090493690653398077175545981844326309297127471003197075735129759658838464742777747136298179823230511936514512481567362996831962992996635761366324620420095941245617301824773213245469320187169478476702979161113288625536002165178101082995333916691001154094793859132451764840472677762682524826968423356887112011148647555167444815602858442639151579849209445956292545371253991252924728558164818404780529003501898711207552352872000101929701331531783770449456359429231393390401778408325675447722683636350822058618823457749648313208184464474119/272687033904853982365746061183445715612066040499058173107958196547430332962279823804066058631300496805989322949039256318277467705044296015902744941269388699769726574710548247384652456307012051289924212903397909549192971635652331140030322638475471575254475063133949979300002519900006633959200226324451470238087625407548868913477751328091140003711856508823387811460982229688192174069836022013904378923587486351669456285203725154026480064109626144503331623391459011810601845610703061282879439379791224806591435930608069342018756906970761301625448190425236424792124314469920962934262499225240280128913762528890317872873128835526437241657386758196580376432707107555416242581099034658812906602379042001356905858999077230422861545296851598827666351221434858708219357041851873842748377967189089992597529255455904187364655242464251565903020676678852039266643784320256755577731891227569189790130219576158102762341142188730241830745614796190856845947568112109504631744441235268178902895108672706864834997990353560685352649779356515139120940939078631902840664657095842155289498409505219634418886334197478923558608488916578767521803383867563917578001032681373958627089359913457234019270244637644728241976838195013733905390272698961293238528993231869969381934640002051029639732501194437181940463453377623460145465399663052901490077089101485455297428509467181554870374681900913404074714043705603258371359696331006187854854295753070269552432325884343201143593023807175905694090986322717451564605588787126892759904846862407466702047192415703944538269848294773285912085190434645454890750748605697688738765322204577107519912173308044789691479508891304039278850748030069038901968276984369366710382090746927174862538007807965648550771423459736164265336559176058506705275739738737799271769136546655699073634112905189127337754726505943455384883194052169244647432991582577223326166292359046269587660392084236132512859372827824708591816309648851226068363982180987381306796154351091963688652618594254942006394151470259519317676929485555494272596359646461023873029024963134725993663925985993271522732649240840191882491234603649546426490938640374338956953405958322226577251072004330356202165990667833382002308189587718264903529680945355525365049653936846713774224022297295110334889631205716885278303159698418891912585090742507982505849457116329636809561058007003797422415104705744000203859402663063567540898912718858462786780803556816651350895445367272701644117237646915499296626416368928948237",
+        "--max-bits",
+        "16384"
+      ],
+      "expected": {
+        "value": "92947773074783731647324947392813057090894116179414862302552720408848543607850288039413171521297815618368393553503071035851380264164741205177697242057934766100068096434844132618917441532775894284840027008553291863049738083189920686305803200612938604568440963937881728351975535571346574898124991077352059142040688700259436012837790059153460204172412125188856665933614678131958399794708641471534964512170374486845485425929985770283647680573738332620262550753530725248304044348356672287899496572997640100134835001242844896507018167036204627725671867107861180783212630818129052534321978374875229898854794293068338985515141945178827691029171903485775654463912063386389988169812115403940440952479991378506670131620181425047518678051671834037135526545626288417392303533516784974401248273215499791736433573032143879146699863358509846163655437865324461270098448578658049030312768902457447476687349318874187278860466063159336326810254301740783330171878753292953765625161015112006346689363896924021853677568553346753023831877669111979454170734843596929836614249007937892045958013572169240565687416540446000617323458234994607532785068583562813868569682709999069375698769629595857006903452666714514074831591011410368254332414556811517854054304709273056197148188179971127827650593179089439126002679481599897411098763206442074620041566800820952335302097411234368566214632138404179742266812309304488518752580587553399860663609034116881074071140491007917469646032365165766444927967130902862903514363286097739571647238075739377862544479645690404076824449755774378331250282157717912359039847819887715727086214987525789894148593393372470835052314669048484714256277961438699547869761465318203664616318007509769536574739004121976380005117058397864203033129868141438224576919186505066126378918759623115158962989215413209489546691527643026908180445205840127169559080244230082230400408550628136649593412606240310040063169940958739957457350382420793360999594295385876223285571809815756336403629231246209133483057009492445220045714224457928194376700767057688838234131122770279362972858058041284941383101449072288732493823160158019642753902310992828434850222464915772746260415706875935459659107642619791092879074712924948048540258760475108628986035575289679960618512744212828216240405477260566868323397516945087339317919813174927693186933680993369305187220709480746338844808819573422078357706665608992263783823366556614080381165070363610165491195179586514231227905044495352765861654164632223008357232171533590852557992956601970504806922568253062985000244085410971944562507975636921909419904107749257551294108466052852093892848706901936679090238115664877621469080868743457904646630351849149860468331169265913011026726342449616769206583248028310314556273048038713548970728955220778593425087950250932463179769189364002669854568191885739322687254324966033227463717932829066292992917376827701806918544988162960197117965875549431962767764562316883684690493755196120164981507446676155923868189425539465356789641870138610642543601085785609987777579867182835119939169208555211180741889750828162215527009219856707534409584970044686815992526012828445625848634571601818074304398888166124868691302695207786673054400013800740135172654555050375812937941403707673275622035394374055042966388760501349555396007586180415126919362467709358644432257665574147142328809768309824375605081822853488617450457019488036376110889731223912301634257112637443068613755435232791774124136885625394900537064333112037154239469460308789122083859102605326694493870020118846252923993822244046819793279571128617578334614943940357816300787728497583055988107019200724686170334766531910248473229712927798447182296370527184976188844043539182109011787492602879257367769547766597541490594993204115584187227067764329921598518213823608463978346389530556480313244056992662581480464143495124434973559713580436900877340323797659583328844625169904586399477656878346723502881805009166715557443949092051599003119378726325068761722772884649060781602755669225219681857238100315464592793192077357106672910745423254997526084796775018314595298979722299723990605745081856471819632830325257714451853579751765216819064176546832824779871689133148023514748973210609968806799161077446588444729208461472185740620156061935403116027324171770988061649649899694238891359305210136508069301512214574342581620700247273212866278936426462525662639100815759272781135794004100466554343215767175010288679540052952019416390913675207103253574256778641866365256833004479598366439451986546818133122546824716588165788601567915218150726402466947408751598704490956734789211054440225533010433766069465818790620385298886206426775866245219329676849531043319920774750181093234017683222566955955227813764371967284150688519259961031370019739504716939226636225795944972411276488232804689332418223782936921362723064835097266925637627873105554564923199484230084068326315848468582150522297256894746774222995083615427355846761875020262761095747258246234330/37179109229913492658929978957125222836357646471765944921021088163539417443140115215765268608519126247347357421401228414340552105665896482071078896823173906440027238573937653047566976613110357713936010803421316745219895233275968274522321280245175441827376385575152691340790214228538629959249996430940823656816275480103774405135116023661384081668964850075542666373445871252783359917883456588613985804868149794738194170371994308113459072229495333048105020301412290099321617739342668915159798629199056040053934000497137958602807266814481851090268746843144472313285052327251621013728791349950091959541917717227335594206056778071531076411668761394310261785564825354555995267924846161576176380991996551402668052648072570019007471220668733614854210618250515366956921413406713989760499309286199916694573429212857551658679945343403938465462175146129784508039379431463219612125107560982978990674939727549674911544186425263734530724101720696313332068751501317181506250064406044802538675745558769608741471027421338701209532751067644791781668293937438771934645699603175156818383205428867696226274966616178400246929383293997843013114027433425125547427873083999627750279507851838342802761381066685805629932636404564147301732965822724607141621721883709222478859275271988451131060237271635775650401071792639958964439505282576829848016626720328380934120838964493747426485852855361671896906724923721795407501032235021359944265443613646752429628456196403166987858412946066306577971186852361145161405745314439095828658895230295751145017791858276161630729779902309751332500112863087164943615939127955086290834485995010315957659437357348988334020925867619393885702511184575479819147904586127281465846527203003907814629895601648790552002046823359145681213251947256575289830767674602026450551567503849246063585195686165283795818676611057210763272178082336050867823632097692032892160163420251254659837365042496124016025267976383495982982940152968317344399837718154350489314228723926302534561451692498483653393222803796978088018285689783171277750680306823075535293652449108111745189143223216513976553240579628915492997529264063207857101560924397131373940088985966309098504166282750374183863643057047916437151629885169979219416103504190043451594414230115871984247405097685131286496162190904226747329359006778034935727167925269971077274773472397347722074888283792298535537923527829368831343082666243596905513529346622645632152466028145444066196478071834605692491162017798141106344661665852889203424698978784892535732921000995821916606388839450942645932485093128617877713687137395988581357351792141499817402355163316624077868652771565545495118476062875881966560045511971598557595544244355046921451203487079229962302181232679188716779424841852796702165028159400479209589047552090301625130103077435814056698195298010261741985152675181637730188458682633429634423781842038084169418117757335252036444494241170684915732747467765980729126338712770104473363214939781991246546286189588847233379089707583228120146635930476246862644512525542634482745489074444061485612962024398373352575505667903348924884932446609778375625772638675805898894226432590352363269265960907352102496089265664093819457234790683521740979459728689422912532650877499798625080542991940681776055926713311774841699945660927537601417179671243422260164317726359213228679106069885270636924659203400956423561600097412152384019248680642645379146698549108637469877387283912234281229772607725968099172987124830611631083358335056874312195184890191721254628477447996672414079829731637109353368994657650265314766834680017337356999746236819820194102861766372663478936257967949465147868443711024951687516099859208289584653991939504292463068589075919793015221796806729539674505805788667629831176629997896955125594641185436886550778443298816481429230958454728093039148424353242701621820738497552516235101828455706195982765149241200041344739446749369818191016079788672419555130850487306627029300884721789592347828543648305765496886365745291927452284095160989930098486900619951309547318071765262928616294721428562938466235658500419313947467716253262052145569894290446179496171705799521314869435965840921417757318108765929543143026575899731411668167301931673938552754146702351827914978859436202140885878969984046113942777151893665418117314893731516615896882961673867091218692678820536603131262545754872076282996399282284465886563173265597143462970266165949052764166630180962237824624666470317395199805402670797671947897215280987939348464348174279647634649654626461267009032156912668193797175022929567583885359468356784760420320434254048440258663054802870954141151455098540088014602269941616222455746031947797194592520537012767342569002356948752773078132193310389039700640401929840927792542614393172945648474785163601841274145438227903656538286122515874270484722126648073659587957543336140045996979582560965421887127100592611103889600200155044971696243159969802894114957831643627981435573876044082754893426223813977178203"
+      },
+      "code": 0,
+      "formula": null,
+      "replay": false
+    },
+    {
+      "name": "power-enumerate",
+      "args": [
+        "research",
+        "--train",
+        "train.csv",
+        "--holdout",
+        "hold.csv",
+        "--min",
+        "-2",
+        "--max",
+        "2",
+        "--strategy",
+        "power-affine",
+        "--max-power",
+        "2",
+        "--planner",
+        "enumerate"
+      ],
+      "expected": {
+        "status": "VERIFIED_ON_SAMPLES"
+      },
+      "code": 0,
+      "formula": "square",
+      "replay": false
+    },
+    {
+      "name": "power-adaptive",
+      "args": [
+        "research",
+        "--train",
+        "train.csv",
+        "--holdout",
+        "hold.csv",
+        "--min",
+        "-2",
+        "--max",
+        "2",
+        "--strategy",
+        "power-affine",
+        "--max-power",
+        "2",
+        "--planner",
+        "adaptive"
+      ],
+      "expected": {
+        "status": "VERIFIED_ON_SAMPLES"
+      },
+      "code": 0,
+      "formula": "square",
+      "replay": false
+    },
+    {
+      "name": "polynomial",
+      "args": [
+        "research",
+        "--train",
+        "train.csv",
+        "--holdout",
+        "hold.csv",
+        "--min",
+        "-2",
+        "--max",
+        "2",
+        "--strategy",
+        "polynomial",
+        "--max-degree",
+        "2"
+      ],
+      "expected": {
+        "status": "VERIFIED_ON_SAMPLES"
+      },
+      "code": 0,
+      "formula": "square",
+      "replay": false
+    },
+    {
+      "name": "expression-grammar",
+      "args": [
+        "research",
+        "--strategy",
+        "expression",
+        "--planner",
+        "grammar",
+        "--train",
+        "expression.csv",
+        "--holdout",
+        "expression-hold.csv",
+        "--max-nodes",
+        "5",
+        "--operators",
+        "+*",
+        "--equivalence",
+        "rational",
+        "--max-candidates",
+        "100000",
+        "--max-operations",
+        "1000000"
+      ],
+      "expected": {
+        "status": "VERIFIED_ON_SAMPLES"
+      },
+      "code": 0,
+      "formula": "linear",
+      "replay": false
+    },
+    {
+      "name": "expression-indexed-grammar",
+      "args": [
+        "research",
+        "--strategy",
+        "expression",
+        "--planner",
+        "indexed-grammar",
+        "--train",
+        "expression.csv",
+        "--holdout",
+        "expression-hold.csv",
+        "--max-nodes",
+        "5",
+        "--operators",
+        "+*",
+        "--equivalence",
+        "rational",
+        "--max-candidates",
+        "100000",
+        "--max-operations",
+        "1000000"
+      ],
+      "expected": {
+        "status": "VERIFIED_ON_SAMPLES"
+      },
+      "code": 0,
+      "formula": "linear",
+      "replay": false
+    },
+    {
+      "name": "expression-cached-grammar",
+      "args": [
+        "research",
+        "--strategy",
+        "expression",
+        "--planner",
+        "cached-grammar",
+        "--train",
+        "expression.csv",
+        "--holdout",
+        "expression-hold.csv",
+        "--max-nodes",
+        "5",
+        "--operators",
+        "+*",
+        "--equivalence",
+        "rational",
+        "--max-candidates",
+        "100000",
+        "--max-operations",
+        "1000000"
+      ],
+      "expected": {
+        "status": "VERIFIED_ON_SAMPLES"
+      },
+      "code": 0,
+      "formula": "linear",
+      "replay": false
+    },
+    {
+      "name": "portfolio-portfolio",
+      "args": [
+        "research",
+        "--strategy",
+        "portfolio-rational",
+        "--planner",
+        "portfolio",
+        "--train",
+        "target.csv",
+        "--holdout",
+        "target-hold.csv",
+        "--min",
+        "-3",
+        "--max",
+        "3",
+        "--max-degree",
+        "2",
+        "--max-power",
+        "2",
+        "--max-denominator",
+        "1"
+      ],
+      "expected": {
+        "status": "VERIFIED_ON_SAMPLES"
+      },
+      "code": 0,
+      "formula": "fraction",
+      "replay": false
+    },
+    {
+      "name": "portfolio-adaptive-order",
+      "args": [
+        "research",
+        "--strategy",
+        "portfolio-rational",
+        "--planner",
+        "adaptive-order",
+        "--train",
+        "target.csv",
+        "--holdout",
+        "target-hold.csv",
+        "--min",
+        "-3",
+        "--max",
+        "3",
+        "--max-degree",
+        "2",
+        "--max-power",
+        "2",
+        "--max-denominator",
+        "1"
+      ],
+      "expected": {
+        "status": "VERIFIED_ON_SAMPLES"
+      },
+      "code": 0,
+      "formula": "fraction",
+      "replay": false
+    },
+    {
+      "name": "portfolio-experience-order",
+      "args": [
+        "research",
+        "--strategy",
+        "portfolio-rational",
+        "--planner",
+        "experience-order",
+        "--train",
+        "target.csv",
+        "--holdout",
+        "target-hold.csv",
+        "--min",
+        "-3",
+        "--max",
+        "3",
+        "--max-degree",
+        "2",
+        "--max-power",
+        "2",
+        "--max-denominator",
+        "1",
+        "--experience",
+        "routing.experience"
+      ],
+      "expected": {
+        "status": "VERIFIED_ON_SAMPLES"
+      },
+      "code": 0,
+      "formula": "fraction",
+      "replay": false
+    },
+    {
+      "name": "rational-linear",
+      "args": [
+        "research",
+        "--strategy",
+        "rational-linear",
+        "--train",
+        "target.csv",
+        "--holdout",
+        "target-hold.csv",
+        "--min",
+        "-3",
+        "--max",
+        "3",
+        "--max-denominator",
+        "1"
+      ],
+      "expected": {
+        "status": "VERIFIED_ON_SAMPLES"
+      },
+      "code": 0,
+      "formula": "fraction",
+      "replay": false
+    },
+    {
+      "name": "grid-repeat-cache-0",
+      "args": [
+        "grid-batch",
+        "--paths",
+        "2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3",
+        "--cache-bytes",
+        "0"
+      ],
+      "expected": {
+        "status": "COMPLETED",
+        "evaluations": 512
+      },
+      "code": 0,
+      "formula": null,
+      "replay": false
+    },
+    {
+      "name": "grid-repeat-cache-65536",
+      "args": [
+        "grid-batch",
+        "--paths",
+        "2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3;2,6;4,3",
+        "--cache-bytes",
+        "65536"
+      ],
+      "expected": {
+        "status": "COMPLETED",
+        "evaluations": 2
+      },
+      "code": 0,
+      "formula": null,
+      "replay": false
+    },
+    {
+      "name": "grid-unique",
+      "args": [
+        "grid-batch",
+        "--paths",
+        "0,0/0,2;0,0/1,2;0,0/2,2;0,0/3,2;0,0/4,2;0,0/5,2;0,0/6,2;0,0/7,2;0,1/0,2;0,1/1,2;0,1/2,2;0,1/3,2;0,1/4,2;0,1/5,2;0,1/6,2;0,1/7,2;0,2/0,2;0,2/1,2;0,2/2,2;0,2/3,2;0,2/4,2;0,2/5,2;0,2/6,2;0,2/7,2;0,3/0,2;0,3/1,2;0,3/2,2;0,3/3,2;0,3/4,2;0,3/5,2;0,3/6,2;0,3/7,2;0,4/0,2;0,4/1,2;0,4/2,2;0,4/3,2;0,4/4,2;0,4/5,2;0,4/6,2;0,4/7,2;0,5/0,2;0,5/1,2;0,5/2,2;0,5/3,2;0,5/4,2;0,5/5,2;0,5/6,2;0,5/7,2;0,6/0,2;0,6/1,2;0,6/2,2;0,6/3,2;0,6/4,2;0,6/5,2;0,6/6,2;0,6/7,2;0,7/0,2;0,7/1,2;0,7/2,2;0,7/3,2;0,7/4,2;0,7/5,2;0,7/6,2;0,7/7,2;1,0/0,2;1,0/1,2;1,0/2,2;1,0/3,2;1,0/4,2;1,0/5,2;1,0/6,2;1,0/7,2;1,1/0,2;1,1/1,2;1,1/2,2;1,1/3,2;1,1/4,2;1,1/5,2;1,1/6,2;1,1/7,2;1,2/0,2;1,2/1,2;1,2/2,2;1,2/3,2;1,2/4,2;1,2/5,2;1,2/6,2;1,2/7,2;1,3/0,2;1,3/1,2;1,3/2,2;1,3/3,2;1,3/4,2;1,3/5,2;1,3/6,2;1,3/7,2;1,4/0,2;1,4/1,2;1,4/2,2;1,4/3,2;1,4/4,2;1,4/5,2;1,4/6,2;1,4/7,2;1,5/0,2;1,5/1,2;1,5/2,2;1,5/3,2;1,5/4,2;1,5/5,2;1,5/6,2;1,5/7,2;1,6/0,2;1,6/1,2;1,6/2,2;1,6/3,2;1,6/4,2;1,6/5,2;1,6/6,2;1,6/7,2;1,7/0,2;1,7/1,2;1,7/2,2;1,7/3,2;1,7/4,2;1,7/5,2;1,7/6,2;1,7/7,2;2,0/0,2;2,0/1,2;2,0/2,2;2,0/3,2;2,0/4,2;2,0/5,2;2,0/6,2;2,0/7,2;2,1/0,2;2,1/1,2;2,1/2,2;2,1/3,2;2,1/4,2;2,1/5,2;2,1/6,2;2,1/7,2;2,2/0,2;2,2/1,2;2,2/2,2;2,2/3,2;2,2/4,2;2,2/5,2;2,2/6,2;2,2/7,2;2,3/0,2;2,3/1,2;2,3/2,2;2,3/3,2;2,3/4,2;2,3/5,2;2,3/6,2;2,3/7,2;2,4/0,2;2,4/1,2;2,4/2,2;2,4/3,2;2,4/4,2;2,4/5,2;2,4/6,2;2,4/7,2;2,5/0,2;2,5/1,2;2,5/2,2;2,5/3,2;2,5/4,2;2,5/5,2;2,5/6,2;2,5/7,2;2,6/0,2;2,6/1,2;2,6/2,2;2,6/3,2;2,6/4,2;2,6/5,2;2,6/6,2;2,6/7,2;2,7/0,2;2,7/1,2;2,7/2,2;2,7/3,2;2,7/4,2;2,7/5,2;2,7/6,2;2,7/7,2;3,0/0,2;3,0/1,2;3,0/2,2;3,0/3,2;3,0/4,2;3,0/5,2;3,0/6,2;3,0/7,2;3,1/0,2;3,1/1,2;3,1/2,2;3,1/3,2;3,1/4,2;3,1/5,2;3,1/6,2;3,1/7,2;3,2/0,2;3,2/1,2;3,2/2,2;3,2/3,2;3,2/4,2;3,2/5,2;3,2/6,2;3,2/7,2;3,3/0,2;3,3/1,2;3,3/2,2;3,3/3,2;3,3/4,2;3,3/5,2;3,3/6,2;3,3/7,2;3,4/0,2;3,4/1,2;3,4/2,2;3,4/3,2;3,4/4,2;3,4/5,2;3,4/6,2;3,4/7,2;3,5/0,2;3,5/1,2;3,5/2,2;3,5/3,2;3,5/4,2;3,5/5,2;3,5/6,2;3,5/7,2;3,6/0,2;3,6/1,2;3,6/2,2;3,6/3,2;3,6/4,2;3,6/5,2;3,6/6,2;3,6/7,2;3,7/0,2;3,7/1,2;3,7/2,2;3,7/3,2;3,7/4,2;3,7/5,2;3,7/6,2;3,7/7,2;4,0/0,2;4,0/1,2;4,0/2,2;4,0/3,2;4,0/4,2;4,0/5,2;4,0/6,2;4,0/7,2;4,1/0,2;4,1/1,2;4,1/2,2;4,1/3,2;4,1/4,2;4,1/5,2;4,1/6,2;4,1/7,2;4,2/0,2;4,2/1,2;4,2/2,2;4,2/3,2;4,2/4,2;4,2/5,2;4,2/6,2;4,2/7,2;4,3/0,2;4,3/1,2;4,3/2,2;4,3/3,2;4,3/4,2;4,3/5,2;4,3/6,2;4,3/7,2;4,4/0,2;4,4/1,2;4,4/2,2;4,4/3,2;4,4/4,2;4,4/5,2;4,4/6,2;4,4/7,2;4,5/0,2;4,5/1,2;4,5/2,2;4,5/3,2;4,5/4,2;4,5/5,2;4,5/6,2;4,5/7,2;4,6/0,2;4,6/1,2;4,6/2,2;4,6/3,2;4,6/4,2;4,6/5,2;4,6/6,2;4,6/7,2;4,7/0,2;4,7/1,2;4,7/2,2;4,7/3,2;4,7/4,2;4,7/5,2;4,7/6,2;4,7/7,2;5,0/0,2;5,0/1,2;5,0/2,2;5,0/3,2;5,0/4,2;5,0/5,2;5,0/6,2;5,0/7,2;5,1/0,2;5,1/1,2;5,1/2,2;5,1/3,2;5,1/4,2;5,1/5,2;5,1/6,2;5,1/7,2;5,2/0,2;5,2/1,2;5,2/2,2;5,2/3,2;5,2/4,2;5,2/5,2;5,2/6,2;5,2/7,2;5,3/0,2;5,3/1,2;5,3/2,2;5,3/3,2;5,3/4,2;5,3/5,2;5,3/6,2;5,3/7,2;5,4/0,2;5,4/1,2;5,4/2,2;5,4/3,2;5,4/4,2;5,4/5,2;5,4/6,2;5,4/7,2;5,5/0,2;5,5/1,2;5,5/2,2;5,5/3,2;5,5/4,2;5,5/5,2;5,5/6,2;5,5/7,2;5,6/0,2;5,6/1,2;5,6/2,2;5,6/3,2;5,6/4,2;5,6/5,2;5,6/6,2;5,6/7,2;5,7/0,2;5,7/1,2;5,7/2,2;5,7/3,2;5,7/4,2;5,7/5,2;5,7/6,2;5,7/7,2;6,0/0,2;6,0/1,2;6,0/2,2;6,0/3,2;6,0/4,2;6,0/5,2;6,0/6,2;6,0/7,2;6,1/0,2;6,1/1,2;6,1/2,2;6,1/3,2;6,1/4,2;6,1/5,2;6,1/6,2;6,1/7,2;6,2/0,2;6,2/1,2;6,2/2,2;6,2/3,2;6,2/4,2;6,2/5,2;6,2/6,2;6,2/7,2;6,3/0,2;6,3/1,2;6,3/2,2;6,3/3,2;6,3/4,2;6,3/5,2;6,3/6,2;6,3/7,2;6,4/0,2;6,4/1,2;6,4/2,2;6,4/3,2;6,4/4,2;6,4/5,2;6,4/6,2;6,4/7,2;6,5/0,2;6,5/1,2;6,5/2,2;6,5/3,2;6,5/4,2;6,5/5,2;6,5/6,2;6,5/7,2;6,6/0,2;6,6/1,2;6,6/2,2;6,6/3,2;6,6/4,2;6,6/5,2;6,6/6,2;6,6/7,2;6,7/0,2;6,7/1,2;6,7/2,2;6,7/3,2;6,7/4,2;6,7/5,2;6,7/6,2;6,7/7,2;7,0/0,2;7,0/1,2;7,0/2,2;7,0/3,2;7,0/4,2;7,0/5,2;7,0/6,2;7,0/7,2;7,1/0,2;7,1/1,2;7,1/2,2;7,1/3,2;7,1/4,2;7,1/5,2;7,1/6,2;7,1/7,2;7,2/0,2;7,2/1,2;7,2/2,2;7,2/3,2;7,2/4,2;7,2/5,2;7,2/6,2;7,2/7,2;7,3/0,2;7,3/1,2;7,3/2,2;7,3/3,2;7,3/4,2;7,3/5,2;7,3/6,2;7,3/7,2;7,4/0,2;7,4/1,2;7,4/2,2;7,4/3,2;7,4/4,2;7,4/5,2;7,4/6,2;7,4/7,2;7,5/0,2;7,5/1,2;7,5/2,2;7,5/3,2;7,5/4,2;7,5/5,2;7,5/6,2;7,5/7,2;7,6/0,2;7,6/1,2;7,6/2,2;7,6/3,2;7,6/4,2;7,6/5,2;7,6/6,2;7,6/7,2;7,7/0,2;7,7/1,2;7,7/2,2;7,7/3,2;7,7/4,2;7,7/5,2;7,7/6,2;7,7/7,2"
+      ],
+      "expected": {
+        "status": "COMPLETED",
+        "evaluations": 512
+      },
+      "code": 0,
+      "formula": null,
+      "replay": false
+    },
+    {
+      "name": "grid-resume",
+      "args": [
+        "grid-resume",
+        "--from-run",
+        "partial.bruce",
+        "--additional-queries",
+        "512"
+      ],
+      "expected": {
+        "status": "COMPLETED"
+      },
+      "code": 0,
+      "formula": null,
+      "replay": false
+    },
+    {
+      "name": "replay-grid",
+      "args": [
+        "replay",
+        "grid.bruce"
+      ],
+      "expected": {
+        "status": "COMPLETED",
+        "evaluations": 2
+      },
+      "code": 0,
+      "formula": null,
+      "replay": false
+    },
+    {
+      "name": "replay-corrupt",
+      "args": [
+        "replay",
+        "corrupt.bruce"
+      ],
+      "expected": {
+        "error": "InvalidEvidence: digest mismatch"
+      },
+      "code": 2,
+      "formula": null,
+      "replay": false
+    },
+    {
+      "name": "compatibility",
+      "args": [
+        "compatibility",
+        "--rules",
+        "rules.txt",
+        "--candidates",
+        "candidates.csv",
+        "--max-trace",
+        "65536"
+      ],
+      "expected": {
+        "status": "INCOMPLETE",
+        "stop_reason": "TraceBudgetExceeded"
+      },
+      "code": 0,
+      "formula": null,
+      "replay": false
+    },
+    {
+      "name": "compare-quadratic",
+      "args": [
+        "compare",
+        "--left-numerator",
+        "-1,0,1",
+        "--left-denominator",
+        "-1,1",
+        "--right-numerator",
+        "1,1",
+        "--right-denominator",
+        "1",
+        "--domain-policy",
+        "quadratic"
+      ],
+      "expected": {
+        "status": "PROVEN_DIFFERENT"
+      },
+      "code": 0,
+      "formula": null,
+      "replay": false
+    },
+    {
+      "name": "compare-modular",
+      "args": [
+        "compare",
+        "--left-numerator",
+        "-1,0,1",
+        "--left-denominator",
+        "-1,1",
+        "--right-numerator",
+        "1,1",
+        "--right-denominator",
+        "1",
+        "--domain-policy",
+        "modular"
+      ],
+      "expected": {
+        "status": "PROVEN_DIFFERENT"
+      },
+      "code": 0,
+      "formula": null,
+      "replay": false
+    },
+    {
+      "name": "compare-modular-witness",
+      "args": [
+        "compare",
+        "--left-numerator",
+        "-1,0,1",
+        "--left-denominator",
+        "-1,1",
+        "--right-numerator",
+        "1,1",
+        "--right-denominator",
+        "1",
+        "--domain-policy",
+        "modular-witness"
+      ],
+      "expected": {
+        "status": "PROVEN_DIFFERENT"
+      },
+      "code": 0,
+      "formula": null,
+      "replay": false
+    },
+    {
+      "name": "export-verified",
+      "args": [
+        "research",
+        "--train",
+        "train.csv",
+        "--holdout",
+        "hold.csv",
+        "--min",
+        "-2",
+        "--max",
+        "2",
+        "--strategy",
+        "polynomial",
+        "--max-degree",
+        "2",
+        "--verification",
+        "replay",
+        "--output",
+        "@EXPORT@"
+      ],
+      "expected": {
+        "execution.replay_verified": true,
+        "result.status": "VERIFIED_ON_SAMPLES"
+      },
+      "code": 0,
+      "formula": "square",
+      "replay": true
+    },
+    {
+      "name": "budget-executing",
+      "args": [
+        "grid-batch",
+        "--paths",
+        "2,6",
+        "--verification",
+        "replay",
+        "--max-session-checkpoints",
+        "0",
+        "--output",
+        "@EXPORT@"
+      ],
+      "expected": {
+        "execution.state": "FAILED",
+        "execution.failed_at": "EXECUTING"
+      },
+      "code": 2,
+      "formula": null,
+      "replay": false
+    },
+    {
+      "name": "budget-serializing",
+      "args": [
+        "grid-batch",
+        "--paths",
+        "2,6",
+        "--verification",
+        "replay",
+        "--max-serialized-bytes",
+        "0",
+        "--output",
+        "@EXPORT@"
+      ],
+      "expected": {
+        "execution.state": "FAILED",
+        "execution.failed_at": "SERIALIZING"
+      },
+      "code": 2,
+      "formula": null,
+      "replay": false
+    },
+    {
+      "name": "budget-replaying",
+      "args": [
+        "grid-batch",
+        "--paths",
+        "2,6",
+        "--verification",
+        "replay",
+        "--max-replay-bytes",
+        "0",
+        "--output",
+        "@EXPORT@"
+      ],
+      "expected": {
+        "execution.state": "FAILED",
+        "execution.failed_at": "REPLAYING"
+      },
+      "code": 2,
+      "formula": null,
+      "replay": false
+    }
+  ]
+}

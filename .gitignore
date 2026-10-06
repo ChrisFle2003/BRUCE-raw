@@ -1,0 +1,52 @@
+/build*/
+/build-host-deps
+/runs/
+/.worktrees/
+
+# CMake- und Compiler-Ausgaben außerhalb der üblichen Build-Verzeichnisse.
+CMakeCache.txt
+CMakeFiles/
+CTestTestfile.cmake
+Testing/
+cmake_install.cmake
+compile_commands.json
+install_manifest.txt
+*.gcda
+*.gcno
+*.gcov
+
+# Benutzerbezogene Editor- und CMake-Konfiguration.
+.idea/
+.vs/
+.vscode/
+CMakeUserPresets.json
+*.user
+
+# Lokale Konfiguration kann Zugangsdaten enthalten. Beispiele bleiben prüfbar.
+.env
+.env.*
+!.env.example
+
+__pycache__/
+*.pyc
+
+# Local agent identity and user-specific guidance.  The tracked AGENTS.md is
+# the repository handbook; these companion files stay local by design.
+/AGENTS.local.md
+/IDENTITY.md
+/SOUL.md
+/USER.md
+
+# Keep only the small, reproducible benchmark summaries in Git.  Raw runs can
+# be regenerated and remain local to avoid committing hundreds of MiB.
+/benchmarks/**
+!/benchmarks/
+!/benchmarks/README.md
+!/benchmarks/2026-09-25-standard-v1/
+!/benchmarks/2026-09-25-standard-v1/report.md
+!/benchmarks/2026-09-25-standard-v1/summary.csv
+!/benchmarks/2026-09-25-standard-v1/manifest.json
+!/benchmarks/2026-09-25-stress-v1/
+!/benchmarks/2026-09-25-stress-v1/report.md
+!/benchmarks/2026-09-25-stress-v1/summary.csv
+!/benchmarks/2026-09-25-stress-v1/manifest.json

@@ -1,0 +1,1599 @@
+{
+  "contract": "bruce-control-flow-acceptance-v1",
+  "accepted": true,
+  "version": {
+    "contract": "bruce-version-v1",
+    "version": "0.101.0"
+  },
+  "binary_sha256": "18cb8d112afce3fe7cebd3ad435d3199344e4ee39e2ff5d4c614fd58c6d9cad2",
+  "inputs": {
+    "train.csv": "x,y\n0,2\n1,3/2\n2,4/3\n3,5/4\n",
+    "hold.csv": "x,y\n5,7/6\n",
+    "rules.txt": "BRUCE_RULES_V1\nsnapshot accepted\nrule first positive value ge 0 0 1 manual -\nrule second positive value ge 0 0 1 manual -\n"
+  },
+  "calls": [
+    {
+      "label": "version",
+      "argv": [
+        "--version"
+      ],
+      "exit_code": 0,
+      "reply": {
+        "contract": "bruce-version-v1",
+        "version": "0.101.0"
+      }
+    },
+    {
+      "label": "research-session",
+      "argv": [
+        "research",
+        "--strategy",
+        "portfolio-rational",
+        "--max-degree",
+        "2",
+        "--train",
+        "train.csv",
+        "--holdout",
+        "hold.csv",
+        "--verification",
+        "replay",
+        "--max-session-checkpoints",
+        "1000000",
+        "--output",
+        "source.bruce"
+      ],
+      "exit_code": 0,
+      "reply": {
+        "execution": {
+          "contract": "application-execution-v14",
+          "replay_verified": true,
+          "result_complete": true,
+          "phases": [
+            "CREATED",
+            "EXECUTING",
+            "SERIALIZING",
+            "REPLAYING",
+            "READY"
+          ],
+          "session_budget": {
+            "model": "session-checkpoints-v1",
+            "max_checkpoints": 1000000,
+            "checkpoints": 46,
+            "by_phase": {
+              "EXECUTING": 17,
+              "SERIALIZING": 3,
+              "REPLAYING": 26
+            }
+          }
+        },
+        "result": {
+          "engine": "bruce-portfolio-v2",
+          "rule_version": "domain-union-v1",
+          "policy_version": "shared-budget-v1",
+          "strategy": "portfolio-rational",
+          "planner": "power-polynomial-rational-v1",
+          "domain": "rational",
+          "max_power": 4,
+          "max_degree": 2,
+          "max_bits": 4096,
+          "max_denominator": 8,
+          "minimum": "-8",
+          "maximum": "8",
+          "status": "VERIFIED_ON_SAMPLES",
+          "stop_reason": "Completed",
+          "general_proof": false,
+          "learn_gate": false,
+          "publish_gate": false,
+          "claim_scope": "Union of bounded power, polynomial and rational-linear families, preserving excluded points; supplied-sample checks are no general proof",
+          "explanation": "Eine kanonische Formel besteht die angegebenen Pruefpaare. Mehrere Strategien sind keine zusaetzlichen unabhaengigen Datenbelege.",
+          "operations_used": 460,
+          "planning_operations": 160,
+          "candidates_executed": 8,
+          "stored_source_hypotheses": 1,
+          "plans_completed": 8,
+          "checkpoints": 16,
+          "trace_bytes": 1126,
+          "trace_events_used": 24,
+          "hypotheses": [
+            {
+              "id": 4027994,
+              "kind": "rational-linear",
+              "a": "1",
+              "b": "2",
+              "c": "1",
+              "numerator": [
+                "2",
+                "1"
+              ],
+              "denominator": [
+                "1",
+                "1"
+              ],
+              "excluded_x": "-1",
+              "formula": "(1*x+(2))/(x+(1)), x != -1",
+              "status": "VERIFIED_ON_SAMPLES",
+              "origins": [
+                {
+                  "strategy": "rational-linear",
+                  "id": 1342664,
+                  "status": "VERIFIED_ON_SAMPLES"
+                }
+              ]
+            }
+          ],
+          "strategy_runs": [
+            {
+              "engine": "bruce-adaptive-v1",
+              "rule_version": "power-affine-v1",
+              "policy_version": "adaptive-samples-v1",
+              "strategy": "power-affine",
+              "planner": "two-point-v1",
+              "max_power": 4,
+              "plans_completed": 4,
+              "planning_operations": 68,
+              "checkpoints": 8,
+              "domain": "rational",
+              "max_bits": 4096,
+              "max_denominator": 8,
+              "minimum": "-8",
+              "maximum": "8",
+              "status": "NO_CANDIDATE",
+              "stop_reason": "Completed",
+              "general_proof": false,
+              "learn_gate": false,
+              "publish_gate": false,
+              "claim_scope": "Exact arithmetic on supplied samples in the declared bounded a*x^p+b family; no general proof",
+              "explanation": "Kein Kandidat der vollstaendig untersuchten Potenzfamilie passt zu den Lernpaaren.",
+              "raw_parameter_combinations": 73984,
+              "candidates_executed": 4,
+              "operations_used": 206,
+              "trace_bytes": 520,
+              "training_samples": 4,
+              "holdout_samples": 1,
+              "hypotheses": [],
+              "trace": [
+                "START two-point-v1: training-only coefficient planning, power ascending",
+                "PLAN power=1 derived training[0,1] slots=57,80",
+                "CANDIDATE 7832 a=-1/2 b=2 power=1 training[2] contradiction",
+                "PLAN power=2 derived training[0,1] slots=57,80",
+                "CANDIDATE 26328 a=-1/2 b=2 power=2 training[2] contradiction",
+                "PLAN power=3 derived training[0,1] slots=57,80",
+                "CANDIDATE 44824 a=-1/2 b=2 power=3 training[2] contradiction",
+                "PLAN power=4 derived training[0,1] slots=57,80",
+                "CANDIDATE 63320 a=-1/2 b=2 power=4 training[2] contradiction",
+                "END NO_CANDIDATE Completed"
+              ]
+            },
+            {
+              "engine": "bruce-polynomial-v1",
+              "rule_version": "polynomial-v1",
+              "policy_version": "polynomial-samples-v1",
+              "strategy": "polynomial",
+              "planner": "newton-v1",
+              "domain": "rational",
+              "max_degree": 2,
+              "max_bits": 4096,
+              "max_denominator": 8,
+              "minimum": "-8",
+              "maximum": "8",
+              "status": "NO_CANDIDATE",
+              "stop_reason": "Completed",
+              "general_proof": false,
+              "learn_gate": false,
+              "publish_gate": false,
+              "claim_scope": "Bounded polynomial interpolation and independent evaluation on supplied samples; no general proof",
+              "explanation": "Kein Polynom in der vollstaendig untersuchten Familie passt.",
+              "candidates_executed": 3,
+              "operations_used": 129,
+              "planning_operations": 27,
+              "plans_completed": 3,
+              "checkpoints": 6,
+              "trace_bytes": 328,
+              "training_samples": 4,
+              "holdout_samples": 1,
+              "hypotheses": [],
+              "trace": [
+                "START newton-v1: ascending degree, training-only interpolation",
+                "PLAN degree=0 training[0..0] derived",
+                "CANDIDATE degree=0 training[1] contradiction",
+                "PLAN degree=1 training[0..1] derived",
+                "CANDIDATE degree=1 training[2] contradiction",
+                "PLAN degree=2 training[0..2] derived",
+                "CANDIDATE degree=2 training[3] contradiction",
+                "END NO_CANDIDATE Completed"
+              ]
+            },
+            {
+              "engine": "bruce-rational-linear-v1",
+              "rule_version": "monic-linear-fraction-v1",
+              "policy_version": "defined-samples-v1",
+              "strategy": "rational-linear",
+              "planner": "linear-system-v1",
+              "domain": "rational",
+              "max_bits": 4096,
+              "max_denominator": 8,
+              "minimum": "-8",
+              "maximum": "8",
+              "status": "VERIFIED_ON_SAMPLES",
+              "stop_reason": "Completed",
+              "general_proof": false,
+              "learn_gate": false,
+              "publish_gate": false,
+              "claim_scope": "Bounded (a*x+b)/(x+c), x!=-c; exact supplied-sample checks, no general proof",
+              "explanation": "Eine Bruchfunktion besteht Lern- und Hold-out-Pruefung mit getrennten Rechenwegen. Der ausgeschlossene Definitionspunkt bleibt erhalten; kein allgemeiner Beweis.",
+              "raw_parameter_combinations": 2515456,
+              "candidates_executed": 1,
+              "operations_used": 125,
+              "planning_operations": 65,
+              "plans_completed": 1,
+              "checkpoints": 2,
+              "trace_bytes": 170,
+              "training_samples": 4,
+              "holdout_samples": 1,
+              "hypotheses": [
+                {
+                  "id": 1342664,
+                  "a": "1",
+                  "b": "2",
+                  "c": "1",
+                  "numerator": [
+                    "2",
+                    "1"
+                  ],
+                  "denominator": [
+                    "1",
+                    "1"
+                  ],
+                  "excluded_x": "-1",
+                  "formula": "(1*x+(2))/(x+(1)), x != -1",
+                  "status": "VERIFIED_ON_SAMPLES"
+                }
+              ],
+              "trace": [
+                "START linear-system-v1: training-only equations, explicit excluded pole",
+                "PLAN rank=3 rows=4 derived",
+                "CANDIDATE id=1342664 VERIFIED_ON_SAMPLES",
+                "END VERIFIED_ON_SAMPLES Completed"
+              ]
+            }
+          ],
+          "trace": [
+            "START power-polynomial-rational-v1: shared budgets, domain-preserving union",
+            "END VERIFIED_ON_SAMPLES Completed"
+          ]
+        }
+      }
+    },
+    {
+      "label": "source-replay",
+      "argv": [
+        "replay",
+        "source.bruce"
+      ],
+      "exit_code": 0,
+      "reply": {
+        "engine": "bruce-portfolio-v2",
+        "rule_version": "domain-union-v1",
+        "policy_version": "shared-budget-v1",
+        "strategy": "portfolio-rational",
+        "planner": "power-polynomial-rational-v1",
+        "domain": "rational",
+        "max_power": 4,
+        "max_degree": 2,
+        "max_bits": 4096,
+        "max_denominator": 8,
+        "minimum": "-8",
+        "maximum": "8",
+        "status": "VERIFIED_ON_SAMPLES",
+        "stop_reason": "Completed",
+        "general_proof": false,
+        "learn_gate": false,
+        "publish_gate": false,
+        "claim_scope": "Union of bounded power, polynomial and rational-linear families, preserving excluded points; supplied-sample checks are no general proof",
+        "explanation": "Eine kanonische Formel besteht die angegebenen Pruefpaare. Mehrere Strategien sind keine zusaetzlichen unabhaengigen Datenbelege.",
+        "operations_used": 460,
+        "planning_operations": 160,
+        "candidates_executed": 8,
+        "stored_source_hypotheses": 1,
+        "plans_completed": 8,
+        "checkpoints": 16,
+        "trace_bytes": 1126,
+        "trace_events_used": 24,
+        "hypotheses": [
+          {
+            "id": 4027994,
+            "kind": "rational-linear",
+            "a": "1",
+            "b": "2",
+            "c": "1",
+            "numerator": [
+              "2",
+              "1"
+            ],
+            "denominator": [
+              "1",
+              "1"
+            ],
+            "excluded_x": "-1",
+            "formula": "(1*x+(2))/(x+(1)), x != -1",
+            "status": "VERIFIED_ON_SAMPLES",
+            "origins": [
+              {
+                "strategy": "rational-linear",
+                "id": 1342664,
+                "status": "VERIFIED_ON_SAMPLES"
+              }
+            ]
+          }
+        ],
+        "strategy_runs": [
+          {
+            "engine": "bruce-adaptive-v1",
+            "rule_version": "power-affine-v1",
+            "policy_version": "adaptive-samples-v1",
+            "strategy": "power-affine",
+            "planner": "two-point-v1",
+            "max_power": 4,
+            "plans_completed": 4,
+            "planning_operations": 68,
+            "checkpoints": 8,
+            "domain": "rational",
+            "max_bits": 4096,
+            "max_denominator": 8,
+            "minimum": "-8",
+            "maximum": "8",
+            "status": "NO_CANDIDATE",
+            "stop_reason": "Completed",
+            "general_proof": false,
+            "learn_gate": false,
+            "publish_gate": false,
+            "claim_scope": "Exact arithmetic on supplied samples in the declared bounded a*x^p+b family; no general proof",
+            "explanation": "Kein Kandidat der vollstaendig untersuchten Potenzfamilie passt zu den Lernpaaren.",
+            "raw_parameter_combinations": 73984,
+            "candidates_executed": 4,
+            "operations_used": 206,
+            "trace_bytes": 520,
+            "training_samples": 4,
+            "holdout_samples": 1,
+            "hypotheses": [],
+            "trace": [
+              "START two-point-v1: training-only coefficient planning, power ascending",
+              "PLAN power=1 derived training[0,1] slots=57,80",
+              "CANDIDATE 7832 a=-1/2 b=2 power=1 training[2] contradiction",
+              "PLAN power=2 derived training[0,1] slots=57,80",
+              "CANDIDATE 26328 a=-1/2 b=2 power=2 training[2] contradiction",
+              "PLAN power=3 derived training[0,1] slots=57,80",
+              "CANDIDATE 44824 a=-1/2 b=2 power=3 training[2] contradiction",
+              "PLAN power=4 derived training[0,1] slots=57,80",
+              "CANDIDATE 63320 a=-1/2 b=2 power=4 training[2] contradiction",
+              "END NO_CANDIDATE Completed"
+            ]
+          },
+          {
+            "engine": "bruce-polynomial-v1",
+            "rule_version": "polynomial-v1",
+            "policy_version": "polynomial-samples-v1",
+            "strategy": "polynomial",
+            "planner": "newton-v1",
+            "domain": "rational",
+            "max_degree": 2,
+            "max_bits": 4096,
+            "max_denominator": 8,
+            "minimum": "-8",
+            "maximum": "8",
+            "status": "NO_CANDIDATE",
+            "stop_reason": "Completed",
+            "general_proof": false,
+            "learn_gate": false,
+            "publish_gate": false,
+            "claim_scope": "Bounded polynomial interpolation and independent evaluation on supplied samples; no general proof",
+            "explanation": "Kein Polynom in der vollstaendig untersuchten Familie passt.",
+            "candidates_executed": 3,
+            "operations_used": 129,
+            "planning_operations": 27,
+            "plans_completed": 3,
+            "checkpoints": 6,
+            "trace_bytes": 328,
+            "training_samples": 4,
+            "holdout_samples": 1,
+            "hypotheses": [],
+            "trace": [
+              "START newton-v1: ascending degree, training-only interpolation",
+              "PLAN degree=0 training[0..0] derived",
+              "CANDIDATE degree=0 training[1] contradiction",
+              "PLAN degree=1 training[0..1] derived",
+              "CANDIDATE degree=1 training[2] contradiction",
+              "PLAN degree=2 training[0..2] derived",
+              "CANDIDATE degree=2 training[3] contradiction",
+              "END NO_CANDIDATE Completed"
+            ]
+          },
+          {
+            "engine": "bruce-rational-linear-v1",
+            "rule_version": "monic-linear-fraction-v1",
+            "policy_version": "defined-samples-v1",
+            "strategy": "rational-linear",
+            "planner": "linear-system-v1",
+            "domain": "rational",
+            "max_bits": 4096,
+            "max_denominator": 8,
+            "minimum": "-8",
+            "maximum": "8",
+            "status": "VERIFIED_ON_SAMPLES",
+            "stop_reason": "Completed",
+            "general_proof": false,
+            "learn_gate": false,
+            "publish_gate": false,
+            "claim_scope": "Bounded (a*x+b)/(x+c), x!=-c; exact supplied-sample checks, no general proof",
+            "explanation": "Eine Bruchfunktion besteht Lern- und Hold-out-Pruefung mit getrennten Rechenwegen. Der ausgeschlossene Definitionspunkt bleibt erhalten; kein allgemeiner Beweis.",
+            "raw_parameter_combinations": 2515456,
+            "candidates_executed": 1,
+            "operations_used": 125,
+            "planning_operations": 65,
+            "plans_completed": 1,
+            "checkpoints": 2,
+            "trace_bytes": 170,
+            "training_samples": 4,
+            "holdout_samples": 1,
+            "hypotheses": [
+              {
+                "id": 1342664,
+                "a": "1",
+                "b": "2",
+                "c": "1",
+                "numerator": [
+                  "2",
+                  "1"
+                ],
+                "denominator": [
+                  "1",
+                  "1"
+                ],
+                "excluded_x": "-1",
+                "formula": "(1*x+(2))/(x+(1)), x != -1",
+                "status": "VERIFIED_ON_SAMPLES"
+              }
+            ],
+            "trace": [
+              "START linear-system-v1: training-only equations, explicit excluded pole",
+              "PLAN rank=3 rows=4 derived",
+              "CANDIDATE id=1342664 VERIFIED_ON_SAMPLES",
+              "END VERIFIED_ON_SAMPLES Completed"
+            ]
+          }
+        ],
+        "trace": [
+          "START power-polynomial-rational-v1: shared budgets, domain-preserving union",
+          "END VERIFIED_ON_SAMPLES Completed"
+        ]
+      }
+    },
+    {
+      "label": "source-gates",
+      "argv": [
+        "gate-run",
+        "source.bruce",
+        "--max-session-checkpoints",
+        "1000000"
+      ],
+      "exit_code": 0,
+      "reply": {
+        "contract": "application-gates-budget-v1",
+        "result": {
+          "contract": "application-gates-v1",
+          "policy": "research-gate-policy-v1",
+          "kind": "research-exact",
+          "replay_checked": true,
+          "applicable": true,
+          "selection": {
+            "allowed": true,
+            "reason": "Allowed"
+          },
+          "experience_source": {
+            "allowed": true,
+            "reason": "Allowed"
+          },
+          "scope": "Research selection gate and existing experience source audit; no projection or destination-store admission",
+          "learn_promotion": false,
+          "publish": false,
+          "general_proof": false
+        },
+        "usage": {
+          "model": "session-checkpoints-v1",
+          "max_checkpoints": 1000000,
+          "checkpoints": 79,
+          "by_phase": {
+            "EXECUTING": 0,
+            "SERIALIZING": 0,
+            "REPLAYING": 79
+          }
+        }
+      }
+    },
+    {
+      "label": "session-stop",
+      "argv": [
+        "research",
+        "--strategy",
+        "portfolio-rational",
+        "--max-degree",
+        "2",
+        "--train",
+        "train.csv",
+        "--holdout",
+        "hold.csv",
+        "--verification",
+        "replay",
+        "--max-session-checkpoints",
+        "0",
+        "--output",
+        "stopped-session"
+      ],
+      "exit_code": 2,
+      "reply": {
+        "error": "ExecutionSessionFailed at EXECUTING: SessionCheckpointBudgetExceeded: phase=EXECUTING checkpoints=0 limit=0",
+        "execution": {
+          "contract": "application-execution-failure-v2",
+          "state": "FAILED",
+          "failed_at": "EXECUTING",
+          "phases": [
+            "CREATED",
+            "EXECUTING",
+            "FAILED"
+          ],
+          "cause": "SessionCheckpointBudgetExceeded: phase=EXECUTING checkpoints=0 limit=0",
+          "session_budget": {
+            "model": "session-checkpoints-v1",
+            "max_checkpoints": 0,
+            "checkpoints": 0,
+            "by_phase": {
+              "EXECUTING": 0,
+              "SERIALIZING": 0,
+              "REPLAYING": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "label": "selection-plan",
+      "argv": [
+        "compatibility-plan",
+        "--from-run",
+        "source.bruce",
+        "--rules",
+        "rules.txt",
+        "--at",
+        "0",
+        "--max-transfer-checkpoints",
+        "1000000",
+        "--output",
+        "selection.plan"
+      ],
+      "exit_code": 0,
+      "reply": {
+        "contract": "controlled-transfer-v1",
+        "result": {
+          "contract": "compatibility-transfer-v1",
+          "source_digest": "393da3947a2866d8f735bba399ad3cdc7bb1eec26116a1bff7d6a77528428004",
+          "rules_digest": "608a482b3a860cc67dd03ae96d20c1a15d661706f0e1398c49ff71a977b1e451",
+          "at": "0",
+          "max_source_bytes": 33554432,
+          "max_candidates": 4096,
+          "max_checks": 1048576,
+          "max_trace": 65536
+        },
+        "usage": {
+          "model": "transfer-checkpoints-v1",
+          "max_checkpoints": 1000000,
+          "checkpoints": 75
+        }
+      }
+    },
+    {
+      "label": "selection-plan-exact",
+      "argv": [
+        "compatibility-plan",
+        "--from-run",
+        "source.bruce",
+        "--rules",
+        "rules.txt",
+        "--at",
+        "0",
+        "--max-transfer-checkpoints",
+        "75",
+        "--output",
+        "selection.plan.exact"
+      ],
+      "exit_code": 0,
+      "reply": {
+        "contract": "controlled-transfer-v1",
+        "result": {
+          "contract": "compatibility-transfer-v1",
+          "source_digest": "393da3947a2866d8f735bba399ad3cdc7bb1eec26116a1bff7d6a77528428004",
+          "rules_digest": "608a482b3a860cc67dd03ae96d20c1a15d661706f0e1398c49ff71a977b1e451",
+          "at": "0",
+          "max_source_bytes": 33554432,
+          "max_candidates": 4096,
+          "max_checks": 1048576,
+          "max_trace": 65536
+        },
+        "usage": {
+          "model": "transfer-checkpoints-v1",
+          "max_checkpoints": 75,
+          "checkpoints": 75
+        }
+      }
+    },
+    {
+      "label": "selection-plan-stop",
+      "argv": [
+        "compatibility-plan",
+        "--from-run",
+        "source.bruce",
+        "--rules",
+        "rules.txt",
+        "--at",
+        "0",
+        "--max-transfer-checkpoints",
+        "74",
+        "--output",
+        "selection.plan.stopped"
+      ],
+      "exit_code": 2,
+      "reply": {
+        "error": "TransferCheckpointBudgetExceeded: checkpoints=74 limit=74"
+      }
+    },
+    {
+      "label": "selection-apply",
+      "argv": [
+        "compatibility-apply",
+        "selection.plan",
+        "--from-run",
+        "source.bruce",
+        "--rules",
+        "rules.txt",
+        "--max-transfer-checkpoints",
+        "1000000",
+        "--output",
+        "selection.bruce"
+      ],
+      "exit_code": 0,
+      "reply": {
+        "contract": "controlled-transfer-v1",
+        "result": {
+          "contract": "compatibility-transfer-result-v1",
+          "plan_digest": "5e50ce40e67cb92cb2e030ebc0932350072d9a446ea3ec9732a913abd5ad2944",
+          "source_digest": "393da3947a2866d8f735bba399ad3cdc7bb1eec26116a1bff7d6a77528428004",
+          "rules_digest": "608a482b3a860cc67dd03ae96d20c1a15d661706f0e1398c49ff71a977b1e451",
+          "result": {
+            "engine": "z-compatibility-v1",
+            "snapshot_digest": "608a482b3a860cc67dd03ae96d20c1a15d661706f0e1398c49ff71a977b1e451",
+            "snapshot_id": "accepted",
+            "input_fingerprint": "3a16b94443e8be0b4e4b339008282e472a1ded7ac61eef0d16ef9913f0252833",
+            "origin_digest": "393da3947a2866d8f735bba399ad3cdc7bb1eec26116a1bff7d6a77528428004",
+            "origin_status": "VERIFIED_ON_SAMPLES",
+            "projection_at": "0",
+            "status": "SELECTED",
+            "stop_reason": "Completed",
+            "general_proof": false,
+            "learn_gate": false,
+            "publish_gate": false,
+            "explanation": "Ein Kandidat hat den besten Score unter den zulaessigen Kandidaten. Auswahl ist kein Wahrheitsbeweis.",
+            "candidates_started": 1,
+            "checks_used": 2,
+            "rules": [
+              {
+                "id": "first",
+                "kind": "positive",
+                "field": "value",
+                "operator": "ge",
+                "argument": "0",
+                "remainder": "0",
+                "weight": 1,
+                "source": "manual",
+                "evidence_ref": "-"
+              },
+              {
+                "id": "second",
+                "kind": "positive",
+                "field": "value",
+                "operator": "ge",
+                "argument": "0",
+                "remainder": "0",
+                "weight": 1,
+                "source": "manual",
+                "evidence_ref": "-"
+              }
+            ],
+            "selected_ids": [
+              "4027994"
+            ],
+            "candidates": [
+              {
+                "id": "4027994",
+                "domain": "portfolio-v2-rational-v1",
+                "layer": "0",
+                "x": "0",
+                "y": "4027994",
+                "z": "8112373874009",
+                "value": "2",
+                "score": 2,
+                "rules_checked": 2,
+                "complete": true,
+                "hard_rejected": false,
+                "negative_evidence": false,
+                "context_matches": true
+              }
+            ],
+            "groups": [
+              {
+                "group": 0,
+                "candidate_ids": [
+                  "4027994"
+                ],
+                "positive_match_mask": "0x0000000000000001",
+                "hard_reject_mask": "0x0000000000000000",
+                "negative_evidence_mask": "0x0000000000000000",
+                "context_role_mask": "0x0000000000000001",
+                "complete_mask": "0x0000000000000001",
+                "eligible_mask": "0x0000000000000001"
+              }
+            ],
+            "trace": [
+              {
+                "candidate_id": "4027994",
+                "rule_id": "first",
+                "matched": true,
+                "effect": "score"
+              },
+              {
+                "candidate_id": "4027994",
+                "rule_id": "second",
+                "matched": true,
+                "effect": "score"
+              }
+            ]
+          }
+        },
+        "usage": {
+          "model": "transfer-checkpoints-v1",
+          "max_checkpoints": 1000000,
+          "checkpoints": 69
+        }
+      }
+    },
+    {
+      "label": "selection-apply-exact",
+      "argv": [
+        "compatibility-apply",
+        "selection.plan",
+        "--from-run",
+        "source.bruce",
+        "--rules",
+        "rules.txt",
+        "--max-transfer-checkpoints",
+        "69",
+        "--output",
+        "selection.bruce.exact"
+      ],
+      "exit_code": 0,
+      "reply": {
+        "contract": "controlled-transfer-v1",
+        "result": {
+          "contract": "compatibility-transfer-result-v1",
+          "plan_digest": "5e50ce40e67cb92cb2e030ebc0932350072d9a446ea3ec9732a913abd5ad2944",
+          "source_digest": "393da3947a2866d8f735bba399ad3cdc7bb1eec26116a1bff7d6a77528428004",
+          "rules_digest": "608a482b3a860cc67dd03ae96d20c1a15d661706f0e1398c49ff71a977b1e451",
+          "result": {
+            "engine": "z-compatibility-v1",
+            "snapshot_digest": "608a482b3a860cc67dd03ae96d20c1a15d661706f0e1398c49ff71a977b1e451",
+            "snapshot_id": "accepted",
+            "input_fingerprint": "3a16b94443e8be0b4e4b339008282e472a1ded7ac61eef0d16ef9913f0252833",
+            "origin_digest": "393da3947a2866d8f735bba399ad3cdc7bb1eec26116a1bff7d6a77528428004",
+            "origin_status": "VERIFIED_ON_SAMPLES",
+            "projection_at": "0",
+            "status": "SELECTED",
+            "stop_reason": "Completed",
+            "general_proof": false,
+            "learn_gate": false,
+            "publish_gate": false,
+            "explanation": "Ein Kandidat hat den besten Score unter den zulaessigen Kandidaten. Auswahl ist kein Wahrheitsbeweis.",
+            "candidates_started": 1,
+            "checks_used": 2,
+            "rules": [
+              {
+                "id": "first",
+                "kind": "positive",
+                "field": "value",
+                "operator": "ge",
+                "argument": "0",
+                "remainder": "0",
+                "weight": 1,
+                "source": "manual",
+                "evidence_ref": "-"
+              },
+              {
+                "id": "second",
+                "kind": "positive",
+                "field": "value",
+                "operator": "ge",
+                "argument": "0",
+                "remainder": "0",
+                "weight": 1,
+                "source": "manual",
+                "evidence_ref": "-"
+              }
+            ],
+            "selected_ids": [
+              "4027994"
+            ],
+            "candidates": [
+              {
+                "id": "4027994",
+                "domain": "portfolio-v2-rational-v1",
+                "layer": "0",
+                "x": "0",
+                "y": "4027994",
+                "z": "8112373874009",
+                "value": "2",
+                "score": 2,
+                "rules_checked": 2,
+                "complete": true,
+                "hard_rejected": false,
+                "negative_evidence": false,
+                "context_matches": true
+              }
+            ],
+            "groups": [
+              {
+                "group": 0,
+                "candidate_ids": [
+                  "4027994"
+                ],
+                "positive_match_mask": "0x0000000000000001",
+                "hard_reject_mask": "0x0000000000000000",
+                "negative_evidence_mask": "0x0000000000000000",
+                "context_role_mask": "0x0000000000000001",
+                "complete_mask": "0x0000000000000001",
+                "eligible_mask": "0x0000000000000001"
+              }
+            ],
+            "trace": [
+              {
+                "candidate_id": "4027994",
+                "rule_id": "first",
+                "matched": true,
+                "effect": "score"
+              },
+              {
+                "candidate_id": "4027994",
+                "rule_id": "second",
+                "matched": true,
+                "effect": "score"
+              }
+            ]
+          }
+        },
+        "usage": {
+          "model": "transfer-checkpoints-v1",
+          "max_checkpoints": 69,
+          "checkpoints": 69
+        }
+      }
+    },
+    {
+      "label": "selection-apply-stop",
+      "argv": [
+        "compatibility-apply",
+        "selection.plan",
+        "--from-run",
+        "source.bruce",
+        "--rules",
+        "rules.txt",
+        "--max-transfer-checkpoints",
+        "68",
+        "--output",
+        "selection.bruce.stopped"
+      ],
+      "exit_code": 2,
+      "reply": {
+        "error": "TransferCheckpointBudgetExceeded: checkpoints=68 limit=68"
+      }
+    },
+    {
+      "label": "selection-replay",
+      "argv": [
+        "replay",
+        "selection.bruce"
+      ],
+      "exit_code": 0,
+      "reply": {
+        "engine": "z-compatibility-v1",
+        "snapshot_digest": "608a482b3a860cc67dd03ae96d20c1a15d661706f0e1398c49ff71a977b1e451",
+        "snapshot_id": "accepted",
+        "input_fingerprint": "3a16b94443e8be0b4e4b339008282e472a1ded7ac61eef0d16ef9913f0252833",
+        "origin_digest": "393da3947a2866d8f735bba399ad3cdc7bb1eec26116a1bff7d6a77528428004",
+        "origin_status": "VERIFIED_ON_SAMPLES",
+        "projection_at": "0",
+        "status": "SELECTED",
+        "stop_reason": "Completed",
+        "general_proof": false,
+        "learn_gate": false,
+        "publish_gate": false,
+        "explanation": "Ein Kandidat hat den besten Score unter den zulaessigen Kandidaten. Auswahl ist kein Wahrheitsbeweis.",
+        "candidates_started": 1,
+        "checks_used": 2,
+        "rules": [
+          {
+            "id": "first",
+            "kind": "positive",
+            "field": "value",
+            "operator": "ge",
+            "argument": "0",
+            "remainder": "0",
+            "weight": 1,
+            "source": "manual",
+            "evidence_ref": "-"
+          },
+          {
+            "id": "second",
+            "kind": "positive",
+            "field": "value",
+            "operator": "ge",
+            "argument": "0",
+            "remainder": "0",
+            "weight": 1,
+            "source": "manual",
+            "evidence_ref": "-"
+          }
+        ],
+        "selected_ids": [
+          "4027994"
+        ],
+        "candidates": [
+          {
+            "id": "4027994",
+            "domain": "portfolio-v2-rational-v1",
+            "layer": "0",
+            "x": "0",
+            "y": "4027994",
+            "z": "8112373874009",
+            "value": "2",
+            "score": 2,
+            "rules_checked": 2,
+            "complete": true,
+            "hard_rejected": false,
+            "negative_evidence": false,
+            "context_matches": true
+          }
+        ],
+        "groups": [
+          {
+            "group": 0,
+            "candidate_ids": [
+              "4027994"
+            ],
+            "positive_match_mask": "0x0000000000000001",
+            "hard_reject_mask": "0x0000000000000000",
+            "negative_evidence_mask": "0x0000000000000000",
+            "context_role_mask": "0x0000000000000001",
+            "complete_mask": "0x0000000000000001",
+            "eligible_mask": "0x0000000000000001"
+          }
+        ],
+        "trace": [
+          {
+            "candidate_id": "4027994",
+            "rule_id": "first",
+            "matched": true,
+            "effect": "score"
+          },
+          {
+            "candidate_id": "4027994",
+            "rule_id": "second",
+            "matched": true,
+            "effect": "score"
+          }
+        ]
+      }
+    },
+    {
+      "label": "experience-plan",
+      "argv": [
+        "experience",
+        "plan-add",
+        "--from-run",
+        "source.bruce",
+        "--max-transfer-checkpoints",
+        "1000000",
+        "--output",
+        "experience.plan"
+      ],
+      "exit_code": 0,
+      "reply": {
+        "contract": "controlled-transfer-v1",
+        "result": {
+          "contract": "experience-add-transfer-v1",
+          "action": "experience-add",
+          "source_digest": "393da3947a2866d8f735bba399ad3cdc7bb1eec26116a1bff7d6a77528428004",
+          "previous_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "max_source_bytes": 1048576,
+          "max_store_bytes": 1048576
+        },
+        "usage": {
+          "model": "transfer-checkpoints-v1",
+          "max_checkpoints": 1000000,
+          "checkpoints": 130
+        }
+      }
+    },
+    {
+      "label": "experience-plan-exact",
+      "argv": [
+        "experience",
+        "plan-add",
+        "--from-run",
+        "source.bruce",
+        "--max-transfer-checkpoints",
+        "130",
+        "--output",
+        "experience.plan.exact"
+      ],
+      "exit_code": 0,
+      "reply": {
+        "contract": "controlled-transfer-v1",
+        "result": {
+          "contract": "experience-add-transfer-v1",
+          "action": "experience-add",
+          "source_digest": "393da3947a2866d8f735bba399ad3cdc7bb1eec26116a1bff7d6a77528428004",
+          "previous_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "max_source_bytes": 1048576,
+          "max_store_bytes": 1048576
+        },
+        "usage": {
+          "model": "transfer-checkpoints-v1",
+          "max_checkpoints": 130,
+          "checkpoints": 130
+        }
+      }
+    },
+    {
+      "label": "experience-plan-stop",
+      "argv": [
+        "experience",
+        "plan-add",
+        "--from-run",
+        "source.bruce",
+        "--max-transfer-checkpoints",
+        "129",
+        "--output",
+        "experience.plan.stopped"
+      ],
+      "exit_code": 2,
+      "reply": {
+        "error": "TransferCheckpointBudgetExceeded: checkpoints=129 limit=129"
+      }
+    },
+    {
+      "label": "experience-apply",
+      "argv": [
+        "experience",
+        "apply-add",
+        "experience.plan",
+        "--from-run",
+        "source.bruce",
+        "--max-transfer-checkpoints",
+        "1000000",
+        "--output",
+        "experience.store"
+      ],
+      "exit_code": 0,
+      "reply": {
+        "contract": "controlled-transfer-v1",
+        "result": {
+          "contract": "experience-transfer-result-v1",
+          "source_digest": "393da3947a2866d8f735bba399ad3cdc7bb1eec26116a1bff7d6a77528428004",
+          "previous_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "plan_digest": "2e8267dfdac3e1081df8827b7620b8a86a15641f2ee6d997d6c20a72db909411",
+          "snapshot_digest": "0d5393e8faf643fdca02360cb881179c7a01e8dea3f494b33511c008b2ac5189",
+          "result": {
+            "engine": "bruce-experience-v1",
+            "policy": "routing-experience-v1",
+            "digest": "07b9f3f4d2d26d4cf5c97845db6e2c489fe722329c6e321591ea516bf6854aa0",
+            "audit_operations": 488,
+            "events": 1,
+            "active_records": 1,
+            "learn_gate": false,
+            "publish_gate": false,
+            "scope": "Routing statistics from replayed holdout runs; no promotion of mathematical truth",
+            "records": [
+              {
+                "id": "fd357a0ceac614fc17a4ae19721f68315e4c4e2493db73cded04c5e2202573ce",
+                "active": true,
+                "source_digest": "393da3947a2866d8f735bba399ad3cdc7bb1eec26116a1bff7d6a77528428004",
+                "training_fingerprint": "91ad819f506395ca16eb5e968b5a88837f87316c7efbd9b77acf95f41b37e307",
+                "context": "6c72290cbbc8794354ea899e4af28b20a2527af52c5cade1b2c633a9d0f56cf3",
+                "votes": [
+                  0,
+                  0,
+                  1
+                ]
+              }
+            ],
+            "corrections": []
+          }
+        },
+        "usage": {
+          "model": "transfer-checkpoints-v1",
+          "max_checkpoints": 1000000,
+          "checkpoints": 133
+        }
+      }
+    },
+    {
+      "label": "experience-apply-exact",
+      "argv": [
+        "experience",
+        "apply-add",
+        "experience.plan",
+        "--from-run",
+        "source.bruce",
+        "--max-transfer-checkpoints",
+        "133",
+        "--output",
+        "experience.store.exact"
+      ],
+      "exit_code": 0,
+      "reply": {
+        "contract": "controlled-transfer-v1",
+        "result": {
+          "contract": "experience-transfer-result-v1",
+          "source_digest": "393da3947a2866d8f735bba399ad3cdc7bb1eec26116a1bff7d6a77528428004",
+          "previous_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "plan_digest": "2e8267dfdac3e1081df8827b7620b8a86a15641f2ee6d997d6c20a72db909411",
+          "snapshot_digest": "0d5393e8faf643fdca02360cb881179c7a01e8dea3f494b33511c008b2ac5189",
+          "result": {
+            "engine": "bruce-experience-v1",
+            "policy": "routing-experience-v1",
+            "digest": "07b9f3f4d2d26d4cf5c97845db6e2c489fe722329c6e321591ea516bf6854aa0",
+            "audit_operations": 488,
+            "events": 1,
+            "active_records": 1,
+            "learn_gate": false,
+            "publish_gate": false,
+            "scope": "Routing statistics from replayed holdout runs; no promotion of mathematical truth",
+            "records": [
+              {
+                "id": "fd357a0ceac614fc17a4ae19721f68315e4c4e2493db73cded04c5e2202573ce",
+                "active": true,
+                "source_digest": "393da3947a2866d8f735bba399ad3cdc7bb1eec26116a1bff7d6a77528428004",
+                "training_fingerprint": "91ad819f506395ca16eb5e968b5a88837f87316c7efbd9b77acf95f41b37e307",
+                "context": "6c72290cbbc8794354ea899e4af28b20a2527af52c5cade1b2c633a9d0f56cf3",
+                "votes": [
+                  0,
+                  0,
+                  1
+                ]
+              }
+            ],
+            "corrections": []
+          }
+        },
+        "usage": {
+          "model": "transfer-checkpoints-v1",
+          "max_checkpoints": 133,
+          "checkpoints": 133
+        }
+      }
+    },
+    {
+      "label": "experience-apply-stop",
+      "argv": [
+        "experience",
+        "apply-add",
+        "experience.plan",
+        "--from-run",
+        "source.bruce",
+        "--max-transfer-checkpoints",
+        "132",
+        "--output",
+        "experience.store.stopped"
+      ],
+      "exit_code": 2,
+      "reply": {
+        "error": "TransferCheckpointBudgetExceeded: checkpoints=132 limit=132"
+      }
+    },
+    {
+      "label": "experience-inspect",
+      "argv": [
+        "experience",
+        "inspect",
+        "experience.store"
+      ],
+      "exit_code": 0,
+      "reply": {
+        "engine": "bruce-experience-v1",
+        "policy": "routing-experience-v1",
+        "digest": "07b9f3f4d2d26d4cf5c97845db6e2c489fe722329c6e321591ea516bf6854aa0",
+        "audit_operations": 488,
+        "events": 1,
+        "active_records": 1,
+        "learn_gate": false,
+        "publish_gate": false,
+        "scope": "Routing statistics from replayed holdout runs; no promotion of mathematical truth",
+        "records": [
+          {
+            "id": "fd357a0ceac614fc17a4ae19721f68315e4c4e2493db73cded04c5e2202573ce",
+            "active": true,
+            "source_digest": "393da3947a2866d8f735bba399ad3cdc7bb1eec26116a1bff7d6a77528428004",
+            "training_fingerprint": "91ad819f506395ca16eb5e968b5a88837f87316c7efbd9b77acf95f41b37e307",
+            "context": "6c72290cbbc8794354ea899e4af28b20a2527af52c5cade1b2c633a9d0f56cf3",
+            "votes": [
+              0,
+              0,
+              1
+            ]
+          }
+        ],
+        "corrections": []
+      }
+    },
+    {
+      "label": "selection-is-not-experience-source",
+      "argv": [
+        "experience",
+        "plan-add",
+        "--from-run",
+        "selection.bruce",
+        "--output",
+        "invalid.plan"
+      ],
+      "exit_code": 2,
+      "reply": {
+        "error": "ExperienceRequiresIndependentPortfolioSource"
+      }
+    },
+    {
+      "label": "selection-source-binding",
+      "argv": [
+        "compatibility-apply",
+        "selection.plan",
+        "--from-run",
+        "source.bruce",
+        "--rules",
+        "rules.txt",
+        "--output",
+        "changed-z"
+      ],
+      "exit_code": 2,
+      "reply": {
+        "error": "CompatibilityTransferSourceChanged"
+      }
+    },
+    {
+      "label": "experience-source-binding",
+      "argv": [
+        "experience",
+        "apply-add",
+        "experience.plan",
+        "--from-run",
+        "source.bruce",
+        "--output",
+        "changed-e"
+      ],
+      "exit_code": 2,
+      "reply": {
+        "error": "ExperienceTransferSourceChanged"
+      }
+    },
+    {
+      "label": "rules-binding",
+      "argv": [
+        "compatibility-apply",
+        "selection.plan",
+        "--from-run",
+        "source.bruce",
+        "--rules",
+        "rules.txt",
+        "--output",
+        "changed-rules"
+      ],
+      "exit_code": 2,
+      "reply": {
+        "error": "CompatibilityTransferRulesChanged"
+      }
+    },
+    {
+      "label": "experience-base-binding",
+      "argv": [
+        "experience",
+        "apply-add",
+        "experience.plan",
+        "--from-run",
+        "source.bruce",
+        "--store",
+        "experience.store",
+        "--output",
+        "changed-base"
+      ],
+      "exit_code": 2,
+      "reply": {
+        "error": "ExperienceTransferBaseChanged"
+      }
+    },
+    {
+      "label": "native-budget-plan",
+      "argv": [
+        "compatibility-plan",
+        "--from-run",
+        "source.bruce",
+        "--rules",
+        "rules.txt",
+        "--at",
+        "0",
+        "--max-checks",
+        "1",
+        "--output",
+        "limited.plan"
+      ],
+      "exit_code": 0,
+      "reply": {
+        "contract": "compatibility-transfer-v1",
+        "source_digest": "393da3947a2866d8f735bba399ad3cdc7bb1eec26116a1bff7d6a77528428004",
+        "rules_digest": "608a482b3a860cc67dd03ae96d20c1a15d661706f0e1398c49ff71a977b1e451",
+        "at": "0",
+        "max_source_bytes": 33554432,
+        "max_candidates": 4096,
+        "max_checks": 1,
+        "max_trace": 65536
+      }
+    },
+    {
+      "label": "native-budget-apply",
+      "argv": [
+        "compatibility-apply",
+        "limited.plan",
+        "--from-run",
+        "source.bruce",
+        "--rules",
+        "rules.txt",
+        "--max-transfer-checkpoints",
+        "1000000",
+        "--output",
+        "partial.bruce"
+      ],
+      "exit_code": 0,
+      "reply": {
+        "contract": "controlled-transfer-v1",
+        "result": {
+          "contract": "compatibility-transfer-result-v1",
+          "plan_digest": "3569e7ccbe5d2761d2bd06416decd771ed3b60640123b380f52a6bac5bb7600f",
+          "source_digest": "393da3947a2866d8f735bba399ad3cdc7bb1eec26116a1bff7d6a77528428004",
+          "rules_digest": "608a482b3a860cc67dd03ae96d20c1a15d661706f0e1398c49ff71a977b1e451",
+          "result": {
+            "engine": "z-compatibility-v1",
+            "snapshot_digest": "608a482b3a860cc67dd03ae96d20c1a15d661706f0e1398c49ff71a977b1e451",
+            "snapshot_id": "accepted",
+            "input_fingerprint": "3a16b94443e8be0b4e4b339008282e472a1ded7ac61eef0d16ef9913f0252833",
+            "origin_digest": "393da3947a2866d8f735bba399ad3cdc7bb1eec26116a1bff7d6a77528428004",
+            "origin_status": "VERIFIED_ON_SAMPLES",
+            "projection_at": "0",
+            "status": "INCOMPLETE",
+            "stop_reason": "OperationBudgetExceeded",
+            "general_proof": false,
+            "learn_gate": false,
+            "publish_gate": false,
+            "explanation": "Pruefung unvollstaendig; keine abschliessende Auswahl.",
+            "candidates_started": 1,
+            "checks_used": 1,
+            "rules": [
+              {
+                "id": "first",
+                "kind": "positive",
+                "field": "value",
+                "operator": "ge",
+                "argument": "0",
+                "remainder": "0",
+                "weight": 1,
+                "source": "manual",
+                "evidence_ref": "-"
+              },
+              {
+                "id": "second",
+                "kind": "positive",
+                "field": "value",
+                "operator": "ge",
+                "argument": "0",
+                "remainder": "0",
+                "weight": 1,
+                "source": "manual",
+                "evidence_ref": "-"
+              }
+            ],
+            "selected_ids": [],
+            "candidates": [
+              {
+                "id": "4027994",
+                "domain": "portfolio-v2-rational-v1",
+                "layer": "0",
+                "x": "0",
+                "y": "4027994",
+                "z": "8112373874009",
+                "value": "2",
+                "score": 1,
+                "rules_checked": 1,
+                "complete": false,
+                "hard_rejected": false,
+                "negative_evidence": false,
+                "context_matches": null
+              }
+            ],
+            "groups": [
+              {
+                "group": 0,
+                "candidate_ids": [
+                  "4027994"
+                ],
+                "positive_match_mask": "0x0000000000000001",
+                "hard_reject_mask": "0x0000000000000000",
+                "negative_evidence_mask": "0x0000000000000000",
+                "context_role_mask": "0x0000000000000000",
+                "complete_mask": "0x0000000000000000",
+                "eligible_mask": "0x0000000000000000"
+              }
+            ],
+            "trace": [
+              {
+                "candidate_id": "4027994",
+                "rule_id": "first",
+                "matched": true,
+                "effect": "score"
+              }
+            ]
+          }
+        },
+        "usage": {
+          "model": "transfer-checkpoints-v1",
+          "max_checkpoints": 1000000,
+          "checkpoints": 68
+        }
+      }
+    },
+    {
+      "label": "partial-replay",
+      "argv": [
+        "replay",
+        "partial.bruce"
+      ],
+      "exit_code": 0,
+      "reply": {
+        "engine": "z-compatibility-v1",
+        "snapshot_digest": "608a482b3a860cc67dd03ae96d20c1a15d661706f0e1398c49ff71a977b1e451",
+        "snapshot_id": "accepted",
+        "input_fingerprint": "3a16b94443e8be0b4e4b339008282e472a1ded7ac61eef0d16ef9913f0252833",
+        "origin_digest": "393da3947a2866d8f735bba399ad3cdc7bb1eec26116a1bff7d6a77528428004",
+        "origin_status": "VERIFIED_ON_SAMPLES",
+        "projection_at": "0",
+        "status": "INCOMPLETE",
+        "stop_reason": "OperationBudgetExceeded",
+        "general_proof": false,
+        "learn_gate": false,
+        "publish_gate": false,
+        "explanation": "Pruefung unvollstaendig; keine abschliessende Auswahl.",
+        "candidates_started": 1,
+        "checks_used": 1,
+        "rules": [
+          {
+            "id": "first",
+            "kind": "positive",
+            "field": "value",
+            "operator": "ge",
+            "argument": "0",
+            "remainder": "0",
+            "weight": 1,
+            "source": "manual",
+            "evidence_ref": "-"
+          },
+          {
+            "id": "second",
+            "kind": "positive",
+            "field": "value",
+            "operator": "ge",
+            "argument": "0",
+            "remainder": "0",
+            "weight": 1,
+            "source": "manual",
+            "evidence_ref": "-"
+          }
+        ],
+        "selected_ids": [],
+        "candidates": [
+          {
+            "id": "4027994",
+            "domain": "portfolio-v2-rational-v1",
+            "layer": "0",
+            "x": "0",
+            "y": "4027994",
+            "z": "8112373874009",
+            "value": "2",
+            "score": 1,
+            "rules_checked": 1,
+            "complete": false,
+            "hard_rejected": false,
+            "negative_evidence": false,
+            "context_matches": null
+          }
+        ],
+        "groups": [
+          {
+            "group": 0,
+            "candidate_ids": [
+              "4027994"
+            ],
+            "positive_match_mask": "0x0000000000000001",
+            "hard_reject_mask": "0x0000000000000000",
+            "negative_evidence_mask": "0x0000000000000000",
+            "context_role_mask": "0x0000000000000000",
+            "complete_mask": "0x0000000000000000",
+            "eligible_mask": "0x0000000000000000"
+          }
+        ],
+        "trace": [
+          {
+            "candidate_id": "4027994",
+            "rule_id": "first",
+            "matched": true,
+            "effect": "score"
+          }
+        ]
+      }
+    },
+    {
+      "label": "human-stage",
+      "argv": [
+        "rules-stage",
+        "active.store",
+        "rules.txt",
+        "proposal"
+      ],
+      "exit_code": 0,
+      "reply": {
+        "staged": true,
+        "approved": false
+      }
+    },
+    {
+      "label": "human-confirmation-required",
+      "argv": [
+        "rules-activate",
+        "active.store",
+        "proposal"
+      ],
+      "exit_code": 2,
+      "reply": {
+        "error": "RuleApprovalRequiresTerminal"
+      }
+    }
+  ],
+  "artifacts_sha256": {
+    "experience.plan": "2e8267dfdac3e1081df8827b7620b8a86a15641f2ee6d997d6c20a72db909411",
+    "experience.plan.exact": "2e8267dfdac3e1081df8827b7620b8a86a15641f2ee6d997d6c20a72db909411",
+    "experience.store": "0d5393e8faf643fdca02360cb881179c7a01e8dea3f494b33511c008b2ac5189",
+    "experience.store.exact": "0d5393e8faf643fdca02360cb881179c7a01e8dea3f494b33511c008b2ac5189",
+    "hold.csv": "11fc164babd2c957df6e666090e7102dff1f436d4577b97deee7c27dca8859b9",
+    "limited.plan": "3569e7ccbe5d2761d2bd06416decd771ed3b60640123b380f52a6bac5bb7600f",
+    "partial.bruce": "728e8c99c60bbe60b5ecc277b6f4397a40c097211bbcac20d9b61c5b54123ff5",
+    "proposal": "706bda90f037a3ee91fed7390827e3d52be7983e14875ac9bb114de32100991f",
+    "rules.txt": "608a482b3a860cc67dd03ae96d20c1a15d661706f0e1398c49ff71a977b1e451",
+    "selection.bruce": "e5477b95cbfa9977d7eb2250664cbe2f585f02a7bfc298349ba6827afe5bf778",
+    "selection.bruce.exact": "e5477b95cbfa9977d7eb2250664cbe2f585f02a7bfc298349ba6827afe5bf778",
+    "selection.plan": "5e50ce40e67cb92cb2e030ebc0932350072d9a446ea3ec9732a913abd5ad2944",
+    "selection.plan.exact": "5e50ce40e67cb92cb2e030ebc0932350072d9a446ea3ec9732a913abd5ad2944",
+    "source.bruce": "393da3947a2866d8f735bba399ad3cdc7bb1eec26116a1bff7d6a77528428004",
+    "train.csv": "714e3e7a451f09b59236fdaaf8ae45e60b7269ccbb12168a27796409965d6785"
+  },
+  "scope": "independent research source with selection and experience branches; no blueprint-wide release"
+}

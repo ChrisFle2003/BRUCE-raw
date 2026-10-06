@@ -1,0 +1,86 @@
+name: Release integrity
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  release-check:
+    runs-on: ubuntu-24.04
+    env:
+      CCACHE_BASEDIR: ${{ github.workspace }}
+      CCACHE_COMPILERCHECK: content
+    steps:
+      - name: Check out source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build g++ ccache pkg-config libgmp-dev libssl-dev python3 python3-dev
+
+      - name: Restore compiler cache
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        with:
+          path: ~/.cache/ccache
+          key: ccache-${{ runner.os }}-${{ hashFiles('CMakeLists.txt', 'cmake/**') }}-${{ github.sha }}
+          restore-keys: |
+            ccache-${{ runner.os }}-${{ hashFiles('CMakeLists.txt', 'cmake/**') }}-
+
+      - name: Configure Release build
+        run: >-
+          cmake -S . -B build-ci -G Ninja -DBUILD_TESTING=ON
+          -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+
+      - name: Build
+        run: cmake --build build-ci --parallel 4
+
+      - name: Run full test suite
+        run: ctest --test-dir build-ci --output-on-failure --parallel 4
+
+      - name: Show compiler-cache statistics
+        if: always()
+        run: ccache --show-stats
+
+      - name: Verify generated CLI documentation without changing checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          probe_dir="$(mktemp -d "${RUNNER_TEMP}/bruce-docs-XXXXXX")"
+          trap 'rm -rf -- "$probe_dir"' EXIT
+          tar -C . \
+            --exclude='./build*' \
+            --exclude='./.git' \
+            --exclude='./.agents' \
+            --exclude='./.codex' \
+            -cf - . | tar -C "$probe_dir" -xf -
+          python3 "$probe_dir/docs/cli/verify_examples.py" "$GITHUB_WORKSPACE/build-ci/bruce"
+          for artifact in source-index.md examples.json validation.md; do
+            cmp "docs/cli/$artifact" "$probe_dir/docs/cli/$artifact"
+          done
+
+      - name: Verify local documentation links
+        uses: lycheeverse/lychee-action@7da8ec1fc4e01b5a12062ac6c589c10a4ce70d67 # v2.0.0
+        with:
+          args: >-
+            --offline --no-progress --root-dir .
+            README.md CONTRIBUTING.md SECURITY.md HISTORY.md docs benchmarks
+          output: /tmp/lychee.md
+          fail: true
+
+      - name: Scan for secrets
+        uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+          GITLEAKS_ENABLE_COMMENTS: "false"
+          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: "false"

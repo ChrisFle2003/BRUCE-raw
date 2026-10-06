@@ -1,0 +1,6 @@
+BRUCE_RULES_V1
+snapshot numeric-demo-v1
+rule prefer_even positive value mod_eq 2 0 5 manual -
+rule outside_range reject value gt 100 0 0 manual -
+rule known_counterexample negative value eq 6 0 0 manual example-counterexample-6
+rule local_context context x le 7 0 0 manual -

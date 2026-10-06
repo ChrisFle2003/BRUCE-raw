@@ -1,0 +1,100 @@
+{
+  "schema_version": "bruce-cli-reference-v1",
+  "generated_from": [
+    "apps/bruce_cli.cpp",
+    "apps/nanocell_cli.hpp",
+    "apps/rule_store.hpp",
+    "apps/rule_review.hpp",
+    "./build/bruce --help"
+  ],
+  "cli_version": "0.102.0",
+  "language": "de",
+  "documentation_prompt_file": "docs/cli/bruce-cli-reference.md",
+  "documentation_prompt": "Erstelle eine deutschsprachige, quellengestützte Bedienungsanleitung für die implementierte BRUCE-CLI. Lies apps/bruce_cli.cpp, apps/nanocell_cli.hpp, apps/rule_store.hpp und apps/rule_review.hpp sowie die Ausgabe von bruce --version und bruce --help. Dokumentiere nur implementierte Befehle: pro Befehl Zweck, vollständige Syntax, Positionsargumente, Pflichtoptionen, Defaults, Wertebereiche, Abhängigkeiten, Konflikte, Ausgabe, Export und typische Fehler. Erfinde keine Flags, Kurzoptionen, Konfigurationsdateien oder geplanten Funktionen. Beachte: Optionen haben getrennte Werte; Erfolg ist JSON auf stdout mit Exitcode 0, Fehler JSON auf stderr mit Exitcode 2; Exitcode 0 ist kein mathematischer Beweis; --output überschreibt keine bestehende Datei. Liefere Markdown und valides JSON und prüfe das JSON sowie jeden Befehlsweg gegen Parser und Hilfeausgabe.",
+  "global_rules": {
+    "option_syntax": "Jede Option benötigt genau einen getrennten Wert; keine Kurzoptionen, kein --name=wert und kein ---Trenner.",
+    "case_sensitive": true,
+    "duplicate_options": "Fehler",
+    "success": {"stdout": "JSON", "exit_code": 0, "not_a_proof": true},
+    "failure": {"stderr": "JSON", "exit_code": 2},
+    "exports": "--output ist optional, erstellt Ziele exklusiv und überschreibt keine vorhandenen Dateien. Zielverzeichnisse werden nicht erzeugt."
+  },
+  "shared_option_families": [
+    {
+      "name": "session_control",
+      "options": ["--verification", "--max-session-checkpoints", "--verification-cancellation", "--max-replay-bytes", "--max-serialized-bytes"],
+      "scope": "Nur bei Parsern mit Sitzungsunterstützung; nicht global."
+    },
+    {
+      "name": "execution_cancellation",
+      "options": ["--execution-cancellation"],
+      "values": ["none", "experience-checkpoints", "grid-source-checkpoints", "grid-and-experience-checkpoints", "compatibility-source-checkpoints", "resume-import-checkpoints"]
+    },
+    {
+      "name": "transfer_control",
+      "options": ["--max-transfer-checkpoints", "--transfer-cancellation"],
+      "scope": "Experience- und Compatibility-Plan/Apply-Übergaben"
+    }
+  ],
+  "command_groups": [
+    {
+      "name": "meta",
+      "commands": [
+        {"path": "--version", "summary": "Version ausgeben", "syntax": "bruce --version", "positionals": [], "options": [], "output": "bruce-version-v1", "constraints": ["keine weiteren Argumente"], "source_files": ["apps/bruce_cli.cpp"]},
+        {"path": "contracts", "summary": "Forschungsstrategien und Planer katalogisieren", "syntax": "bruce contracts", "positionals": [], "options": [], "output": "JSON", "constraints": ["keine Argumente"], "source_files": ["apps/bruce_cli.cpp"]},
+        {"path": "task-contracts", "summary": "Anwendungstypen und Grenzen ausgeben", "syntax": "bruce task-contracts", "positionals": [], "options": [], "output": "JSON", "constraints": ["keine Argumente"], "source_files": ["apps/bruce_cli.cpp"]},
+        {"path": "gate-contracts", "summary": "Forschungs-Gatevertrag ausgeben", "syntax": "bruce gate-contracts", "positionals": [], "options": [], "output": "JSON", "constraints": ["prüft keinen Lauf"], "source_files": ["apps/bruce_cli.cpp"]}
+      ]
+    },
+    {
+      "name": "math_and_grid",
+      "commands": [
+        {"path": "coordinate", "summary": "Cantor-Adresse vorwärts oder rückwärts berechnen", "syntax": ["bruce coordinate --x X --y Y", "bruce coordinate --z Z"], "positionals": [], "options": [{"name": "--x", "required_with": "--y", "format": "UInt64"}, {"name": "--y", "required_with": "--x", "format": "UInt64"}, {"name": "--z", "exclusive_with": ["--x", "--y"], "format": "UInt64"}], "output": "x, y, z; bei lokalen Koordinaten zusätzlich local_z", "constraints": ["genau eine der beiden Formen"], "source_files": ["apps/bruce_cli.cpp"]},
+        {"path": "calculate", "summary": "Eine exakte Rechenoperation", "syntax": "bruce calculate --op OP --left A --right B [--domain bigint|rational] [--max-bits N] [--modulus M]", "positionals": [], "options": [{"name": "--op", "required": true, "values": ["add", "sub", "mul", "div", "divmod", "pow", "modpow"]}, {"name": "--left", "required": true}, {"name": "--right", "required": true}, {"name": "--domain", "default": "bigint", "values": ["bigint", "rational"]}, {"name": "--max-bits", "default": 4096}, {"name": "--modulus", "only_with": "modpow"}], "output": "JSON", "constraints": ["divmod nur bigint"], "source_files": ["apps/bruce_cli.cpp"]},
+        {"path": "compare", "summary": "Polynombrüche über Q vergleichen", "syntax": "bruce compare --left-numerator L0,... --left-denominator L0,... --right-numerator R0,... --right-denominator R0,... [OPTIONS]", "positionals": [], "options": [{"name": "--left-numerator", "required": true}, {"name": "--left-denominator", "required": true}, {"name": "--right-numerator", "required": true}, {"name": "--right-denominator", "required": true}, {"name": "--domain-policy", "default": "quadratic", "values": ["quadratic", "modular", "modular-witness"]}, {"name": "--max-bits", "default": 4096}, {"name": "--max-operations", "default": 1000000}, {"name": "--output"}], "output": "JSON; optionales Bundle", "constraints": ["Koeffizienten aufsteigend"], "source_files": ["apps/bruce_cli.cpp"]},
+        {"path": "grid", "summary": "Letztes Paar eines lokalen Pfads als Potenz auswerten", "syntax": "bruce grid --path P [--mode exact|modular|metric] [--modulus M] [--max-bits N] [--zero-zero one|stop] [OPTIONS]", "positionals": [], "options": [{"name": "--path", "required": true, "format": "1..64 Paare x,y in 0..7"}, {"name": "--mode", "default": "exact", "values": ["exact", "modular", "metric"]}, {"name": "--modulus", "required_with": "--mode modular"}, {"name": "--max-bits", "default": 64}, {"name": "--zero-zero", "default": "one", "values": ["one", "stop"]}, {"name": "--output"}], "output": "JSON; optionales Bundle", "constraints": ["--modulus außerhalb modular verboten"], "source_files": ["apps/bruce_cli.cpp"]},
+        {"path": "grid-batch", "summary": "Mehrere Grid-Pfade mit Cache", "syntax": "bruce grid-batch --paths P1;P2 [--cache-bytes N] [--max-query-steps N] [GRID_OPTIONS]", "positionals": [], "options": [{"name": "--paths", "required": true, "limit": "maximal 1024 Pfade"}, {"name": "--cache-bytes", "default": 65536, "range": "0..1048576"}, {"name": "--max-query-steps", "range": "0..1024"}], "output": "JSON; optionales fortsetzbares Bundle", "constraints": ["Grid-Optionen wie grid"], "source_files": ["apps/bruce_cli.cpp"]},
+        {"path": "grid-resume", "summary": "Unvollständigen Grid-Lauf fortsetzen", "syntax": "bruce grid-resume --from-run PARTIAL --additional-queries N [OPTIONS]", "positionals": [], "options": [{"name": "--from-run", "required": true}, {"name": "--additional-queries", "required": true, "range": "1..1024"}, {"name": "--output"}], "output": "JSON; optionales Bundle", "constraints": ["Quelle muss unvollständig und replaybar sein"], "source_files": ["apps/bruce_cli.cpp"]}
+      ]
+    },
+    {
+      "name": "research",
+      "commands": [
+        {"path": "research", "summary": "Begrenzte Formelforschung aus CSV oder Grid", "syntax": ["bruce research --train TRAIN.csv [--holdout HOLD.csv] [OPTIONS]", "bruce research --grid-train GRID.bruce [--grid-holdout GRID.bruce] [--grid-axis x|y] [OPTIONS]"], "positionals": [], "options": [{"name": "--train", "exclusive_with": "--grid-train"}, {"name": "--holdout", "only_with": "--train"}, {"name": "--grid-train", "exclusive_with": "--train"}, {"name": "--grid-holdout", "only_with": "--grid-train"}, {"name": "--grid-axis", "only_with": "--grid-train", "values": ["x", "y"]}, {"name": "--strategy", "default": "affine", "values": ["affine", "power-affine", "polynomial", "rational-linear", "rational-quadratic", "expression", "portfolio", "portfolio-rational", "portfolio-quadratic", "portfolio-expression"]}, {"name": "--domain", "values": ["int64", "bigint", "rational"]}, {"name": "--planner"}, {"name": "--min"}, {"name": "--max"}, {"name": "--max-candidates", "default": 100000}, {"name": "--max-operations", "default": 1000000}, {"name": "--max-trace", "default": 100002}, {"name": "--max-results", "default": 128}, {"name": "--max-bits", "default": 4096, "only_for": ["bigint", "rational"]}, {"name": "--max-denominator", "only_for": ["bigint", "rational"]}, {"name": "--max-trace-bytes", "default": 1048576, "only_for": ["bigint", "rational"]}, {"name": "--max-power", "only_for": ["power-affine", "portfolio", "portfolio-rational", "portfolio-quadratic", "portfolio-expression"]}, {"name": "--max-degree", "only_for": ["polynomial", "portfolio", "portfolio-rational", "portfolio-quadratic", "portfolio-expression"]}, {"name": "--max-nodes", "only_for": ["expression", "portfolio-expression"]}, {"name": "--operators", "only_for": ["expression", "portfolio-expression"]}, {"name": "--equivalence", "only_for": ["expression", "portfolio-expression"]}, {"name": "--domain-cache", "only_for": ["expression", "portfolio-expression"]}, {"name": "--expression-planner", "only_for": ["portfolio-expression"]}, {"name": "--experience", "only_for": ["rational portfolio paths"]}, {"name": "--output"}], "output": "JSON; optionales Replaybundle", "constraints": ["Strategie, Planer, Domäne und Spezialoptionen werden gemeinsam validiert"], "source_files": ["apps/bruce_cli.cpp"]}
+      ]
+    },
+    {
+      "name": "language_and_nanocell",
+      "commands": [
+        {"path": "language interpret", "summary": "Ein festes deutsches Satzmuster in Entwurf übersetzen", "syntax": "bruce language interpret --text TEXT --train TRAIN.csv --holdout HOLD.csv [BUDGETS] --output DRAFT", "positionals": [], "options": [{"name": "--text", "required": true}, {"name": "--train", "required": true}, {"name": "--holdout", "required": true}, {"name": "--output", "required": true}], "output": "language-interpretation-v1; Entwurfsdatei", "constraints": ["keine freie Sprache"], "source_files": ["apps/bruce_cli.cpp"]},
+        {"path": "language select", "summary": "Alternative in einem Entwurf auswählen", "syntax": "bruce language select DRAFT --alternative ID --output SELECTED", "positionals": ["DRAFT"], "options": [{"name": "--alternative", "required": true}, {"name": "--output", "required": true}], "output": "language-selection-v1; Entwurfsdatei", "constraints": [], "source_files": ["apps/bruce_cli.cpp"]},
+        {"path": "language execute", "summary": "Ausgewählten Entwurf ausführen", "syntax": "bruce language execute DRAFT --output LANGUAGE_RUN", "positionals": ["DRAFT"], "options": [{"name": "--output", "required": true}], "output": "language-execution-v1; Laufdatei", "constraints": ["Auswahl bei Mehrdeutigkeit erforderlich"], "source_files": ["apps/bruce_cli.cpp"]},
+        {"path": "language replay", "summary": "Sprachlauf erneut prüfen", "syntax": "bruce language replay LANGUAGE_RUN", "positionals": ["LANGUAGE_RUN"], "options": [], "output": "language-replay-v1", "constraints": ["schreibt keine Datei"], "source_files": ["apps/bruce_cli.cpp"]},
+        {"path": "nanocell run", "summary": "Isolierten Acht-Byte-Kern ausführen", "syntax": "bruce nanocell run --core HEX16 --active-index N --context-id ID --context-file FILE --technique ID [OPTIONS]", "positionals": [], "options": [{"name": "--core", "required": true, "format": "genau 16 Hexziffern"}, {"name": "--active-index", "required": true, "range": "0..7"}, {"name": "--context-id", "required": true}, {"name": "--context-file", "required": true}, {"name": "--technique", "required": true, "values": ["masked-match-v1", "rotate-match-v1", "context-conflict-v1"]}, {"name": "--max-operations", "default": 16, "range": "0..16"}, {"name": "--max-trace-entries", "default": 18, "range": "2..18"}, {"name": "--output"}], "output": "nanocell-cli-v1; optionales NanoCell-Bundle", "constraints": ["separater Replaypfad"], "source_files": ["apps/nanocell_cli.hpp"]},
+        {"path": "nanocell replay", "summary": "NanoCell-Bundle semantisch prüfen", "syntax": "bruce nanocell replay RUN", "positionals": ["RUN"], "options": [], "output": "nanocell-cli-v1", "constraints": ["nicht bruce replay verwenden"], "source_files": ["apps/nanocell_cli.hpp"]}
+      ]
+    },
+    {
+      "name": "rules_experience_compatibility_and_inspection",
+      "commands": [
+        {"path": "rules-stage", "summary": "Regeländerung stagen", "syntax": "bruce rules-stage STORE NEW PROPOSAL", "positionals": ["STORE", "NEW", "PROPOSAL"], "options": [], "output": "JSON; Vorschlagsdatei", "constraints": [], "source_files": ["apps/rule_store.hpp"]},
+        {"path": "rules-activate", "summary": "Vorschlag nach Bestätigung aktivieren", "syntax": "bruce rules-activate STORE PROPOSAL", "positionals": ["STORE", "PROPOSAL"], "options": [], "output": "rule-history-v1", "constraints": ["Terminaldialog", "atomare Speicheränderung"], "source_files": ["apps/rule_store.hpp"]},
+        {"path": "rules-status", "summary": "Aktive Regeln und Journal lesen", "syntax": "bruce rules-status STORE", "positionals": ["STORE"], "options": [], "output": "rule-history-v1", "constraints": [], "source_files": ["apps/rule_store.hpp"]},
+        {"path": "rules-propose", "summary": "Regelvorschlag erzeugen", "syntax": "bruce rules-propose OLD NEW PROPOSAL", "positionals": ["OLD", "NEW", "PROPOSAL"], "options": [], "output": "JSON; Vorschlagsdatei", "constraints": [], "source_files": ["apps/rule_review.hpp"]},
+        {"path": "rules-approve", "summary": "Regelvorschlag nach Bestätigung exportieren", "syntax": "bruce rules-approve PROPOSAL CURRENT OUTPUT", "positionals": ["PROPOSAL", "CURRENT", "OUTPUT"], "options": [], "output": "JSON; Regeldatei", "constraints": ["Terminaldialog"], "source_files": ["apps/rule_review.hpp"]},
+        {"path": "experience", "summary": "Experience-Snapshots erzeugen, ändern oder prüfen", "syntax": ["bruce experience add --from-run RUN [--store STORE] --output NEW [TRANSFER_OPTIONS]", "bruce experience revoke --store STORE --id ID --reason TEXT --output NEW [TRANSFER_OPTIONS]", "bruce experience replace --store STORE --id ID --reason TEXT --from-run RUN --output NEW [TRANSFER_OPTIONS]", "bruce experience plan-add --from-run RUN [--store STORE] [--max-source-bytes N] [--max-store-bytes N] --output PLAN [TRANSFER_OPTIONS]", "bruce experience apply-add PLAN --from-run RUN [--store STORE] --output NEW [TRANSFER_OPTIONS]", "bruce experience inspect SNAPSHOT"], "positionals": ["PLAN bei apply-add", "SNAPSHOT bei inspect"], "options": [{"name": "--from-run"}, {"name": "--store"}, {"name": "--id"}, {"name": "--reason"}, {"name": "--output"}], "output": "JSON; bei mutierenden Aktionen neuer Snapshot/Plan", "constraints": ["Aktionsabhängige Pflichtoptionen", "keine Überschreibung"], "source_files": ["apps/bruce_cli.cpp"]},
+        {"path": "compatibility", "summary": "Kandidaten nach Regeln auswählen", "syntax": "bruce compatibility (--rules FILE|--rule-store STORE) (--candidates CSV|--from-run RUN --at X) [OPTIONS]", "positionals": [], "options": [{"name": "--rules", "exclusive_with": "--rule-store"}, {"name": "--rule-store", "exclusive_with": "--rules"}, {"name": "--candidates", "exclusive_with": "--from-run"}, {"name": "--from-run", "exclusive_with": "--candidates"}, {"name": "--at", "required_with": "--from-run"}, {"name": "--max-candidates", "default": 4096}, {"name": "--max-checks", "default": 1048576}, {"name": "--max-trace", "default": 65536}, {"name": "--output"}], "output": "JSON; optionales Bundle", "constraints": ["jeweils genau eine Regel- und Quellenform"], "source_files": ["apps/bruce_cli.cpp"]},
+        {"path": "compatibility-plan", "summary": "Übergabeplan Forschung zu Z-Auswahl", "syntax": "bruce compatibility-plan --from-run RUN (--rules FILE|--rule-store STORE) --at X --output PLAN [TRANSFER_OPTIONS]", "positionals": [], "options": [{"name": "--from-run", "required": true}, {"name": "--rules", "exclusive_with": "--rule-store"}, {"name": "--rule-store", "exclusive_with": "--rules"}, {"name": "--at", "required": true}, {"name": "--output", "required": true}], "output": "JSON; Plan", "constraints": [], "source_files": ["apps/bruce_cli.cpp"]},
+        {"path": "compatibility-apply", "summary": "Kompatibilitätsplan anwenden", "syntax": "bruce compatibility-apply PLAN --from-run RUN (--rules FILE|--rule-store STORE) [--output RUN] [TRANSFER_OPTIONS]", "positionals": ["PLAN"], "options": [{"name": "--from-run", "required": true}, {"name": "--rules", "exclusive_with": "--rule-store"}, {"name": "--rule-store", "exclusive_with": "--rules"}, {"name": "--output"}], "output": "JSON; optionales Bundle", "constraints": [], "source_files": ["apps/bruce_cli.cpp"]},
+        {"path": "inspect-run", "summary": "Allgemeines Bundle inspizieren", "syntax": "bruce inspect-run RUN.bruce", "positionals": ["RUN.bruce"], "options": [], "output": "JSON", "constraints": [], "source_files": ["apps/bruce_cli.cpp"]},
+        {"path": "assess-run", "summary": "Lauf per Gate bewerten", "syntax": "bruce assess-run RUN.bruce", "positionals": ["RUN.bruce"], "options": [], "output": "JSON", "constraints": [], "source_files": ["apps/bruce_cli.cpp"]},
+        {"path": "replay", "summary": "Allgemeines Bundle semantisch wiederholen", "syntax": "bruce replay RUN.bruce", "positionals": ["RUN.bruce"], "options": [], "output": "JSON", "constraints": ["nicht für NanoCell, Language oder Experience"], "source_files": ["apps/bruce_cli.cpp"]},
+        {"path": "gate-run", "summary": "Konkreten Lauf mit Gate prüfen", "syntax": "bruce gate-run RUN.bruce [--max-session-checkpoints N] [--max-replay-bytes N] [--cancellation none|checkpoints]", "positionals": ["RUN.bruce"], "options": [{"name": "--max-session-checkpoints"}, {"name": "--max-replay-bytes"}, {"name": "--cancellation", "default": "none", "values": ["none", "checkpoints"]}], "output": "JSON", "constraints": [], "source_files": ["apps/bruce_cli.cpp"]}
+      ]
+    }
+  ],
+  "verification": {
+    "commands": ["./build/bruce --version", "./build/bruce --help", "python3 -m json.tool docs/cli/bruce-cli-reference.json >/dev/null"],
+    "status": "passed: JSON parsed successfully; built CLI reported 0.102.0; documented command paths were compared with the help output and parser dispatch."
+  }
+}

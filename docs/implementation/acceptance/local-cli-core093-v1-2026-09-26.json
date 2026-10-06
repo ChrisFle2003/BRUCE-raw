@@ -1,0 +1,1734 @@
+{
+  "profile": "local-cli-core093-v1",
+  "date": "2026-09-26",
+  "version": "0.93.0",
+  "technical_status": "passed_with_documented_scope",
+  "full_m0_m2_complete": false,
+  "hosts": {
+    "local": {
+      "ctest": {
+        "tests": 117,
+        "failed": 0,
+        "skipped": 0,
+        "suite_seconds": 124.0,
+        "timestamp_as_reported": "2026-09-26T00:37:24",
+        "cases": [
+          {
+            "name": "resume_copy_control",
+            "seconds": 0.0997332,
+            "status": "run"
+          },
+          {
+            "name": "session_work_budget_contracts",
+            "seconds": 0.287759,
+            "status": "run"
+          },
+          {
+            "name": "rule_history_contracts",
+            "seconds": 0.531949,
+            "status": "run"
+          },
+          {
+            "name": "rule_proposal_contracts",
+            "seconds": 0.00611873,
+            "status": "run"
+          },
+          {
+            "name": "compatibility_transfer_workflows",
+            "seconds": 0.105553,
+            "status": "run"
+          },
+          {
+            "name": "experience_transfer_workflows",
+            "seconds": 0.111864,
+            "status": "run"
+          },
+          {
+            "name": "rule_store_workflows",
+            "seconds": 0.175881,
+            "status": "run"
+          },
+          {
+            "name": "rule_review_workflows",
+            "seconds": 0.0657077,
+            "status": "run"
+          },
+          {
+            "name": "result_assessment_workflows",
+            "seconds": 1.74402,
+            "status": "run"
+          },
+          {
+            "name": "benchmark_runner_contracts",
+            "seconds": 0.113483,
+            "status": "run"
+          },
+          {
+            "name": "resume_copy_workflows",
+            "seconds": 0.125082,
+            "status": "run"
+          },
+          {
+            "name": "serialized_byte_budget_workflows",
+            "seconds": 0.0406393,
+            "status": "run"
+          },
+          {
+            "name": "cli_version",
+            "seconds": 0.0266041,
+            "status": "run"
+          },
+          {
+            "name": "installed_cli_workflows",
+            "seconds": 0.931807,
+            "status": "run"
+          },
+          {
+            "name": "session_work_budget_workflows",
+            "seconds": 0.0814335,
+            "status": "run"
+          },
+          {
+            "name": "grid_partial_workflows",
+            "seconds": 0.250891,
+            "status": "run"
+          },
+          {
+            "name": "grid_budget_workflows",
+            "seconds": 0.174058,
+            "status": "run"
+          },
+          {
+            "name": "grid_axis_workflows",
+            "seconds": 0.337433,
+            "status": "run"
+          },
+          {
+            "name": "grid_research_contracts",
+            "seconds": 0.186156,
+            "status": "run"
+          },
+          {
+            "name": "grid_research_workflows",
+            "seconds": 0.27397,
+            "status": "run"
+          },
+          {
+            "name": "grid_cache_contracts",
+            "seconds": 0.295892,
+            "status": "run"
+          },
+          {
+            "name": "grid_cache_workflows",
+            "seconds": 0.257351,
+            "status": "run"
+          },
+          {
+            "name": "grid_contracts",
+            "seconds": 0.0386291,
+            "status": "run"
+          },
+          {
+            "name": "grid_replay_workflows",
+            "seconds": 1.89834,
+            "status": "run"
+          },
+          {
+            "name": "witness_portfolio_contracts",
+            "seconds": 15.7592,
+            "status": "run"
+          },
+          {
+            "name": "witness_portfolio_workflows",
+            "seconds": 10.1071,
+            "status": "run"
+          },
+          {
+            "name": "witness_expression_contracts",
+            "seconds": 14.4487,
+            "status": "run"
+          },
+          {
+            "name": "witness_expression_workflows",
+            "seconds": 4.49296,
+            "status": "run"
+          },
+          {
+            "name": "rational_witness_contracts",
+            "seconds": 1.58452,
+            "status": "run"
+          },
+          {
+            "name": "rational_witness_workflows",
+            "seconds": 0.162089,
+            "status": "run"
+          },
+          {
+            "name": "domain_cache_portfolio_contracts",
+            "seconds": 9.72928,
+            "status": "run"
+          },
+          {
+            "name": "domain_cache_contracts",
+            "seconds": 0.963652,
+            "status": "run"
+          },
+          {
+            "name": "q_portfolio_contracts",
+            "seconds": 18.4559,
+            "status": "run"
+          },
+          {
+            "name": "domain_cache_portfolio_workflows",
+            "seconds": 10.4842,
+            "status": "run"
+          },
+          {
+            "name": "domain_cache_workflows",
+            "seconds": 2.6528,
+            "status": "run"
+          },
+          {
+            "name": "modular_expression_workflows",
+            "seconds": 3.52861,
+            "status": "run"
+          },
+          {
+            "name": "modular_portfolio_workflows",
+            "seconds": 7.59508,
+            "status": "run"
+          },
+          {
+            "name": "q_portfolio_workflows",
+            "seconds": 7.59074,
+            "status": "run"
+          },
+          {
+            "name": "q_expression_contracts",
+            "seconds": 1.70264,
+            "status": "run"
+          },
+          {
+            "name": "q_expression_workflows",
+            "seconds": 2.00662,
+            "status": "run"
+          },
+          {
+            "name": "fraction_comparison_contracts",
+            "seconds": 1.35915,
+            "status": "run"
+          },
+          {
+            "name": "modular_comparison_workflows",
+            "seconds": 0.55854,
+            "status": "run"
+          },
+          {
+            "name": "fraction_comparison_workflows",
+            "seconds": 0.671673,
+            "status": "run"
+          },
+          {
+            "name": "core_contracts",
+            "seconds": 0.015017,
+            "status": "run"
+          },
+          {
+            "name": "cli_workflows",
+            "seconds": 0.20151,
+            "status": "run"
+          },
+          {
+            "name": "compatibility_workflows",
+            "seconds": 0.270644,
+            "status": "run"
+          },
+          {
+            "name": "compatibility_contracts",
+            "seconds": 0.0117978,
+            "status": "run"
+          },
+          {
+            "name": "exact_domain_workflows",
+            "seconds": 0.345032,
+            "status": "run"
+          },
+          {
+            "name": "exact_domain_contracts",
+            "seconds": 0.00848494,
+            "status": "run"
+          },
+          {
+            "name": "power_research_workflows",
+            "seconds": 0.263095,
+            "status": "run"
+          },
+          {
+            "name": "adaptive_research_workflows",
+            "seconds": 0.326765,
+            "status": "run"
+          },
+          {
+            "name": "polynomial_research_workflows",
+            "seconds": 0.15993,
+            "status": "run"
+          },
+          {
+            "name": "polynomial_contracts",
+            "seconds": 0.00672798,
+            "status": "run"
+          },
+          {
+            "name": "portfolio_workflows",
+            "seconds": 0.156661,
+            "status": "run"
+          },
+          {
+            "name": "portfolio_contracts",
+            "seconds": 0.0161294,
+            "status": "run"
+          },
+          {
+            "name": "rational_linear_workflows",
+            "seconds": 0.173761,
+            "status": "run"
+          },
+          {
+            "name": "rational_linear_contracts",
+            "seconds": 0.0771668,
+            "status": "run"
+          },
+          {
+            "name": "rational_portfolio_workflows",
+            "seconds": 0.174502,
+            "status": "run"
+          },
+          {
+            "name": "rational_portfolio_contracts",
+            "seconds": 0.359062,
+            "status": "run"
+          },
+          {
+            "name": "adaptive_portfolio_workflows",
+            "seconds": 0.162288,
+            "status": "run"
+          },
+          {
+            "name": "adaptive_portfolio_contracts",
+            "seconds": 0.657241,
+            "status": "run"
+          },
+          {
+            "name": "experience_workflows",
+            "seconds": 0.300366,
+            "status": "run"
+          },
+          {
+            "name": "experience_header_boundary",
+            "seconds": 0.00223462,
+            "status": "run"
+          },
+          {
+            "name": "experience_contracts",
+            "seconds": 0.62855,
+            "status": "run"
+          },
+          {
+            "name": "rational_quadratic_workflows",
+            "seconds": 0.231405,
+            "status": "run"
+          },
+          {
+            "name": "rational_quadratic_contracts",
+            "seconds": 0.404954,
+            "status": "run"
+          },
+          {
+            "name": "quadratic_portfolio_workflows",
+            "seconds": 0.259794,
+            "status": "run"
+          },
+          {
+            "name": "quadratic_portfolio_contracts",
+            "seconds": 8.45578,
+            "status": "run"
+          },
+          {
+            "name": "expression_workflows",
+            "seconds": 0.321581,
+            "status": "run"
+          },
+          {
+            "name": "expression_contracts",
+            "seconds": 0.281476,
+            "status": "run"
+          },
+          {
+            "name": "expression_equivalence_workflows",
+            "seconds": 0.506903,
+            "status": "run"
+          },
+          {
+            "name": "expression_equivalence_contracts",
+            "seconds": 0.714671,
+            "status": "run"
+          },
+          {
+            "name": "expression_portfolio_workflows",
+            "seconds": 0.349866,
+            "status": "run"
+          },
+          {
+            "name": "expression_portfolio_contracts",
+            "seconds": 3.95311,
+            "status": "run"
+          },
+          {
+            "name": "five_experience_workflows",
+            "seconds": 3.92336,
+            "status": "run"
+          },
+          {
+            "name": "five_experience_contracts",
+            "seconds": 7.39381,
+            "status": "run"
+          },
+          {
+            "name": "indexed_expression_workflows",
+            "seconds": 0.807904,
+            "status": "run"
+          },
+          {
+            "name": "indexed_expression_contracts",
+            "seconds": 0.905537,
+            "status": "run"
+          },
+          {
+            "name": "indexed_portfolio_workflows",
+            "seconds": 2.44164,
+            "status": "run"
+          },
+          {
+            "name": "indexed_portfolio_contracts",
+            "seconds": 9.77407,
+            "status": "run"
+          },
+          {
+            "name": "expression_operators_workflows",
+            "seconds": 0.375896,
+            "status": "run"
+          },
+          {
+            "name": "expression_operators_contracts",
+            "seconds": 0.675869,
+            "status": "run"
+          },
+          {
+            "name": "portfolio_operators_workflows",
+            "seconds": 1.12321,
+            "status": "run"
+          },
+          {
+            "name": "portfolio_operators_contracts",
+            "seconds": 13.9379,
+            "status": "run"
+          },
+          {
+            "name": "portfolio_powers_contracts",
+            "seconds": 15.1583,
+            "status": "run"
+          },
+          {
+            "name": "portfolio_powers_workflows",
+            "seconds": 0.797276,
+            "status": "run"
+          },
+          {
+            "name": "cached_expression_contracts",
+            "seconds": 1.12399,
+            "status": "run"
+          },
+          {
+            "name": "cached_portfolio_contracts",
+            "seconds": 40.2633,
+            "status": "run"
+          },
+          {
+            "name": "cached_portfolio_workflows",
+            "seconds": 2.23879,
+            "status": "run"
+          },
+          {
+            "name": "cached_expression_workflows",
+            "seconds": 0.764292,
+            "status": "run"
+          },
+          {
+            "name": "expression_powers_workflows",
+            "seconds": 0.337071,
+            "status": "run"
+          },
+          {
+            "name": "expression_powers_contracts",
+            "seconds": 0.354703,
+            "status": "run"
+          },
+          {
+            "name": "grid_resume_workflows",
+            "seconds": 0.15342,
+            "status": "run"
+          },
+          {
+            "name": "grid_experience_workflows",
+            "seconds": 0.32014,
+            "status": "run"
+          },
+          {
+            "name": "experience_replace_workflows",
+            "seconds": 0.318799,
+            "status": "run"
+          },
+          {
+            "name": "grid_experience_budget_workflows",
+            "seconds": 0.244022,
+            "status": "run"
+          },
+          {
+            "name": "json_encoding_isolation",
+            "seconds": 0.00184298,
+            "status": "run"
+          },
+          {
+            "name": "research_gate_isolation",
+            "seconds": 0.00199344,
+            "status": "run"
+          },
+          {
+            "name": "research_contract_matrix",
+            "seconds": 0.00256824,
+            "status": "run"
+          },
+          {
+            "name": "research_contract_catalog",
+            "seconds": 0.0495023,
+            "status": "run"
+          },
+          {
+            "name": "application_task_adapters",
+            "seconds": 0.13275,
+            "status": "run"
+          },
+          {
+            "name": "application_task_catalog",
+            "seconds": 0.0425541,
+            "status": "run"
+          },
+          {
+            "name": "run_inspection_workflows",
+            "seconds": 0.864052,
+            "status": "run"
+          },
+          {
+            "name": "execution_session_states",
+            "seconds": 0.733694,
+            "status": "run"
+          },
+          {
+            "name": "execution_session_workflows",
+            "seconds": 0.375556,
+            "status": "run"
+          },
+          {
+            "name": "grid_replay_control",
+            "seconds": 0.0350053,
+            "status": "run"
+          },
+          {
+            "name": "research_replay_control",
+            "seconds": 0.688317,
+            "status": "run"
+          },
+          {
+            "name": "grid_research_replay_control",
+            "seconds": 0.277513,
+            "status": "run"
+          },
+          {
+            "name": "execution_resume_import_control",
+            "seconds": 0.0347794,
+            "status": "run"
+          },
+          {
+            "name": "execution_compatibility_source_control",
+            "seconds": 0.126619,
+            "status": "run"
+          },
+          {
+            "name": "execution_grid_source_control",
+            "seconds": 0.035282,
+            "status": "run"
+          },
+          {
+            "name": "execution_experience_control",
+            "seconds": 0.193419,
+            "status": "run"
+          },
+          {
+            "name": "grid_serialization_control",
+            "seconds": 0.01394,
+            "status": "run"
+          },
+          {
+            "name": "serialization_control",
+            "seconds": 0.016187,
+            "status": "run"
+          },
+          {
+            "name": "experience_replay_control",
+            "seconds": 0.133831,
+            "status": "run"
+          },
+          {
+            "name": "compatibility_replay_control",
+            "seconds": 0.0290764,
+            "status": "run"
+          },
+          {
+            "name": "comparison_replay_control",
+            "seconds": 0.513603,
+            "status": "run"
+          }
+        ]
+      },
+      "installation_and_package": {
+        "contract": "bruce-install-audit-v1",
+        "installation": {
+          "version": "0.93.0",
+          "build_info": {
+            "contract": "bruce-build-info-v1",
+            "version": "0.93.0",
+            "system": "Linux",
+            "processor": "x86_64",
+            "compiler": "GNU 14.2.0",
+            "cxx_standard": 20,
+            "build_type": "Debug",
+            "cmake": "3.31.6",
+            "openssl": "3.5.7",
+            "gmpxx": "6.3.0",
+            "source_index_sha256": "4ba9ff6585f7d907c72cedaf8fd3e80dcafc6adc2f3ab7b8a31c2284ed55d1ff"
+          },
+          "binary_sha256": "ca076086fd07a224eb67e0cb4ee48d2d91cb2f1f280f13f2e7a874248328ef80",
+          "research_export_replay": true,
+          "budget_failure_no_export": true,
+          "historical_fixtures": [
+            {
+              "name": "adaptive-v1.bruce",
+              "sha256": "14cbb1ec6f3c442dd5ee8598c91695d15ba27c6f025f688c6c64df8ff4724570"
+            },
+            {
+              "name": "compatibility-v1.bruce",
+              "sha256": "fee573f3318a164150a011ae85ccfa11b3efaa42a13461299d95eb33375dc25d"
+            },
+            {
+              "name": "core-036-grid-v1.bruce",
+              "sha256": "08b33ba2d1a393142d5c6df95de06363bdafe9fadd3b4ae457098202da7a430d"
+            },
+            {
+              "name": "core-038-grid-research-v1.bruce",
+              "sha256": "3969c00c106bfd93de1aed1ced1f4d2181b81f18bdcd78c24c893ec4b7088c0d"
+            },
+            {
+              "name": "exact-v1.bruce",
+              "sha256": "b7f6db4fb58042150d877d1e4384fa38f590d257b0681cac9979c452aa57b6fa"
+            },
+            {
+              "name": "expression-v1.bruce",
+              "sha256": "a7c48b4a8c4a4e6bfb8b18e671499302705a2f18261e6d6ce0b189238b9bc3b6"
+            },
+            {
+              "name": "expression-v2.bruce",
+              "sha256": "1d1bc04127d0527bfc8bb1f154afa0e1c35a2ee12ffa1249ca40ef163efb842f"
+            },
+            {
+              "name": "expression-v3.bruce",
+              "sha256": "08b177e59c79b4b6c24b1470b707c0f82e7e74943d4e07d1889b1ded16c516d9"
+            },
+            {
+              "name": "expression-v4.bruce",
+              "sha256": "2536f7f8cd273b38978da14bcbc5b6bbd3590ce917144a27c8f84800eed17c5c"
+            },
+            {
+              "name": "expression-v5.bruce",
+              "sha256": "27a9348d5bf1a323a17b96926a2ca2d9481c0c9ab3e428a791eee95f7fdb2479"
+            },
+            {
+              "name": "expression-v6.bruce",
+              "sha256": "62ddc2282285f12080ad67f1e493b72d3e04fc8e316b1df3b732c114d7304bec"
+            },
+            {
+              "name": "polynomial-v1.bruce",
+              "sha256": "6116782e6076dacbcdd552ede4d1f9b34635245ce2e9ca0fcfd7a314cd55c6a5"
+            },
+            {
+              "name": "portfolio-v1.bruce",
+              "sha256": "3a89c5b2d8a98b158cc282c63166e184d424685b46ea9e1d667286c533b3f1d7"
+            },
+            {
+              "name": "portfolio-v10.bruce",
+              "sha256": "55d1da80d776baa28dc1494ca4f47016301a79f5605a59c66c75e738b45c952a"
+            },
+            {
+              "name": "portfolio-v13.bruce",
+              "sha256": "dbb20011bf91c4f58f606fa35360e67c390a345a0dcbc79385a8aa70affdc0fe"
+            },
+            {
+              "name": "portfolio-v16.bruce",
+              "sha256": "f7b1665d4bd284b6518d9d51c1ee4e52802dbbb386339087346bf799bdc991b6"
+            },
+            {
+              "name": "portfolio-v19.bruce",
+              "sha256": "4b9e7259d0fe9fa03761c11f9f7d09b34c0db9487ab6b5c3659f821cc6fb3e01"
+            },
+            {
+              "name": "portfolio-v2.bruce",
+              "sha256": "f4359a0d22e03d8328ead7649bed888d94cf1dc80bd808bd74fe827af1fb49b9"
+            },
+            {
+              "name": "portfolio-v3.bruce",
+              "sha256": "870d5799089e38e2e4ef5a7410082ed79962f9d8549d66b68fd6a8dc2df9196b"
+            },
+            {
+              "name": "portfolio-v4.bruce",
+              "sha256": "52400686579087b878746645a1705471233f7cfe8b683ddd48aba658c2fe257c"
+            },
+            {
+              "name": "portfolio-v6.bruce",
+              "sha256": "391af488fdbfa4ab797f5b7d1d25a0e827144e05ae4059e3fe492ce06970ea62"
+            },
+            {
+              "name": "portfolio-v8.bruce",
+              "sha256": "533fe272fe7714eeab54e932041fa53a67d599cbfd737a7e8b6af0e6ab344085"
+            },
+            {
+              "name": "power-v1.bruce",
+              "sha256": "4f38b7d308d993887a584b49ed4d99cdfc7ec3376a07e897ffd4948b995fe4ed"
+            },
+            {
+              "name": "rational-linear-v1.bruce",
+              "sha256": "b818193ce0dbc6e232e6e18d2242d6c08aad9decdced9ca034a57681228fbc59"
+            },
+            {
+              "name": "rational-quadratic-v1.bruce",
+              "sha256": "133567d5495723a3eed1504e7cb6ab29f7f23798c6ce02c3b62f7bc2824865a6"
+            },
+            {
+              "name": "research-v1.bruce",
+              "sha256": "c22eb8a153f1596ba4ee0cac31e135a3f9153aebb9921c5771d4d62666e0f342"
+            }
+          ]
+        },
+        "package": {
+          "version": "0.93.0",
+          "build_info": {
+            "contract": "bruce-build-info-v1",
+            "version": "0.93.0",
+            "system": "Linux",
+            "processor": "x86_64",
+            "compiler": "GNU 14.2.0",
+            "cxx_standard": 20,
+            "build_type": "Debug",
+            "cmake": "3.31.6",
+            "openssl": "3.5.7",
+            "gmpxx": "6.3.0",
+            "source_index_sha256": "4ba9ff6585f7d907c72cedaf8fd3e80dcafc6adc2f3ab7b8a31c2284ed55d1ff"
+          },
+          "binary_sha256": "ca076086fd07a224eb67e0cb4ee48d2d91cb2f1f280f13f2e7a874248328ef80",
+          "research_export_replay": true,
+          "budget_failure_no_export": true,
+          "historical_fixtures": [
+            {
+              "name": "adaptive-v1.bruce",
+              "sha256": "14cbb1ec6f3c442dd5ee8598c91695d15ba27c6f025f688c6c64df8ff4724570"
+            },
+            {
+              "name": "compatibility-v1.bruce",
+              "sha256": "fee573f3318a164150a011ae85ccfa11b3efaa42a13461299d95eb33375dc25d"
+            },
+            {
+              "name": "core-036-grid-v1.bruce",
+              "sha256": "08b33ba2d1a393142d5c6df95de06363bdafe9fadd3b4ae457098202da7a430d"
+            },
+            {
+              "name": "core-038-grid-research-v1.bruce",
+              "sha256": "3969c00c106bfd93de1aed1ced1f4d2181b81f18bdcd78c24c893ec4b7088c0d"
+            },
+            {
+              "name": "exact-v1.bruce",
+              "sha256": "b7f6db4fb58042150d877d1e4384fa38f590d257b0681cac9979c452aa57b6fa"
+            },
+            {
+              "name": "expression-v1.bruce",
+              "sha256": "a7c48b4a8c4a4e6bfb8b18e671499302705a2f18261e6d6ce0b189238b9bc3b6"
+            },
+            {
+              "name": "expression-v2.bruce",
+              "sha256": "1d1bc04127d0527bfc8bb1f154afa0e1c35a2ee12ffa1249ca40ef163efb842f"
+            },
+            {
+              "name": "expression-v3.bruce",
+              "sha256": "08b177e59c79b4b6c24b1470b707c0f82e7e74943d4e07d1889b1ded16c516d9"
+            },
+            {
+              "name": "expression-v4.bruce",
+              "sha256": "2536f7f8cd273b38978da14bcbc5b6bbd3590ce917144a27c8f84800eed17c5c"
+            },
+            {
+              "name": "expression-v5.bruce",
+              "sha256": "27a9348d5bf1a323a17b96926a2ca2d9481c0c9ab3e428a791eee95f7fdb2479"
+            },
+            {
+              "name": "expression-v6.bruce",
+              "sha256": "62ddc2282285f12080ad67f1e493b72d3e04fc8e316b1df3b732c114d7304bec"
+            },
+            {
+              "name": "polynomial-v1.bruce",
+              "sha256": "6116782e6076dacbcdd552ede4d1f9b34635245ce2e9ca0fcfd7a314cd55c6a5"
+            },
+            {
+              "name": "portfolio-v1.bruce",
+              "sha256": "3a89c5b2d8a98b158cc282c63166e184d424685b46ea9e1d667286c533b3f1d7"
+            },
+            {
+              "name": "portfolio-v10.bruce",
+              "sha256": "55d1da80d776baa28dc1494ca4f47016301a79f5605a59c66c75e738b45c952a"
+            },
+            {
+              "name": "portfolio-v13.bruce",
+              "sha256": "dbb20011bf91c4f58f606fa35360e67c390a345a0dcbc79385a8aa70affdc0fe"
+            },
+            {
+              "name": "portfolio-v16.bruce",
+              "sha256": "f7b1665d4bd284b6518d9d51c1ee4e52802dbbb386339087346bf799bdc991b6"
+            },
+            {
+              "name": "portfolio-v19.bruce",
+              "sha256": "4b9e7259d0fe9fa03761c11f9f7d09b34c0db9487ab6b5c3659f821cc6fb3e01"
+            },
+            {
+              "name": "portfolio-v2.bruce",
+              "sha256": "f4359a0d22e03d8328ead7649bed888d94cf1dc80bd808bd74fe827af1fb49b9"
+            },
+            {
+              "name": "portfolio-v3.bruce",
+              "sha256": "870d5799089e38e2e4ef5a7410082ed79962f9d8549d66b68fd6a8dc2df9196b"
+            },
+            {
+              "name": "portfolio-v4.bruce",
+              "sha256": "52400686579087b878746645a1705471233f7cfe8b683ddd48aba658c2fe257c"
+            },
+            {
+              "name": "portfolio-v6.bruce",
+              "sha256": "391af488fdbfa4ab797f5b7d1d25a0e827144e05ae4059e3fe492ce06970ea62"
+            },
+            {
+              "name": "portfolio-v8.bruce",
+              "sha256": "533fe272fe7714eeab54e932041fa53a67d599cbfd737a7e8b6af0e6ab344085"
+            },
+            {
+              "name": "power-v1.bruce",
+              "sha256": "4f38b7d308d993887a584b49ed4d99cdfc7ec3376a07e897ffd4948b995fe4ed"
+            },
+            {
+              "name": "rational-linear-v1.bruce",
+              "sha256": "b818193ce0dbc6e232e6e18d2242d6c08aad9decdced9ca034a57681228fbc59"
+            },
+            {
+              "name": "rational-quadratic-v1.bruce",
+              "sha256": "133567d5495723a3eed1504e7cb6ab29f7f23798c6ce02c3b62f7bc2824865a6"
+            },
+            {
+              "name": "research-v1.bruce",
+              "sha256": "c22eb8a153f1596ba4ee0cac31e135a3f9153aebb9921c5771d4d62666e0f342"
+            }
+          ],
+          "archive_sha256": "73bdc9af375e3629e7e8b177a971ffa902ed3ac2244eabc04b7779ea79a5fdd8",
+          "archive_name": "bruce-core-0.93.0-Linux-x86_64.tar.gz"
+        }
+      },
+      "cli_reference": {
+        "exit_code": 0,
+        "examples": 104,
+        "documented_options": 67,
+        "diagnostics": 366,
+        "links": "OK"
+      }
+    },
+    "remote": {
+      "ctest": {
+        "tests": 117,
+        "failed": 0,
+        "skipped": 0,
+        "suite_seconds": 97.0,
+        "timestamp_as_reported": "2026-09-26T00:37:29",
+        "cases": [
+          {
+            "name": "resume_copy_control",
+            "seconds": 0.0561504,
+            "status": "run"
+          },
+          {
+            "name": "session_work_budget_contracts",
+            "seconds": 0.193158,
+            "status": "run"
+          },
+          {
+            "name": "rule_history_contracts",
+            "seconds": 0.412887,
+            "status": "run"
+          },
+          {
+            "name": "rule_proposal_contracts",
+            "seconds": 0.0106786,
+            "status": "run"
+          },
+          {
+            "name": "compatibility_transfer_workflows",
+            "seconds": 0.18462,
+            "status": "run"
+          },
+          {
+            "name": "experience_transfer_workflows",
+            "seconds": 0.197338,
+            "status": "run"
+          },
+          {
+            "name": "rule_store_workflows",
+            "seconds": 0.281495,
+            "status": "run"
+          },
+          {
+            "name": "rule_review_workflows",
+            "seconds": 0.124766,
+            "status": "run"
+          },
+          {
+            "name": "result_assessment_workflows",
+            "seconds": 1.6785,
+            "status": "run"
+          },
+          {
+            "name": "benchmark_runner_contracts",
+            "seconds": 0.184244,
+            "status": "run"
+          },
+          {
+            "name": "resume_copy_workflows",
+            "seconds": 0.131947,
+            "status": "run"
+          },
+          {
+            "name": "serialized_byte_budget_workflows",
+            "seconds": 0.0936434,
+            "status": "run"
+          },
+          {
+            "name": "cli_version",
+            "seconds": 0.0483005,
+            "status": "run"
+          },
+          {
+            "name": "installed_cli_workflows",
+            "seconds": 0.831024,
+            "status": "run"
+          },
+          {
+            "name": "session_work_budget_workflows",
+            "seconds": 0.152403,
+            "status": "run"
+          },
+          {
+            "name": "grid_partial_workflows",
+            "seconds": 0.421312,
+            "status": "run"
+          },
+          {
+            "name": "grid_budget_workflows",
+            "seconds": 0.314185,
+            "status": "run"
+          },
+          {
+            "name": "grid_axis_workflows",
+            "seconds": 0.570193,
+            "status": "run"
+          },
+          {
+            "name": "grid_research_contracts",
+            "seconds": 0.140368,
+            "status": "run"
+          },
+          {
+            "name": "grid_research_workflows",
+            "seconds": 0.467204,
+            "status": "run"
+          },
+          {
+            "name": "grid_cache_contracts",
+            "seconds": 0.161891,
+            "status": "run"
+          },
+          {
+            "name": "grid_cache_workflows",
+            "seconds": 0.400103,
+            "status": "run"
+          },
+          {
+            "name": "grid_contracts",
+            "seconds": 0.0605269,
+            "status": "run"
+          },
+          {
+            "name": "grid_replay_workflows",
+            "seconds": 3.14715,
+            "status": "run"
+          },
+          {
+            "name": "witness_portfolio_contracts",
+            "seconds": 13.1944,
+            "status": "run"
+          },
+          {
+            "name": "witness_portfolio_workflows",
+            "seconds": 7.53683,
+            "status": "run"
+          },
+          {
+            "name": "witness_expression_contracts",
+            "seconds": 9.50057,
+            "status": "run"
+          },
+          {
+            "name": "witness_expression_workflows",
+            "seconds": 3.18,
+            "status": "run"
+          },
+          {
+            "name": "rational_witness_contracts",
+            "seconds": 1.076,
+            "status": "run"
+          },
+          {
+            "name": "rational_witness_workflows",
+            "seconds": 0.271399,
+            "status": "run"
+          },
+          {
+            "name": "domain_cache_portfolio_contracts",
+            "seconds": 7.18966,
+            "status": "run"
+          },
+          {
+            "name": "domain_cache_contracts",
+            "seconds": 0.62949,
+            "status": "run"
+          },
+          {
+            "name": "q_portfolio_contracts",
+            "seconds": 13.3521,
+            "status": "run"
+          },
+          {
+            "name": "domain_cache_portfolio_workflows",
+            "seconds": 7.77722,
+            "status": "run"
+          },
+          {
+            "name": "domain_cache_workflows",
+            "seconds": 1.88768,
+            "status": "run"
+          },
+          {
+            "name": "modular_expression_workflows",
+            "seconds": 2.48131,
+            "status": "run"
+          },
+          {
+            "name": "modular_portfolio_workflows",
+            "seconds": 6.03326,
+            "status": "run"
+          },
+          {
+            "name": "q_portfolio_workflows",
+            "seconds": 6.0523,
+            "status": "run"
+          },
+          {
+            "name": "q_expression_contracts",
+            "seconds": 1.01987,
+            "status": "run"
+          },
+          {
+            "name": "q_expression_workflows",
+            "seconds": 1.76174,
+            "status": "run"
+          },
+          {
+            "name": "fraction_comparison_contracts",
+            "seconds": 0.958553,
+            "status": "run"
+          },
+          {
+            "name": "modular_comparison_workflows",
+            "seconds": 0.901738,
+            "status": "run"
+          },
+          {
+            "name": "fraction_comparison_workflows",
+            "seconds": 1.12177,
+            "status": "run"
+          },
+          {
+            "name": "core_contracts",
+            "seconds": 0.00863078,
+            "status": "run"
+          },
+          {
+            "name": "cli_workflows",
+            "seconds": 0.327511,
+            "status": "run"
+          },
+          {
+            "name": "compatibility_workflows",
+            "seconds": 0.3971,
+            "status": "run"
+          },
+          {
+            "name": "compatibility_contracts",
+            "seconds": 0.0105009,
+            "status": "run"
+          },
+          {
+            "name": "exact_domain_workflows",
+            "seconds": 0.609004,
+            "status": "run"
+          },
+          {
+            "name": "exact_domain_contracts",
+            "seconds": 0.00923085,
+            "status": "run"
+          },
+          {
+            "name": "power_research_workflows",
+            "seconds": 0.315221,
+            "status": "run"
+          },
+          {
+            "name": "adaptive_research_workflows",
+            "seconds": 0.495955,
+            "status": "run"
+          },
+          {
+            "name": "polynomial_research_workflows",
+            "seconds": 0.290214,
+            "status": "run"
+          },
+          {
+            "name": "polynomial_contracts",
+            "seconds": 0.00825187,
+            "status": "run"
+          },
+          {
+            "name": "portfolio_workflows",
+            "seconds": 0.274731,
+            "status": "run"
+          },
+          {
+            "name": "portfolio_contracts",
+            "seconds": 0.0150471,
+            "status": "run"
+          },
+          {
+            "name": "rational_linear_workflows",
+            "seconds": 0.308066,
+            "status": "run"
+          },
+          {
+            "name": "rational_linear_contracts",
+            "seconds": 0.0539848,
+            "status": "run"
+          },
+          {
+            "name": "rational_portfolio_workflows",
+            "seconds": 0.312695,
+            "status": "run"
+          },
+          {
+            "name": "rational_portfolio_contracts",
+            "seconds": 0.21784,
+            "status": "run"
+          },
+          {
+            "name": "adaptive_portfolio_workflows",
+            "seconds": 0.291789,
+            "status": "run"
+          },
+          {
+            "name": "adaptive_portfolio_contracts",
+            "seconds": 0.40568,
+            "status": "run"
+          },
+          {
+            "name": "experience_workflows",
+            "seconds": 0.500852,
+            "status": "run"
+          },
+          {
+            "name": "experience_header_boundary",
+            "seconds": 0.00384851,
+            "status": "run"
+          },
+          {
+            "name": "experience_contracts",
+            "seconds": 0.5721,
+            "status": "run"
+          },
+          {
+            "name": "rational_quadratic_workflows",
+            "seconds": 0.397675,
+            "status": "run"
+          },
+          {
+            "name": "rational_quadratic_contracts",
+            "seconds": 0.292837,
+            "status": "run"
+          },
+          {
+            "name": "quadratic_portfolio_workflows",
+            "seconds": 0.399481,
+            "status": "run"
+          },
+          {
+            "name": "quadratic_portfolio_contracts",
+            "seconds": 6.50745,
+            "status": "run"
+          },
+          {
+            "name": "expression_workflows",
+            "seconds": 0.386021,
+            "status": "run"
+          },
+          {
+            "name": "expression_contracts",
+            "seconds": 0.169403,
+            "status": "run"
+          },
+          {
+            "name": "expression_equivalence_workflows",
+            "seconds": 0.448379,
+            "status": "run"
+          },
+          {
+            "name": "expression_equivalence_contracts",
+            "seconds": 0.55687,
+            "status": "run"
+          },
+          {
+            "name": "expression_portfolio_workflows",
+            "seconds": 0.40366,
+            "status": "run"
+          },
+          {
+            "name": "expression_portfolio_contracts",
+            "seconds": 2.56628,
+            "status": "run"
+          },
+          {
+            "name": "five_experience_workflows",
+            "seconds": 2.83448,
+            "status": "run"
+          },
+          {
+            "name": "five_experience_contracts",
+            "seconds": 5.76007,
+            "status": "run"
+          },
+          {
+            "name": "indexed_expression_workflows",
+            "seconds": 0.632366,
+            "status": "run"
+          },
+          {
+            "name": "indexed_expression_contracts",
+            "seconds": 0.441668,
+            "status": "run"
+          },
+          {
+            "name": "indexed_portfolio_workflows",
+            "seconds": 1.82428,
+            "status": "run"
+          },
+          {
+            "name": "indexed_portfolio_contracts",
+            "seconds": 7.2126,
+            "status": "run"
+          },
+          {
+            "name": "expression_operators_workflows",
+            "seconds": 0.517163,
+            "status": "run"
+          },
+          {
+            "name": "expression_operators_contracts",
+            "seconds": 0.331368,
+            "status": "run"
+          },
+          {
+            "name": "portfolio_operators_workflows",
+            "seconds": 1.25779,
+            "status": "run"
+          },
+          {
+            "name": "portfolio_operators_contracts",
+            "seconds": 10.5716,
+            "status": "run"
+          },
+          {
+            "name": "portfolio_powers_contracts",
+            "seconds": 11.5431,
+            "status": "run"
+          },
+          {
+            "name": "portfolio_powers_workflows",
+            "seconds": 0.986371,
+            "status": "run"
+          },
+          {
+            "name": "cached_expression_contracts",
+            "seconds": 0.658235,
+            "status": "run"
+          },
+          {
+            "name": "cached_portfolio_contracts",
+            "seconds": 28.8529,
+            "status": "run"
+          },
+          {
+            "name": "cached_portfolio_workflows",
+            "seconds": 1.8399,
+            "status": "run"
+          },
+          {
+            "name": "cached_expression_workflows",
+            "seconds": 0.67938,
+            "status": "run"
+          },
+          {
+            "name": "expression_powers_workflows",
+            "seconds": 0.487933,
+            "status": "run"
+          },
+          {
+            "name": "expression_powers_contracts",
+            "seconds": 0.204583,
+            "status": "run"
+          },
+          {
+            "name": "grid_resume_workflows",
+            "seconds": 0.265473,
+            "status": "run"
+          },
+          {
+            "name": "grid_experience_workflows",
+            "seconds": 0.493759,
+            "status": "run"
+          },
+          {
+            "name": "experience_replace_workflows",
+            "seconds": 0.491833,
+            "status": "run"
+          },
+          {
+            "name": "grid_experience_budget_workflows",
+            "seconds": 0.400043,
+            "status": "run"
+          },
+          {
+            "name": "json_encoding_isolation",
+            "seconds": 0.00309035,
+            "status": "run"
+          },
+          {
+            "name": "research_gate_isolation",
+            "seconds": 0.00386944,
+            "status": "run"
+          },
+          {
+            "name": "research_contract_matrix",
+            "seconds": 0.00368915,
+            "status": "run"
+          },
+          {
+            "name": "research_contract_catalog",
+            "seconds": 0.092114,
+            "status": "run"
+          },
+          {
+            "name": "application_task_adapters",
+            "seconds": 0.0626891,
+            "status": "run"
+          },
+          {
+            "name": "application_task_catalog",
+            "seconds": 0.105381,
+            "status": "run"
+          },
+          {
+            "name": "run_inspection_workflows",
+            "seconds": 0.823304,
+            "status": "run"
+          },
+          {
+            "name": "execution_session_states",
+            "seconds": 0.407488,
+            "status": "run"
+          },
+          {
+            "name": "execution_session_workflows",
+            "seconds": 0.619343,
+            "status": "run"
+          },
+          {
+            "name": "grid_replay_control",
+            "seconds": 0.0326351,
+            "status": "run"
+          },
+          {
+            "name": "research_replay_control",
+            "seconds": 0.403878,
+            "status": "run"
+          },
+          {
+            "name": "grid_research_replay_control",
+            "seconds": 0.289058,
+            "status": "run"
+          },
+          {
+            "name": "execution_resume_import_control",
+            "seconds": 0.025895,
+            "status": "run"
+          },
+          {
+            "name": "execution_compatibility_source_control",
+            "seconds": 0.103515,
+            "status": "run"
+          },
+          {
+            "name": "execution_grid_source_control",
+            "seconds": 0.0266888,
+            "status": "run"
+          },
+          {
+            "name": "execution_experience_control",
+            "seconds": 0.161323,
+            "status": "run"
+          },
+          {
+            "name": "grid_serialization_control",
+            "seconds": 0.012335,
+            "status": "run"
+          },
+          {
+            "name": "serialization_control",
+            "seconds": 0.0279163,
+            "status": "run"
+          },
+          {
+            "name": "experience_replay_control",
+            "seconds": 0.127785,
+            "status": "run"
+          },
+          {
+            "name": "compatibility_replay_control",
+            "seconds": 0.0243292,
+            "status": "run"
+          },
+          {
+            "name": "comparison_replay_control",
+            "seconds": 0.399945,
+            "status": "run"
+          }
+        ]
+      },
+      "installation_and_package": {
+        "contract": "bruce-install-audit-v1",
+        "installation": {
+          "version": "0.93.0",
+          "build_info": {
+            "contract": "bruce-build-info-v1",
+            "version": "0.93.0",
+            "system": "Linux",
+            "processor": "x86_64",
+            "compiler": "GNU 14.2.0",
+            "cxx_standard": 20,
+            "build_type": "Release",
+            "cmake": "3.31.6",
+            "openssl": "3.5.7",
+            "gmpxx": "6.3.0",
+            "source_index_sha256": "9b360110875915ddd5f063a8ff486488acafcc7316db965ac474270043005a21"
+          },
+          "binary_sha256": "6c6e1009b6f4a264a3bec68460f1dc7d2cd19c3cfead46613be006cc461eff9a",
+          "research_export_replay": true,
+          "budget_failure_no_export": true,
+          "historical_fixtures": [
+            {
+              "name": "adaptive-v1.bruce",
+              "sha256": "14cbb1ec6f3c442dd5ee8598c91695d15ba27c6f025f688c6c64df8ff4724570"
+            },
+            {
+              "name": "compatibility-v1.bruce",
+              "sha256": "fee573f3318a164150a011ae85ccfa11b3efaa42a13461299d95eb33375dc25d"
+            },
+            {
+              "name": "core-036-grid-v1.bruce",
+              "sha256": "08b33ba2d1a393142d5c6df95de06363bdafe9fadd3b4ae457098202da7a430d"
+            },
+            {
+              "name": "core-038-grid-research-v1.bruce",
+              "sha256": "3969c00c106bfd93de1aed1ced1f4d2181b81f18bdcd78c24c893ec4b7088c0d"
+            },
+            {
+              "name": "exact-v1.bruce",
+              "sha256": "b7f6db4fb58042150d877d1e4384fa38f590d257b0681cac9979c452aa57b6fa"
+            },
+            {
+              "name": "expression-v1.bruce",
+              "sha256": "a7c48b4a8c4a4e6bfb8b18e671499302705a2f18261e6d6ce0b189238b9bc3b6"
+            },
+            {
+              "name": "expression-v2.bruce",
+              "sha256": "1d1bc04127d0527bfc8bb1f154afa0e1c35a2ee12ffa1249ca40ef163efb842f"
+            },
+            {
+              "name": "expression-v3.bruce",
+              "sha256": "08b177e59c79b4b6c24b1470b707c0f82e7e74943d4e07d1889b1ded16c516d9"
+            },
+            {
+              "name": "expression-v4.bruce",
+              "sha256": "2536f7f8cd273b38978da14bcbc5b6bbd3590ce917144a27c8f84800eed17c5c"
+            },
+            {
+              "name": "expression-v5.bruce",
+              "sha256": "27a9348d5bf1a323a17b96926a2ca2d9481c0c9ab3e428a791eee95f7fdb2479"
+            },
+            {
+              "name": "expression-v6.bruce",
+              "sha256": "62ddc2282285f12080ad67f1e493b72d3e04fc8e316b1df3b732c114d7304bec"
+            },
+            {
+              "name": "polynomial-v1.bruce",
+              "sha256": "6116782e6076dacbcdd552ede4d1f9b34635245ce2e9ca0fcfd7a314cd55c6a5"
+            },
+            {
+              "name": "portfolio-v1.bruce",
+              "sha256": "3a89c5b2d8a98b158cc282c63166e184d424685b46ea9e1d667286c533b3f1d7"
+            },
+            {
+              "name": "portfolio-v10.bruce",
+              "sha256": "55d1da80d776baa28dc1494ca4f47016301a79f5605a59c66c75e738b45c952a"
+            },
+            {
+              "name": "portfolio-v13.bruce",
+              "sha256": "dbb20011bf91c4f58f606fa35360e67c390a345a0dcbc79385a8aa70affdc0fe"
+            },
+            {
+              "name": "portfolio-v16.bruce",
+              "sha256": "f7b1665d4bd284b6518d9d51c1ee4e52802dbbb386339087346bf799bdc991b6"
+            },
+            {
+              "name": "portfolio-v19.bruce",
+              "sha256": "4b9e7259d0fe9fa03761c11f9f7d09b34c0db9487ab6b5c3659f821cc6fb3e01"
+            },
+            {
+              "name": "portfolio-v2.bruce",
+              "sha256": "f4359a0d22e03d8328ead7649bed888d94cf1dc80bd808bd74fe827af1fb49b9"
+            },
+            {
+              "name": "portfolio-v3.bruce",
+              "sha256": "870d5799089e38e2e4ef5a7410082ed79962f9d8549d66b68fd6a8dc2df9196b"
+            },
+            {
+              "name": "portfolio-v4.bruce",
+              "sha256": "52400686579087b878746645a1705471233f7cfe8b683ddd48aba658c2fe257c"
+            },
+            {
+              "name": "portfolio-v6.bruce",
+              "sha256": "391af488fdbfa4ab797f5b7d1d25a0e827144e05ae4059e3fe492ce06970ea62"
+            },
+            {
+              "name": "portfolio-v8.bruce",
+              "sha256": "533fe272fe7714eeab54e932041fa53a67d599cbfd737a7e8b6af0e6ab344085"
+            },
+            {
+              "name": "power-v1.bruce",
+              "sha256": "4f38b7d308d993887a584b49ed4d99cdfc7ec3376a07e897ffd4948b995fe4ed"
+            },
+            {
+              "name": "rational-linear-v1.bruce",
+              "sha256": "b818193ce0dbc6e232e6e18d2242d6c08aad9decdced9ca034a57681228fbc59"
+            },
+            {
+              "name": "rational-quadratic-v1.bruce",
+              "sha256": "133567d5495723a3eed1504e7cb6ab29f7f23798c6ce02c3b62f7bc2824865a6"
+            },
+            {
+              "name": "research-v1.bruce",
+              "sha256": "c22eb8a153f1596ba4ee0cac31e135a3f9153aebb9921c5771d4d62666e0f342"
+            }
+          ]
+        },
+        "package": {
+          "version": "0.93.0",
+          "build_info": {
+            "contract": "bruce-build-info-v1",
+            "version": "0.93.0",
+            "system": "Linux",
+            "processor": "x86_64",
+            "compiler": "GNU 14.2.0",
+            "cxx_standard": 20,
+            "build_type": "Release",
+            "cmake": "3.31.6",
+            "openssl": "3.5.7",
+            "gmpxx": "6.3.0",
+            "source_index_sha256": "9b360110875915ddd5f063a8ff486488acafcc7316db965ac474270043005a21"
+          },
+          "binary_sha256": "6c6e1009b6f4a264a3bec68460f1dc7d2cd19c3cfead46613be006cc461eff9a",
+          "research_export_replay": true,
+          "budget_failure_no_export": true,
+          "historical_fixtures": [
+            {
+              "name": "adaptive-v1.bruce",
+              "sha256": "14cbb1ec6f3c442dd5ee8598c91695d15ba27c6f025f688c6c64df8ff4724570"
+            },
+            {
+              "name": "compatibility-v1.bruce",
+              "sha256": "fee573f3318a164150a011ae85ccfa11b3efaa42a13461299d95eb33375dc25d"
+            },
+            {
+              "name": "core-036-grid-v1.bruce",
+              "sha256": "08b33ba2d1a393142d5c6df95de06363bdafe9fadd3b4ae457098202da7a430d"
+            },
+            {
+              "name": "core-038-grid-research-v1.bruce",
+              "sha256": "3969c00c106bfd93de1aed1ced1f4d2181b81f18bdcd78c24c893ec4b7088c0d"
+            },
+            {
+              "name": "exact-v1.bruce",
+              "sha256": "b7f6db4fb58042150d877d1e4384fa38f590d257b0681cac9979c452aa57b6fa"
+            },
+            {
+              "name": "expression-v1.bruce",
+              "sha256": "a7c48b4a8c4a4e6bfb8b18e671499302705a2f18261e6d6ce0b189238b9bc3b6"
+            },
+            {
+              "name": "expression-v2.bruce",
+              "sha256": "1d1bc04127d0527bfc8bb1f154afa0e1c35a2ee12ffa1249ca40ef163efb842f"
+            },
+            {
+              "name": "expression-v3.bruce",
+              "sha256": "08b177e59c79b4b6c24b1470b707c0f82e7e74943d4e07d1889b1ded16c516d9"
+            },
+            {
+              "name": "expression-v4.bruce",
+              "sha256": "2536f7f8cd273b38978da14bcbc5b6bbd3590ce917144a27c8f84800eed17c5c"
+            },
+            {
+              "name": "expression-v5.bruce",
+              "sha256": "27a9348d5bf1a323a17b96926a2ca2d9481c0c9ab3e428a791eee95f7fdb2479"
+            },
+            {
+              "name": "expression-v6.bruce",
+              "sha256": "62ddc2282285f12080ad67f1e493b72d3e04fc8e316b1df3b732c114d7304bec"
+            },
+            {
+              "name": "polynomial-v1.bruce",
+              "sha256": "6116782e6076dacbcdd552ede4d1f9b34635245ce2e9ca0fcfd7a314cd55c6a5"
+            },
+            {
+              "name": "portfolio-v1.bruce",
+              "sha256": "3a89c5b2d8a98b158cc282c63166e184d424685b46ea9e1d667286c533b3f1d7"
+            },
+            {
+              "name": "portfolio-v10.bruce",
+              "sha256": "55d1da80d776baa28dc1494ca4f47016301a79f5605a59c66c75e738b45c952a"
+            },
+            {
+              "name": "portfolio-v13.bruce",
+              "sha256": "dbb20011bf91c4f58f606fa35360e67c390a345a0dcbc79385a8aa70affdc0fe"
+            },
+            {
+              "name": "portfolio-v16.bruce",
+              "sha256": "f7b1665d4bd284b6518d9d51c1ee4e52802dbbb386339087346bf799bdc991b6"
+            },
+            {
+              "name": "portfolio-v19.bruce",
+              "sha256": "4b9e7259d0fe9fa03761c11f9f7d09b34c0db9487ab6b5c3659f821cc6fb3e01"
+            },
+            {
+              "name": "portfolio-v2.bruce",
+              "sha256": "f4359a0d22e03d8328ead7649bed888d94cf1dc80bd808bd74fe827af1fb49b9"
+            },
+            {
+              "name": "portfolio-v3.bruce",
+              "sha256": "870d5799089e38e2e4ef5a7410082ed79962f9d8549d66b68fd6a8dc2df9196b"
+            },
+            {
+              "name": "portfolio-v4.bruce",
+              "sha256": "52400686579087b878746645a1705471233f7cfe8b683ddd48aba658c2fe257c"
+            },
+            {
+              "name": "portfolio-v6.bruce",
+              "sha256": "391af488fdbfa4ab797f5b7d1d25a0e827144e05ae4059e3fe492ce06970ea62"
+            },
+            {
+              "name": "portfolio-v8.bruce",
+              "sha256": "533fe272fe7714eeab54e932041fa53a67d599cbfd737a7e8b6af0e6ab344085"
+            },
+            {
+              "name": "power-v1.bruce",
+              "sha256": "4f38b7d308d993887a584b49ed4d99cdfc7ec3376a07e897ffd4948b995fe4ed"
+            },
+            {
+              "name": "rational-linear-v1.bruce",
+              "sha256": "b818193ce0dbc6e232e6e18d2242d6c08aad9decdced9ca034a57681228fbc59"
+            },
+            {
+              "name": "rational-quadratic-v1.bruce",
+              "sha256": "133567d5495723a3eed1504e7cb6ab29f7f23798c6ce02c3b62f7bc2824865a6"
+            },
+            {
+              "name": "research-v1.bruce",
+              "sha256": "c22eb8a153f1596ba4ee0cac31e135a3f9153aebb9921c5771d4d62666e0f342"
+            }
+          ],
+          "archive_sha256": "285bd4c66f2c56f86833401e1e1563b871e632f5a7e1bffe2506ea9bb629c08b",
+          "archive_name": "bruce-core-0.93.0-Linux-x86_64.tar.gz"
+        }
+      },
+      "cli_reference": {
+        "exit_code": 0,
+        "examples": 104,
+        "documented_options": 67,
+        "diagnostics": 366,
+        "links": "OK"
+      }
+    }
+  },
+  "source_comparison": {
+    "common_indexed_files_identical": true,
+    "local_only": [],
+    "remote_only": [
+      "tests/unit/grid_record_blocks_tests.cpp"
+    ],
+    "changed_common_files": [],
+    "note": "Additional remote file is indexed for provenance but is not an explicit CMake build or test target."
+  }
+}

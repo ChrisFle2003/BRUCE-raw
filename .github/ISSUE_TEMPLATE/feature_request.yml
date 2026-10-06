@@ -1,0 +1,33 @@
+name: Funktionsvorschlag
+description: Schlage eine klar abgegrenzte Weiterentwicklung vor.
+title: "[Vorschlag]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        BRUCE_raw trennt implementierte, belegte Funktionen strikt von Konzepten. Bitte beschreibe das Problem und einen überprüfbaren Nutzen.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Welches Problem soll gelöst werden?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Vorgeschlagene Lösung
+      description: Beschreibe gewünschtes Verhalten, Grenzen und mögliche Nachweise.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Erwogene Alternativen
+    validations:
+      required: false
+  - type: textarea
+    id: context
+    attributes:
+      label: Zusätzlicher Kontext
+    validations:
+      required: false

@@ -1,0 +1,2 @@
+#pragma once
+#define BRUCE_VERSION "@PROJECT_VERSION@"

@@ -1,0 +1,21 @@
+BRUCE_BUNDLE_V1
+1f41de1f4807071c6edc3447eb4c8bf3e01d30693a00f4b98e15830b90f1f4b7
+engine bruce-core-v1
+rule affine-integer-v1
+policy sample-evidence-v1
+minimum 0
+maximum 3
+candidates 100000
+operations 1000000
+trace 100002
+results 128
+cancel none
+training 3
+0 3
+1 5
+4 11
+holdout 2
+2 7
+10 23
+RESULT
+{"engine":"bruce-core-v1","rule_version":"affine-integer-v1","policy_version":"sample-evidence-v1","status":"VERIFIED_ON_SAMPLES","stop_reason":"Completed","general_proof":false,"learn_gate":false,"publish_gate":false,"claim_scope":"Exact checks on supplied samples within the declared integer affine family; no general proof","explanation":"Ein Kandidat passt zu Lern- und zurueckgehaltenen Pruefpaaren. Vorwaertsrechnung und Rueckpruefung stimmen ueberein. Keine allgemeine Formel bewiesen.","minimum":0,"maximum":3,"theoretical_candidates":16,"candidates_executed":16,"operations_used":46,"integer_range_rejections":0,"training_samples":3,"holdout_samples":2,"hypotheses":[{"id":11,"a":2,"b":3,"formula":"2*x+(3)","status":"VERIFIED_ON_SAMPLES"}],"trace":["START affine-integer-v1: candidates generated lazily, a then b ascending","CANDIDATE 0 a=0 b=0 training[0] contradiction","CANDIDATE 1 a=0 b=1 training[0] contradiction","CANDIDATE 2 a=0 b=2 training[0] contradiction","CANDIDATE 3 a=0 b=3 training[1] contradiction","CANDIDATE 4 a=1 b=0 training[0] contradiction","CANDIDATE 5 a=1 b=1 training[0] contradiction","CANDIDATE 6 a=1 b=2 training[0] contradiction","CANDIDATE 7 a=1 b=3 training[1] contradiction","CANDIDATE 8 a=2 b=0 training[0] contradiction","CANDIDATE 9 a=2 b=1 training[0] contradiction","CANDIDATE 10 a=2 b=2 training[0] contradiction","CANDIDATE 11 a=2 b=3 VERIFIED_ON_SAMPLES","CANDIDATE 12 a=3 b=0 training[0] contradiction","CANDIDATE 13 a=3 b=1 training[0] contradiction","CANDIDATE 14 a=3 b=2 training[0] contradiction","CANDIDATE 15 a=3 b=3 training[1] contradiction","END VERIFIED_ON_SAMPLES Completed"]}

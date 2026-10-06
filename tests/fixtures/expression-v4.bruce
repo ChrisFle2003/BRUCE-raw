@@ -1,0 +1,31 @@
+BRUCE_EXPRESSION_BUNDLE_V4
+c4b8dc829290c8555cdf9baf537309da77396221786e2660d19039a2c6b9e99a
+engine bruce-expression-v4
+rule selected-binary-v1
+policy defined-expression-samples-v4
+planner block-index-v1
+operators +*
+equivalence rational-domain-v1
+max_nodes 5
+checkpoint none
+domain rational
+max_bits 4096
+max_denominator 1
+minimum 1
+maximum 1
+candidates 100000
+operations 1000000
+trace 100002
+results 128
+trace_bytes 1048576
+cancel none
+training 4
+1 2
+2 6
+3 12
+4 20
+holdout 2
+0 0
+5 30
+RESULT
+{"engine":"bruce-expression-v4","rule_version":"selected-binary-v1","policy_version":"defined-expression-samples-v4","strategy":"expression","planner":"block-index-v1","operators":"+*","equivalence":"rational-domain-v1","domain":"rational","max_nodes":5,"minimum":"1","maximum":"1","max_denominator":1,"max_bits":4096,"status":"VERIFIED_ON_SAMPLES","stop_reason":"Completed","general_proof":false,"learn_gate":false,"publish_gate":false,"claim_scope":"Only the declared operators and bounded constants/node counts were searched; IDs are local to this grammar; sample checks are no general proof","explanation":"Eine Gruppe algebraisch gleicher Ausdruecke mit gleicher Ausschlussbedingung besteht die Samples. Herkunft bleibt erhalten; kein allgemeiner Beweis fuer die gefundene Datenbeziehung.","grammar_expressions":32,"candidates_executed":32,"operations_used":1597,"planning_operations":376,"plans_completed":1,"checkpoints":33,"trace_bytes":1461,"training_samples":4,"holdout_samples":2,"index_entries":4,"normalization_operations":485,"stored_source_hypotheses":2,"hypotheses":[{"id":11,"nodes":5,"formula":"(x+(x*x))","status":"VERIFIED_ON_SAMPLES","domain_conditions":[],"expression":[{"op":"x"},{"op":"x"},{"op":"x"},{"op":"*","left":1,"right":2},{"op":"+","left":0,"right":3}],"normal_form":{"numerator":["0","1","1"],"denominator":["1"],"excluded_polynomial":["1"],"empty_domain":false},"expression_origins":[{"id":11,"status":"VERIFIED_ON_SAMPLES","formula":"(x+(x*x))","expression":[{"op":"x"},{"op":"x"},{"op":"x"},{"op":"*","left":1,"right":2},{"op":"+","left":0,"right":3}]},{"id":21,"status":"VERIFIED_ON_SAMPLES","formula":"(x*(x+1))","expression":[{"op":"x"},{"op":"x"},{"op":"c","value":"1"},{"op":"+","left":1,"right":2},{"op":"*","left":0,"right":3}]}]}],"trace":["START selected-binary-v1: operators=+*, local grammar identities","PLAN nodes<=5 expressions=32","EXPRESSION id=0 training[0] contradiction","EXPRESSION id=1 training[0] contradiction","EXPRESSION id=2 training[1] contradiction","EXPRESSION id=3 training[1] contradiction","EXPRESSION id=4 training[1] contradiction","EXPRESSION id=5 training[0] contradiction","EXPRESSION id=6 training[0] contradiction","EXPRESSION id=7 training[0] contradiction","EXPRESSION id=8 training[0] contradiction","EXPRESSION id=9 training[0] contradiction","EXPRESSION id=10 training[0] contradiction","EXPRESSION id=11 VERIFIED_ON_SAMPLES","EXPRESSION id=12 training[1] contradiction","EXPRESSION id=13 training[1] contradiction","EXPRESSION id=14 training[0] contradiction","EXPRESSION id=15 training[0] contradiction","EXPRESSION id=16 training[0] contradiction","EXPRESSION id=17 training[1] contradiction","EXPRESSION id=18 training[1] contradiction","EXPRESSION id=19 training[1] contradiction","EXPRESSION id=20 training[1] contradiction","EXPRESSION id=21 VERIFIED_ON_SAMPLES merge_into=11","EXPRESSION id=22 training[1] contradiction","EXPRESSION id=23 training[0] contradiction","EXPRESSION id=24 training[0] contradiction","EXPRESSION id=25 training[0] contradiction","EXPRESSION id=26 training[1] contradiction","EXPRESSION id=27 training[1] contradiction","EXPRESSION id=28 training[1] contradiction","EXPRESSION id=29 training[0] contradiction","EXPRESSION id=30 training[0] contradiction","EXPRESSION id=31 training[0] contradiction","END VERIFIED_ON_SAMPLES Completed"]}

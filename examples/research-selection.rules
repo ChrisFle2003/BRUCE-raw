@@ -1,0 +1,3 @@
+BRUCE_RULES_V1
+snapshot research-preference-v1
+rule prefer_positive positive value ge 0 0 3 manual -

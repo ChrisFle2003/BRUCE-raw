@@ -1,0 +1,52 @@
+name: Fehlerbericht
+description: Melde ein reproduzierbares Problem im implementierten BRUCE-Kern.
+title: "[Fehler]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Bitte keine Sicherheitslücken, Tokens, personenbezogenen Daten oder privaten Pfade veröffentlichen. Für Sicherheitsmeldungen gilt SECURITY.md im Projektstamm.
+  - type: input
+    id: version
+    attributes:
+      label: BRUCE-Version oder Commit
+      description: Ausgabe von `bruce --version` oder ein Commit-Hash.
+      placeholder: "0.102.0"
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduktionsschritte
+      description: Kleinster vollständiger Aufruf einschließlich sicher teilbarer Eingabedaten.
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Erwartetes Verhalten
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Tatsächliches Verhalten
+      description: Bitte relevante Ausgabe und Exitcode einfügen, aber keine Geheimnisse.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Bereich
+      options:
+        - CLI
+        - Build oder Installation
+        - Tests
+        - Dokumentation
+        - Anderes
+    validations:
+      required: true

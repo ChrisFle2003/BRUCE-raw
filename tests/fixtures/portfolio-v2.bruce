@@ -1,0 +1,29 @@
+BRUCE_PORTFOLIO_BUNDLE_V2
+6a54d6de0467cbc282960962f7cbeb51091e2a3fccb074a6ae901f194a734e4a
+engine bruce-portfolio-v2
+rule domain-union-v1
+policy shared-budget-v1
+planner power-polynomial-rational-v1
+max_power 4
+max_degree 2
+checkpoint none
+domain rational
+max_bits 4096
+max_denominator 8
+minimum -8
+maximum 8
+candidates 100000
+operations 1000000
+trace 100002
+results 128
+trace_bytes 1048576
+cancel none
+training 3
+0 1
+1 1/2
+2 1/3
+holdout 2
+-2 -1
+3 1/4
+RESULT
+{"engine":"bruce-portfolio-v2","rule_version":"domain-union-v1","policy_version":"shared-budget-v1","strategy":"portfolio-rational","planner":"power-polynomial-rational-v1","domain":"rational","max_power":4,"max_degree":2,"max_bits":4096,"max_denominator":8,"minimum":"-8","maximum":"8","status":"VERIFIED_ON_SAMPLES","stop_reason":"Completed","general_proof":false,"learn_gate":false,"publish_gate":false,"claim_scope":"Union of bounded power, polynomial and rational-linear families, preserving excluded points; supplied-sample checks are no general proof","explanation":"Eine kanonische Formel besteht die angegebenen Pruefpaare. Mehrere Strategien sind keine zusaetzlichen unabhaengigen Datenbelege.","operations_used":436,"planning_operations":136,"candidates_executed":8,"stored_source_hypotheses":2,"plans_completed":8,"checkpoints":16,"trace_bytes":1128,"trace_events_used":24,"hypotheses":[{"id":7,"kind":"polynomial","degree":2,"coefficients":["1","-2/3","1/6"],"formula":"(1)+(-2/3)*x^1+(1/6)*x^2","status":"REFUTED","origins":[{"strategy":"polynomial","id":2,"status":"REFUTED"}]},{"id":3580826,"kind":"rational-linear","a":"0","b":"1","c":"1","numerator":["1","0"],"denominator":["1","1"],"excluded_x":"-1","formula":"(0*x+(1))/(x+(1)), x != -1","status":"VERIFIED_ON_SAMPLES","origins":[{"strategy":"rational-linear","id":1193608,"status":"VERIFIED_ON_SAMPLES"}]}],"strategy_runs":[{"engine":"bruce-adaptive-v1","rule_version":"power-affine-v1","policy_version":"adaptive-samples-v1","strategy":"power-affine","planner":"two-point-v1","max_power":4,"plans_completed":4,"planning_operations":68,"checkpoints":8,"domain":"rational","max_bits":4096,"max_denominator":8,"minimum":"-8","maximum":"8","status":"NO_CANDIDATE","stop_reason":"Completed","general_proof":false,"learn_gate":false,"publish_gate":false,"claim_scope":"Exact arithmetic on supplied samples in the declared bounded a*x^p+b family; no general proof","explanation":"Kein Kandidat der vollstaendig untersuchten Potenzfamilie passt zu den Lernpaaren.","raw_parameter_combinations":73984,"candidates_executed":4,"operations_used":206,"trace_bytes":520,"training_samples":3,"holdout_samples":2,"hypotheses":[],"trace":["START two-point-v1: training-only coefficient planning, power ascending","PLAN power=1 derived training[0,1] slots=57,72","CANDIDATE 7824 a=-1/2 b=1 power=1 training[2] contradiction","PLAN power=2 derived training[0,1] slots=57,72","CANDIDATE 26320 a=-1/2 b=1 power=2 training[2] contradiction","PLAN power=3 derived training[0,1] slots=57,72","CANDIDATE 44816 a=-1/2 b=1 power=3 training[2] contradiction","PLAN power=4 derived training[0,1] slots=57,72","CANDIDATE 63312 a=-1/2 b=1 power=4 training[2] contradiction","END NO_CANDIDATE Completed"]},{"engine":"bruce-polynomial-v1","rule_version":"polynomial-v1","policy_version":"polynomial-samples-v1","strategy":"polynomial","planner":"newton-v1","domain":"rational","max_degree":2,"max_bits":4096,"max_denominator":8,"minimum":"-8","maximum":"8","status":"REFUTED","stop_reason":"Completed","general_proof":false,"learn_gate":false,"publish_gate":false,"claim_scope":"Bounded polynomial interpolation and independent evaluation on supplied samples; no general proof","explanation":"Der Lernkandidat scheitert an Hold-out.","candidates_executed":3,"operations_used":129,"planning_operations":27,"plans_completed":3,"checkpoints":6,"trace_bytes":330,"training_samples":3,"holdout_samples":2,"hypotheses":[{"id":2,"degree":2,"coefficients":["1","-2/3","1/6"],"formula":"(1)+(-2/3)*x^1+(1/6)*x^2","status":"REFUTED"}],"trace":["START newton-v1: ascending degree, training-only interpolation","PLAN degree=0 training[0..0] derived","CANDIDATE degree=0 training[1] contradiction","PLAN degree=1 training[0..1] derived","CANDIDATE degree=1 training[2] contradiction","PLAN degree=2 training[0..2] derived","CANDIDATE degree=2 holdout[0] contradiction REFUTED","END REFUTED Completed"]},{"engine":"bruce-rational-linear-v1","rule_version":"monic-linear-fraction-v1","policy_version":"defined-samples-v1","strategy":"rational-linear","planner":"linear-system-v1","domain":"rational","max_bits":4096,"max_denominator":8,"minimum":"-8","maximum":"8","status":"VERIFIED_ON_SAMPLES","stop_reason":"Completed","general_proof":false,"learn_gate":false,"publish_gate":false,"claim_scope":"Bounded (a*x+b)/(x+c), x!=-c; exact supplied-sample checks, no general proof","explanation":"Eine Bruchfunktion besteht Lern- und Hold-out-Pruefung mit getrennten Rechenwegen. Der ausgeschlossene Definitionspunkt bleibt erhalten; kein allgemeiner Beweis.","raw_parameter_combinations":2515456,"candidates_executed":1,"operations_used":101,"planning_operations":41,"plans_completed":1,"checkpoints":2,"trace_bytes":170,"training_samples":3,"holdout_samples":2,"hypotheses":[{"id":1193608,"a":"0","b":"1","c":"1","numerator":["1","0"],"denominator":["1","1"],"excluded_x":"-1","formula":"(0*x+(1))/(x+(1)), x != -1","status":"VERIFIED_ON_SAMPLES"}],"trace":["START linear-system-v1: training-only equations, explicit excluded pole","PLAN rank=3 rows=3 derived","CANDIDATE id=1193608 VERIFIED_ON_SAMPLES","END VERIFIED_ON_SAMPLES Completed"]}],"trace":["START power-polynomial-rational-v1: shared budgets, domain-preserving union","END VERIFIED_ON_SAMPLES Completed"]}
