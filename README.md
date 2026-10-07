@@ -133,3 +133,5 @@ Dokumentationsregeln und den Umgang mit generierten CLI-Artefakten erläutert
 Lokale Ausgaben gehören nach `runs/`; Build-Verzeichnisse und lokale
 Arbeitsbäume bleiben ignoriert. Kleine Benchmark-Zusammenfassungen sind unter
 `benchmarks/` versioniert, Rohdaten bleiben lokal.
+
+( fortsetzung folgt ( Bruce-Teil 001 ))
