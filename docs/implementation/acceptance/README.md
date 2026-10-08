@@ -1,8 +1,9 @@
-# Abnahmebelege
+# Acceptance evidence
 
-Diese Sammlung enthält datierte, versionsbezogene Abnahmen und maschinenlesbare
-Laufprotokolle. Sie sind historische Evidenz für genau den benannten Stand und
-ersetzen keine frische Prüfung des aktuellen Checkouts.
+This collection contains dated, version-specific acceptances and machine-readable
+run logs. They are historical evidence for exactly the named state and do not
+replace a fresh check of the current checkout.
 
-Für den gegenwärtigen Kern gelten Build und CTest gemäß [Root-README](../../../README.md)
-sowie die CI-Konfiguration als reproduzierbarer Prüfpfad.
+For the current core, the build and CTest path in the
+[root README](../../../README.md), together with CI configuration, is the
+reproducible verification path.
