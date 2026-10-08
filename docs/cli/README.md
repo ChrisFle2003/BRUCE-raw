@@ -1,33 +1,38 @@
-# BRUCE Core 0.102.0 – CLI-Handbuch
+# BRUCE Core 0.102.0 – CLI manual
 
-Stand: 04. Oktober 2026. Diese Referenz beschreibt die implementierte Linux-CLI aus `apps/bruce_cli.cpp`, `apps/nanocell_cli.hpp`, `apps/rule_review.hpp` und ihren aufgerufenen Parsern und Ausführern. Architekturentwürfe und geplante Funktionen sind keine zugesicherten CLI-Funktionen. Rechteinhaber: Christopher Flegel.
+Current as of 4 October 2026. This reference describes the implemented Linux
+CLI in `apps/bruce_cli.cpp`, `apps/nanocell_cli.hpp`, and
+`apps/rule_review.hpp`, together with the parsers and executors they invoke.
+Architecture designs and planned capabilities are not guaranteed CLI features.
+Rights holder: Christopher Flegel.
 
-## Inhalt
+## Contents
 
-1. [Installation, Aufruf und Konventionen](#installation-und-start)
-2. [Alle Befehle, Optionen, Standardwerte und Grenzen](commands.md)
-3. [Eingabedateien, Zahlen und Exporte](formats.md)
-4. [JSON-Ergebnisse, Budgets, Abbruch und Fehler](results-and-control.md)
-5. [Ausführbares Tutorial](tutorial.sh)
-6. [Vollständiger Optionsindex und Diagnosekatalog](source-index.md)
-7. [Gemessene Beispielaufrufe mit vollständigen JSON-Ausgaben](examples.json)
-8. [Validierungsnachweis](validation.md)
-9. [Benchmark-Suite V1: Messverfahren und Profile](benchmark.md)
-10. [Steuerung im Überblick und durchgängiger Abnahmeablauf](control-overview.md)
-11. [Gemeinsame Ergebnisbewertung](../implementation/153-result-assessment-usage.md)
-12. [Zulassungsgründe und Regelvertrag](../implementation/154-research-gate-reasons-usage.md)
-13. [Zulassung eines konkreten Laufs prüfen](../implementation/155-run-gates-usage.md)
-14. [Lokale Regelprüfung](rule-review.md)
-15. [Aktive Regeln und Entscheidungsjournal](active-rules.md)
-16. [Explizite Übergabe: Forschung → Erfahrung](experience-transfer.md)
-17. [Explizite Übergabe: Forschung → Z-Auswahl](compatibility-transfer.md)
-18. [Gemeinsame Budget- und Abbruchsteuerung der Übergaben](transfer-control.md)
+1. [Installation, invocation, and conventions](#installation-and-startup)
+2. [Integrated CLI reference: overview, claim scope, and audit](CLI_REFERENCE.md)
+3. [All commands, options, defaults, and limits](commands.md)
+4. [Input files, numbers, and exports](formats.md)
+5. [JSON results, budgets, cancellation, and errors](results-and-control.md)
+6. [Executable tutorial](tutorial.sh)
+7. [Complete option index and diagnostic catalog](source-index.md)
+8. [Measured example invocations with complete JSON output](examples.json)
+9. [Validation evidence](validation.md)
+10. [Benchmark suite V1: methodology and profiles](benchmark.md)
+11. [Control overview and end-to-end acceptance workflow](control-overview.md)
+12. [Shared result assessment](../implementation/153-result-assessment-usage.md)
+13. [Admission reasons and rule contract](../implementation/154-research-gate-reasons-usage.md)
+14. [Check admission of a specific run](../implementation/155-run-gates-usage.md)
+15. [Local rule review](rule-review.md)
+16. [Active rules and decision journal](active-rules.md)
+17. [Explicit transfer: research → experience](experience-transfer.md)
+18. [Explicit transfer: research → Z selection](compatibility-transfer.md)
+19. [Shared budget and cancellation control for transfers](transfer-control.md)
+20. [Local files, write failures, and publication](local-files.md)
 
-19. [Lokale Dateien, Schreibfehler und Veröffentlichung](local-files.md)
+## Installation and startup
 
-## Installation und Start
-
-Aus dem Projektstamm, mit installiertem C++20-Compiler, CMake ab 3.20, Ninja, pkg-config und Entwicklungsbibliotheken für GMP/GMPXX und OpenSSL Crypto:
+From the project root, with a C++20 compiler, CMake 3.20 or later, Ninja,
+pkg-config, and development libraries for GMP/GMPXX and OpenSSL Crypto:
 
 ```bash
 cmake -G Ninja -S . -B build-cli -DCMAKE_BUILD_TYPE=Release
@@ -36,47 +41,107 @@ cmake --build build-cli --target bruce -j2
 ./build-cli/bruce --help
 ```
 
-Optionaler vollständiger Testlauf: `cmake --build build-cli -j2` und danach `ctest --test-dir build-cli --output-on-failure`. Python 3 ist für Tests und das Tutorial erforderlich. Auf Bruce-AI kann der vorhandene `scripts/with-host-deps.sh`-Wrapper vor den Buildbefehlen die projektspezifisch bereitgestellten Systemabhängigkeiten aktivieren; er gehört nicht zur CLI selbst.
+For the optional complete test run, execute `cmake --build build-cli -j2`,
+then `ctest --test-dir build-cli --output-on-failure`. Python 3 is required
+for tests and the tutorial. In Bruce-AI, the existing
+`scripts/with-host-deps.sh` wrapper can activate the project-provided system
+dependencies before build commands; it is not part of the CLI itself.
 
-Installation ohne Administratorrechte:
+Installation without administrator privileges:
 
 ```bash
 cmake --install build-cli --prefix "$HOME/.local"
 "$HOME/.local/bin/bruce" --version
 ```
 
-Das installierte Programm ist `bin/bruce`; unter `share/bruce` liegen Buildinformationen, Quellenprüfsummen, `LICENSE`, `NOTICE`, `DEPENDENCIES.md` und `THIRD_PARTY_NOTICES.md`. Dieses Handbuch liegt im Quellbaum unter `docs/cli`; es wird durch den bestehenden Installationsvertrag nicht automatisch mitinstalliert. Das Archiv enthält keine fremden Laufzeitbibliotheken. Details: [Abhängigkeiten](../../DEPENDENCIES.md).
+The installed program is `bin/bruce`. `share/bruce` contains build
+information, source checksums, `LICENSE`, `NOTICE`, `DEPENDENCIES.md`, and
+`THIRD_PARTY_NOTICES.md`. This manual lives under `docs/cli` in the source
+tree; the existing installation contract does not install it automatically.
+The archive contains no third-party runtime libraries. See
+[Dependencies](../../DEPENDENCIES.md) for details.
 
-Im Handbuch bedeutet `bruce` entweder das installierte Programm im Suchpfad oder den vollständigen Pfad zur gebauten Datei. In allen Beispielen kann es durch `./build/bruce` ersetzt werden.
+In this manual, `bruce` means either the installed program on the search path
+or the full path to the built file. Every example can instead use
+`./build/bruce`.
 
-## Aufrufregeln
+## Invocation rules
 
-- Ohne Argument, mit `help` oder mit `--help` erscheint Text-Hilfe. Diese globalen Hilfeformen ignorieren nachfolgende Argumente. Befehle wie `research --help` besitzen keine eigene Hilfe und melden `UnknownOption`.
-- Jede Option hat genau einen nachfolgenden Wert: `--max-bits 4096`. `--max-bits=4096`, Kurzoptionen, kombinierte Schalter und ein allgemeiner `--`-Trenner werden nicht unterstützt.
-- Optionsreihenfolge ist beliebig, Wiederholungen sind Fehler. Unbekannte Optionen werden zurückgewiesen. Optionsnamen und Werte sind groß-/kleinschreibungssensitiv.
-- Negative Werte bleiben eigene Argumente: `--min -8`. Zeichenketten mit Leerzeichen, Semikolon oder Shell-Metazeichen gehören in Anführungszeichen, z. B. `--paths '2,6;4,3'` und `--operators '+-*/^'`.
-- `rules-approve` und `rules-activate` besitzen einen verpflichtenden Terminaldialog. Die übrigen Befehle besitzen keinen interaktiven Dialog. Es gibt keine Konfigurationsdatei oder Umgebungsvariable zur Auswahl einer Strategie. Eingaben kommen aus Argumenten oder ausdrücklich genannten Dateien. `-` ist kein implementierter Standard-Eingabeplatzhalter.
-- `stdout` enthält bei erfolgreicher fachlicher Verarbeitung ein JSON-Objekt mit abschließendem Zeilenumbruch. Hilfe ist Klartext; `rules-approve` und `rules-activate` schreiben einen Klartextdialog und danach bei Erfolg JSON. Fehler stehen als JSON auf `stderr` und liefern Exitcode 2.
-- Exitcode 0 bedeutet erfolgreiche Verarbeitung. Er bedeutet weder vollständige Suche noch mathematischen Beweis. `INCOMPLETE`, `NO_CANDIDATE`, `REFUTED`, `UNDECIDED` und Mehrdeutigkeit müssen im JSON ausgewertet werden. Auch NanoCell-`NO_MATCH` und `CONTEXT_REJECTED` sind reguläre Antworten.
-- Ohne `--output` gibt es keinen mathematischen Bundleexport. Regelvorschläge und Einzeldatei-Freigaben verwenden Positionsparameter für ihre Ausgabedatei; `rules-activate` aktualisiert den benannten Speicher. Eine Umleitung wie `> ergebnis.json` speichert nur die JSON-Ausgabe. Sie erzeugt keine Replay-Datei.
-- Exporte dürfen noch nicht existieren. Auch `experience replace` überschreibt keine Datei. Zielverzeichnisse müssen bereits existieren. Ausnahme: `rules-activate` ersetzt nach konkreter Zustimmung den benannten Regelspeicher atomar samt Journal.
+- With no argument, `help`, or `--help`, the CLI displays plain-text help.
+  These global help forms ignore following arguments. Commands such as
+  `research --help` have no command-specific help and report `UnknownOption`.
+- Each option has exactly one following value: `--max-bits 4096`.
+  `--max-bits=4096`, short options, combined flags, and a general `--`
+  delimiter are unsupported.
+- Option order is arbitrary, duplicates are errors, and unknown options are
+  rejected. Option names and values are case-sensitive.
+- Negative values remain separate arguments: `--min -8`. Quote strings that
+  contain spaces, semicolons, or shell metacharacters, for example
+  `--paths '2,6;4,3'` and `--operators '+-*/^'`.
+- `rules-approve` and `rules-activate` use a mandatory terminal dialogue.
+  The other commands are non-interactive. No configuration file or
+  environment variable selects a strategy. Input comes from arguments or
+  explicitly named files. `-` is not an implemented standard-input placeholder.
+- On successful domain processing, `stdout` contains a JSON object followed by
+  a newline. Help is plain text; `rules-approve` and `rules-activate` write a
+  plain-text dialogue, then JSON on success. Errors are JSON on `stderr` and
+  use exit code 2.
+- Exit code 0 means processing completed successfully. It does not mean a
+  complete search or mathematical proof. Evaluate `INCOMPLETE`,
+  `NO_CANDIDATE`, `REFUTED`, `UNDECIDED`, and ambiguity in the JSON. NanoCell
+  `NO_MATCH` and `CONTEXT_REJECTED` are also ordinary responses.
+- Without `--output`, no mathematical bundle is exported. Rule proposals and
+  individual file approvals use positional arguments for their output file;
+  `rules-activate` updates the named store. A redirect such as
+  `> result.json` saves only JSON output, not a replay file.
+- Exports must not already exist. `experience replace` does not overwrite a
+  file either. Target directories must exist. The exception is
+  `rules-activate`, which atomically replaces the named rule store and its
+  journal after explicit approval.
 
-## Erster vollständiger Forschungsdurchlauf
+## First complete research run
 
-Das [Tutorial](tutorial.sh) erzeugt eigene Beispieldaten in einem neuen Verzeichnis, führt Forschung, Vergleich, Grid, Fortsetzung, Auswahl und Erfahrungskorrektur aus und prüft wesentliche Resultate. Vom Projektstamm:
+The [tutorial](tutorial.sh) creates its own sample data in a new directory,
+runs research, comparison, grid, resume, selection, and experience correction,
+and checks key results. From the project root:
 
 ```bash
 bash docs/cli/tutorial.sh ./build/bruce
 ```
 
-Es löscht keine vorhandenen Dateien. Der am Ende ausgegebene Arbeitsordner enthält JSON-Ergebnisse, Eingaben und replaybare Bundles. Eine gezielt verursachte Budgetüberschreitung demonstriert den Unterschied zwischen Fehlercode und fachlichem Teilbefund.
+It does not delete existing files. The printed working directory contains JSON
+results, inputs, and replayable bundles. A deliberately triggered budget
+exhaustion demonstrates the difference between an error code and a partial
+domain result.
 
-## Grenzen der Anwendung
+## Application boundaries
 
-BRUCE untersucht begrenzte, eingebaute mathematische Familien. Bei aktiviertem CMake-Schalter `BRUCE_BUILD_MOD_LANGUAGE` bildet `language interpret/select/execute/replay` eine implementierte, deterministische Language-Mod für genau zwei Satzmuster; ausgeschaltet ist der Befehl nicht registriert. Eine freie natürliche Sprachschnittstelle und ein allgemeiner Formelbeweiser sind nicht implementiert. Der optionale statische [NanoCell-Mod](commands.md#nanocell--optionaler-statischer-nanocell-mod) führt bei `BRUCE_BUILD_MOD_NANOCELL=ON` drei feste Byte-Techniken mit gebundenem Kontext aus, schreibt neue herkunftsgebundene Mod-Exporte und kann historische direkte V1-Dateien nur lesen. Er ist nicht Teil der allgemeinen Forschungssitzung. Ein Holdout bestätigt zusätzliche konkrete Zahlenpaare. `compare` kann dagegen Aussagen über zwei ausdrücklich übergebene Polynombrüche über den rationalen Zahlen beweisen; der jeweilige Definitionsbereich gehört zu dieser Aussage.
+BRUCE investigates bounded built-in mathematical families. When the CMake
+option `BRUCE_BUILD_MOD_LANGUAGE` is enabled,
+`language interpret/select/execute/replay` provides an implemented,
+deterministic Language mod: V1 remains limited to two fixed sentence patterns;
+V2 adds several explicitly versioned German phrasings for the same rational
+portfolio semantics. A general free-form dialogue language and a general
+formula prover are not implemented. With `BRUCE_BUILD_MOD_NANOCELL=ON`, the
+optional static [NanoCell mod](commands.md#nanocell--optionaler-statischer-nanocell-mod)
+runs three fixed byte techniques with bound context, writes new provenance-bound
+mod exports, and can only read historical direct V1 files. It is not part of
+the general research session. With `BRUCE_BUILD_MOD_COCKPIT=ON`, the local
+[Cockpit](commands.md#cockpit--optionaler-statischer-cockpit-mod) provides only the
+separate management contracts; it performs no independent domain research. A
+holdout confirms additional concrete number pairs. By contrast, `compare` can
+prove statements about two explicitly supplied rational functions over the
+rational numbers; the relevant domain of definition is part of that statement.
 
-Die CLI bietet kein Netzwerkprotokoll, keine dynamischen Strategieplugins, keine GPU-Steuerung und kein universelles Zeit-/RAM-Limit. Grid und numerische Z-Kompatibilität verwenden weiterhin begrenzte Ganzzahlen. Exakte BigInt-/Bruchforschung ist ein eigener Pfad.
+The CLI has no network protocol, dynamic strategy plugins, GPU control, or
+universal time/RAM limit. Grid and numerical Z compatibility still use bounded
+integers. Exact BigInt/rational-function research is a separate path.
 
-## Pflege der Referenz
+## Maintaining the reference
 
-`commands.md`, `formats.md` und `results-and-control.md` erklären das Verhalten. `source-index.md` wird direkt aus dem CLI-Parser und den Fehlerliteralen abgeleitet; `examples.json` enthält echte Aufrufe und ihre vollständigen Antworten. Bei einer neuen Core-Version müssen sowohl Texte als auch die ausgeführten Beispiele erneut geprüft werden. Die [historischen Implementierungspakete](../README.md) bleiben für Herkunft und Detailverträge erhalten.
+`commands.md`, `formats.md`, and `results-and-control.md` explain behavior.
+`source-index.md` is derived directly from the CLI parser and error literals;
+`examples.json` contains real invocations and their complete responses. On a
+new core version, both text and executed examples must be checked again. The
+[historical implementation packages](../README.md) remain available for
+provenance and detailed contracts.
