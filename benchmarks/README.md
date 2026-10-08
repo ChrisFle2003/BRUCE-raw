@@ -1,14 +1,13 @@
-# BRUCE Benchmark-Ergebnisse
+# BRUCE benchmark results
 
-[Auswertung des ersten Remote-Release-Laufs](../docs/implementation/152-benchmark-v1-results.md)
+[Analysis of the first remote release run](../docs/implementation/152-benchmark-v1-results.md)
 
-- [Standard: 10 Wiederholungen pro Fall](2026-09-25-standard-v1/report.md)
-- [Stress: 30 Wiederholungen pro Fall](2026-09-25-stress-v1/report.md)
-- [Suite ausführen und Messgrenzen verstehen](../docs/cli/benchmark.md)
+- [Standard: 10 repetitions per case](2026-09-25-standard-v1/report.md)
+- [Stress: 30 repetitions per case](2026-09-25-stress-v1/report.md)
+- [Run the suite and understand its measurement limits](../docs/cli/benchmark.md)
 
-Versioniert sind nur diese sechs kompakten Artefakte je Lauf: `report.md`,
-`summary.csv` und `manifest.json`. Rohdaten, Zwischenstände und neue
-Messordner bleiben lokal und werden nicht Teil eines ausgelieferten
-CLI-Archivs. Neue Läufe verwenden neue Ordner. Keine Rangliste aus verschiedenen
-Aufgaben, unterschiedlichen Stopgründen oder verschiedenen Hardwareumgebungen
-bilden.
+Only these three compact artifacts are versioned for each run: `report.md`,
+`summary.csv`, and `manifest.json`. Raw data, intermediate state, and new
+measurement directories remain local and are not included in a distributed CLI
+archive. New runs use new directories. Do not form a ranking from different
+tasks, stop reasons, or hardware environments.
