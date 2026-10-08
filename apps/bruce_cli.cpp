@@ -7,6 +7,13 @@
 #include "bruce/application/research.hpp"
 #include "bruce/application/experience_task.hpp"
 #include "bruce/application/application_task.hpp"
+#if BRUCE_BUILD_APPLICATION_DISPATCH
+#include "bruce/application/application_dispatch.hpp"
+#endif
+#if BRUCE_BUILD_PHASE_DAG
+#include "bruce/application/phase_dag_replay.hpp"
+#include "bruce/application/phase_dag_session.hpp"
+#endif
 #include "bruce/application/execution_session.hpp"
 #include "bruce/application/research_contract.hpp"
 #include "bruce/application/research_gates.hpp"
@@ -27,11 +34,18 @@
 #include "bruce/mods/language/mod.hpp"
 #include "bruce/mods/language/language_run.hpp"
 #endif
+#if BRUCE_BUILD_MOD_DIALOGUE
+#include "bruce/mods/dialogue/dialogue.hpp"
+#endif
 #if BRUCE_BUILD_MOD_NANOCELL
 #include "nanocell_cli.hpp"
 #endif
+#if BRUCE_BUILD_MOD_COCKPIT
+#include "bruce/mods/cockpit/mod.hpp"
+#endif
 #include "bruce/token/task_spec.hpp"
 #include "bruce/application/tokenized_task_run.hpp"
+#include "management_inspection_cli.hpp"
 #include <csignal>
 #include "bruce/version.hpp"
 #include <algorithm>
@@ -90,6 +104,7 @@ std::string render_language_draft_cli(const bruce::LanguageDraftV1& draft,std::s
     std::string result="{\"contract\":"+bruce::json_string(contract)+
         ",\"status\":"+bruce::json_string(language_status(draft.status))+
         ",\"grammar_version\":"+bruce::json_string(draft.grammar_version)+
+        ",\"raw_text\":"+bruce::json_string(draft.raw_text)+
         ",\"normalized_text\":"+bruce::json_string(draft.normalized_text)+
         ",\"alternatives\":[";
     for(std::size_t i=0;i<draft.alternatives.size();++i) {
@@ -106,6 +121,64 @@ std::string render_language_draft_cli(const bruce::LanguageDraftV1& draft,std::s
     }
     result+=']';
     if(contract=="language-selection-v1") {
+        const auto chosen=std::find_if(draft.alternatives.begin(),draft.alternatives.end(),
+            [&](const auto& alternative){return alternative.id==draft.selected_id;});
+        if(chosen==draft.alternatives.end()) throw bruce::Error("UnknownLanguageAlternative");
+        result+=",\"selected_alternative\":{\"id\":"+bruce::json_string(chosen->id)+
+            ",\"rule\":"+bruce::json_string(chosen->rule)+"}";
+    }
+    return result+'}';
+}
+std::string render_language_draft_cli(const bruce::LanguageDraftV2& draft,std::string_view contract) {
+    std::string result="{\"contract\":"+bruce::json_string(contract)+
+        ",\"status\":"+bruce::json_string(language_status(draft.status))+
+        ",\"grammar_version\":"+bruce::json_string(draft.grammar_version)+
+        ",\"raw_text\":"+bruce::json_string(draft.raw_text)+
+        ",\"normalized_text\":"+bruce::json_string(draft.normalized_text)+
+        ",\"alternatives\":[";
+    for(std::size_t i=0;i<draft.alternatives.size();++i) {
+        if(i) result+=',';
+        result+="{\"id\":"+bruce::json_string(draft.alternatives[i].id)+
+            ",\"rule\":"+bruce::json_string(draft.alternatives[i].rule)+"}";
+    }
+    result+="],\"selected_id\":"+(draft.selected_id.empty() ? "null" : bruce::json_string(draft.selected_id))+
+        ",\"inputs\":[";
+    for(std::size_t i=0;i<draft.inputs.size();++i) {
+        if(i) result+=',';
+        result+="{\"alias\":"+bruce::json_string(draft.inputs[i].alias)+
+            ",\"digest\":"+bruce::json_string(draft.inputs[i].digest)+"}";
+    }
+    result+=']';
+    if(contract=="language-selection-v2") {
+        const auto chosen=std::find_if(draft.alternatives.begin(),draft.alternatives.end(),
+            [&](const auto& alternative){return alternative.id==draft.selected_id;});
+        if(chosen==draft.alternatives.end()) throw bruce::Error("UnknownLanguageAlternative");
+        result+=",\"selected_alternative\":{\"id\":"+bruce::json_string(chosen->id)+
+            ",\"rule\":"+bruce::json_string(chosen->rule)+"}";
+    }
+    return result+'}';
+}
+std::string render_language_draft_cli(const bruce::LanguageDraftV3& draft,std::string_view contract) {
+    std::string result="{\"contract\":"+bruce::json_string(contract)+
+        ",\"status\":"+bruce::json_string(language_status(draft.status))+
+        ",\"grammar_version\":"+bruce::json_string(draft.grammar_version)+
+        ",\"raw_text\":"+bruce::json_string(draft.raw_text)+
+        ",\"normalized_text\":"+bruce::json_string(draft.normalized_text)+
+        ",\"alternatives\":[";
+    for(std::size_t i=0;i<draft.alternatives.size();++i) {
+        if(i) result+=',';
+        result+="{\"id\":"+bruce::json_string(draft.alternatives[i].id)+
+            ",\"rule\":"+bruce::json_string(draft.alternatives[i].rule)+"}";
+    }
+    result+="],\"selected_id\":"+(draft.selected_id.empty() ? "null" : bruce::json_string(draft.selected_id))+
+        ",\"inputs\":[";
+    for(std::size_t i=0;i<draft.inputs.size();++i) {
+        if(i) result+=',';
+        result+="{\"alias\":"+bruce::json_string(draft.inputs[i].alias)+
+            ",\"digest\":"+bruce::json_string(draft.inputs[i].digest)+"}";
+    }
+    result+=']';
+    if(contract=="language-selection-v3") {
         const auto chosen=std::find_if(draft.alternatives.begin(),draft.alternatives.end(),
             [&](const auto& alternative){return alternative.id==draft.selected_id;});
         if(chosen==draft.alternatives.end()) throw bruce::Error("UnknownLanguageAlternative");
@@ -138,6 +211,98 @@ bruce::LanguageRunV1 replay_language_cli(const std::string_view bytes) {
     if(bruce::pack_language_draft(run.draft)!=bruce::pack_language_draft(draft))
         throw bruce::Error("LanguageModDraftRunMismatch");
     return run;
+}
+std::string pack_language_mod_run_v2(const bruce::LanguageRunV2& run) {
+    const auto draft_bytes=bruce::pack_language_draft_v2(run.draft);
+    const auto run_bytes=bruce::pack_language_run_v2(run);
+    return bruce::pack_mod_run_envelope({
+        .manifest = bruce::language_mod_manifest_v1(),
+        .input_codec = "bruce-language-draft-v2",
+        .input_bytes = draft_bytes,
+        .input_digest = bruce::sha256(draft_bytes),
+        .payload_codec = "bruce-language-run-v2",
+        .payload_bytes = run_bytes,
+        .payload_digest = bruce::sha256(run_bytes),
+    });
+}
+bruce::LanguageRunV2 replay_language_cli_v2(const std::string_view bytes) {
+    if(!bytes.starts_with("BRUCE_MOD_RUN_V1\n")) return bruce::replay_language_run_v2(bytes);
+    const auto envelope=bruce::unpack_mod_run_envelope(bytes);
+    bruce::require_matching_mod_manifest(envelope.manifest,bruce::language_mod_manifest_v1());
+    if(envelope.input_codec!="bruce-language-draft-v2" || envelope.payload_codec!="bruce-language-run-v2")
+        throw bruce::Error("InvalidLanguageModCodec");
+    const auto draft=bruce::unpack_language_draft_v2(envelope.input_bytes);
+    const auto run=bruce::replay_language_run_v2(envelope.payload_bytes);
+    if(bruce::pack_language_draft_v2(run.draft)!=bruce::pack_language_draft_v2(draft))
+        throw bruce::Error("LanguageModDraftRunMismatch");
+    return run;
+}
+std::string pack_language_mod_run_v3(const bruce::LanguageRunV3& run) {
+    const auto draft_bytes=bruce::pack_language_draft_v3(run.draft);
+    const auto run_bytes=bruce::pack_language_run_v3(run);
+    return bruce::pack_mod_run_envelope({
+        .manifest = bruce::language_mod_manifest_v1(),
+        .input_codec = "bruce-language-draft-v3",
+        .input_bytes = draft_bytes,
+        .input_digest = bruce::sha256(draft_bytes),
+        .payload_codec = "bruce-language-run-v3",
+        .payload_bytes = run_bytes,
+        .payload_digest = bruce::sha256(run_bytes),
+    });
+}
+bruce::LanguageRunV3 replay_language_cli_v3(const std::string_view bytes) {
+    if(!bytes.starts_with("BRUCE_MOD_RUN_V1\n")) return bruce::replay_language_run_v3(bytes);
+    const auto envelope=bruce::unpack_mod_run_envelope(bytes);
+    bruce::require_matching_mod_manifest(envelope.manifest,bruce::language_mod_manifest_v1());
+    if(envelope.input_codec!="bruce-language-draft-v3" || envelope.payload_codec!="bruce-language-run-v3")
+        throw bruce::Error("InvalidLanguageModCodec");
+    const auto draft=bruce::unpack_language_draft_v3(envelope.input_bytes);
+    const auto run=bruce::replay_language_run_v3(envelope.payload_bytes);
+    if(bruce::pack_language_draft_v3(run.draft)!=bruce::pack_language_draft_v3(draft))
+        throw bruce::Error("LanguageModDraftRunMismatch");
+    return run;
+}
+bool language_run_is_v3(const std::string_view bytes) {
+    if(bytes.starts_with("BRUCE_LANGUAGE_RUN_V3\n")) return true;
+    if(!bytes.starts_with("BRUCE_MOD_RUN_V1\n")) return false;
+    return bruce::unpack_mod_run_envelope(bytes).payload_codec=="bruce-language-run-v3";
+}
+bool language_run_is_v2(const std::string_view bytes) {
+    if(bytes.starts_with("BRUCE_LANGUAGE_RUN_V2\n")) return true;
+    if(!bytes.starts_with("BRUCE_MOD_RUN_V1\n")) return false;
+    return bruce::unpack_mod_run_envelope(bytes).payload_codec=="bruce-language-run-v2";
+}
+#endif
+#if BRUCE_BUILD_MOD_DIALOGUE
+std::string dialogue_status(bruce::DialogueStatus status) {
+    switch(status) {
+        case bruce::DialogueStatus::understood: return "UNDERSTOOD";
+        case bruce::DialogueStatus::ambiguous: return "AMBIGUOUS";
+        case bruce::DialogueStatus::unsupported: return "UNSUPPORTED";
+    }
+    throw bruce::Error("InvalidDialogueStatus");
+}
+std::string render_dialogue_cli(const bruce::DialogueDraftV1& draft,std::string_view contract) {
+    std::string result="{\"contract\":"+bruce::json_string(contract)+
+        ",\"status\":"+bruce::json_string(dialogue_status(draft.status))+
+        ",\"normalized_text\":"+bruce::json_string(draft.normalized_text)+
+        ",\"selected_id\":"+(draft.selected_id.empty() ? "null" : bruce::json_string(draft.selected_id))+
+        ",\"candidates\":[";
+    for(std::size_t i=0;i<draft.candidates.size();++i) {
+        if(i) result+=',';
+        const auto& candidate=draft.candidates[i];
+        result+="{\"id\":"+bruce::json_string(candidate.id)+
+            ",\"intent\":"+bruce::json_string(candidate.intent)+
+            ",\"rule\":"+bruce::json_string(candidate.rule)+
+            ",\"requires_confirmation\":"+(candidate.requires_confirmation ? "true" : "false")+"}";
+    }
+    return result+"]}";
+}
+std::string render_dialogue_run_cli(const bruce::DialogueRunV1& run,std::string_view contract) {
+    return "{\"contract\":"+bruce::json_string(contract)+
+        ",\"decision_intent\":"+bruce::json_string(run.decision_intent)+
+        ",\"explanation\":"+bruce::json_string(run.explanation)+
+        ",\"draft\":"+render_dialogue_cli(run.draft,"dialogue-draft-v1")+"}";
 }
 #endif
 void append_task_spec_roles(std::string& result,const std::vector<bruce::TokenizedRoleV1>& roles) {
@@ -251,7 +416,7 @@ void execute_cli(const Options& args,bruce::ApplicationTask task,const bruce::Ex
     }
 }
 void help() {
-    std::cout << "BRUCE Core " << BRUCE_VERSION << R"( — Rationale Gleichheit mit erhaltenem Definitionsbereich
+    std::cout << "BRUCE Core " << BRUCE_VERSION << R"( — Rational equality with preserved domains of definition
 
 bruce --version
 bruce contracts
@@ -261,23 +426,34 @@ bruce compare --left-numerator A0,A1,... --left-denominator B0,B1,...
               --right-numerator C0,C1,... --right-denominator D0,D1,...
               [--domain-policy quadratic|modular|modular-witness]
               [--max-bits 4096] [--max-operations 1000000] [--output RUN.bruce]
-              Exakter Polynombruchvergleich ueber Q; Koeffizienten aufsteigend.
+              Exact rational-function comparison over Q; coefficients in ascending order.
 bruce coordinate --x N --y N
 bruce coordinate --z N
 bruce grid --path 2,6/4,3 [--mode exact|modular|metric]
            [--modulus N] [--max-bits 1..64] [--zero-zero one|stop] [--output RUN.bruce]
 bruce grid-resume --from-run PARTIAL --additional-queries 1..1024 [--output FILE]
 bruce grid-batch --paths "2,6;4,3;2,6" [--cache-bytes 0..1048576] [--max-query-steps 0..1024]
-                 [dieselben Grid-Modi, Grenzen und Exportoptionen]
-bruce research --train DATEI [--holdout DATEI] [--min -8] [--max 8]
+                 [the same grid modes, limits, and export options]
+bruce research --train FILE [--holdout FILE] [--min -8] [--max 8]
                [--max-candidates 100000] [--max-operations 1000000]
                [--max-trace 100002] [--max-results 128] [--output RUN.bruce]
 bruce language interpret --text TEXT --train TRAIN.csv --holdout HOLDOUT.csv
+               [--grammar v1|v2|v3]
+               [V2: --train-alias ALIAS --holdout-alias ALIAS]
                [--max-bits N] [--max-denominator N] [--max-candidates N]
                [--max-operations N] [--max-trace N] [--max-results N] --output DRAFT
 bruce language select DRAFT --alternative ID --output SELECTED_DRAFT
 bruce language execute DRAFT --output LANGUAGE_RUN
 bruce language replay LANGUAGE_RUN
+)";
+#if BRUCE_BUILD_MOD_DIALOGUE
+    std::cout << R"(bruce dialogue interpret --text TEXT --output DIALOGUE_DRAFT
+bruce dialogue select DIALOGUE_DRAFT --alternative ID --output SELECTED_DRAFT
+bruce dialogue confirm DIALOGUE_DRAFT --output DIALOGUE_RUN
+bruce dialogue replay DIALOGUE_DRAFT|DIALOGUE_RUN
+)";
+#endif
+    std::cout << R"(
 bruce task-spec create --train FILE --holdout FILE --route rational-portfolio-v1
                --token-table-version v1 --output SPEC
                [--min N] [--max N] [--max-bits N] [--max-denominator N]
@@ -299,106 +475,122 @@ bruce evidence replay CHAIN
 bruce nanocell replay RUN
 )";
 #endif
+#if BRUCE_BUILD_MOD_COCKPIT
+    std::cout << "bruce cockpit [--port N]\n";
+#endif
+#if BRUCE_BUILD_APPLICATION_DISPATCH
+    std::cout << R"(bruce dispatch inspect BUNDLE
+bruce dispatch replay BUNDLE
+)";
+#endif
     std::cout << R"(bruce research --grid-train GRID.bruce [--grid-holdout GRID.bruce] [--grid-axis x|y] [--max-total-operations N]
-               [bestehende exakte Strategien, Budgets und Exportoptionen]
-bruce experience add --from-run RUN.bruce [--store ALT.experience] --output NEU.experience
+               [existing exact strategies, budgets, and export options]
+bruce experience add --from-run RUN.bruce [--store OLD.experience] --output NEW.experience
                   [--max-transfer-checkpoints N] [--transfer-cancellation none|checkpoints]
-bruce experience revoke --store ALT.experience --id ID --reason TEXT --output NEU.experience
+bruce experience revoke --store OLD.experience --id ID --reason TEXT --output NEW.experience
                      [--max-transfer-checkpoints N] [--transfer-cancellation none|checkpoints]
 bruce experience replace --store STORE --id ID --reason TEXT --from-run RUN --output STORE
                       [--max-transfer-checkpoints N] [--transfer-cancellation none|checkpoints]
 bruce experience plan-add --from-run RUN [--store STORE] [--max-source-bytes N] [--max-store-bytes N] --output PLAN
 bruce experience apply-add PLAN --from-run RUN [--store STORE] --output NEW
                [--max-transfer-checkpoints N] [--transfer-cancellation none|checkpoints]
-bruce experience inspect SNAPSHOT
+bruce experience inspect SNAPSHOT [--max-management-checkpoints N]
+                                  [--management-cancellation none|checkpoints]
 bruce rules-stage STORE NEW PROPOSAL
 bruce rules-activate STORE PROPOSAL
-bruce rules-status STORE
+bruce rules-status STORE [--max-management-checkpoints N]
+                         [--management-cancellation none|checkpoints]
 bruce rules-propose OLD NEW PROPOSAL
 bruce rules-approve PROPOSAL CURRENT OUTPUT
 bruce inspect-run RUN.bruce
-bruce gate-run RUN.bruce [--max-session-checkpoints N] [--max-replay-bytes N] [--cancellation none|checkpoints]
+)";
+#if BRUCE_BUILD_PHASE_DAG
+    std::cout << R"(bruce phase-dag inspect BUNDLE
+bruce phase-dag replay BUNDLE
+)";
+#endif
+    std::cout << R"(bruce gate-run RUN.bruce [--max-session-checkpoints N] [--max-replay-bytes N] [--cancellation none|checkpoints]
 bruce assess-run RUN.bruce
 bruce replay RUN.bruce
-bruce calculate --op add|sub|mul|div|divmod|pow|modpow --left ZAHL --right ZAHL
-                [--domain bigint|rational] [--max-bits 4096] [--modulus ZAHL]
-bruce research --domain bigint|rational --train DATEI [--holdout DATEI]
+bruce calculate --op add|sub|mul|div|divmod|pow|modpow --left NUMBER --right NUMBER
+                [--domain bigint|rational] [--max-bits 4096] [--modulus NUMBER]
+bruce research --domain bigint|rational --train FILE [--holdout FILE]
                [--min -8] [--max 8] [--max-bits 4096] [--max-denominator N]
-               [--max-trace-bytes 1048576] [dieselben Forschungsbudgets/Exportoptionen]
-bruce research --strategy power-affine --train DATEI [--max-power 4]
+               [--max-trace-bytes 1048576] [the same research budgets/export options]
+bruce research --strategy power-affine --train FILE [--max-power 4]
                [--domain bigint|rational] [--planner enumerate|adaptive]
-               [dieselben Forschungsbudgets/Exportoptionen]
-bruce research --strategy polynomial --train DATEI [--max-degree 3]
+               [the same research budgets/export options]
+bruce research --strategy polynomial --train FILE [--max-degree 3]
                [--domain bigint|rational] [--planner interpolate]
-               [dieselben Forschungsbudgets/Exportoptionen]
-bruce research --strategy expression --train DATEI [--holdout DATEI]
+               [the same research budgets/export options]
+bruce research --strategy expression --train FILE [--holdout FILE]
                [--max-nodes 7] [--min 0] [--max 1] [--max-denominator 1]
                [--domain rational] [--planner grammar|indexed-grammar|cached-grammar] [--equivalence syntax|rational|rational-q|rational-q-modular|rational-q-witness]
-               [--domain-cache none|equal-64 (nur rational-q-modular)]
-               [--max-results 1..256 bei rational-q-witness; Standard 128]
-               [--operators "+-*/" (optional ^ mit literalen Exponenten 2..8)]
-               [Forschungsbudgets/Exportoptionen]
-bruce research --strategy rational-quadratic --train DATEI [--holdout DATEI]
-               [--domain rational] [--planner solve] [dieselben Forschungsbudgets/Exportoptionen]
-bruce research --strategy rational-linear --train DATEI [--holdout DATEI]
+               [--domain-cache none|equal-64 (rational-q-modular only)]
+               [--max-results 1..256 for rational-q-witness; default 128]
+               [--operators "+-*/" (optional ^ with literal exponents 2..8)]
+               [research budgets/export options]
+bruce research --strategy rational-quadratic --train FILE [--holdout FILE]
+               [--domain rational] [--planner solve] [the same research budgets/export options]
+bruce research --strategy rational-linear --train FILE [--holdout FILE]
                [--domain rational] [--planner solve] [--max-denominator 8]
-               [--min -8] [--max 8] [--output LAUF.bruce]
-bruce research --strategy portfolio-expression --train DATEI [--holdout DATEI]
+               [--min -8] [--max 8] [--output RUN.bruce]
+bruce research --strategy portfolio-expression --train FILE [--holdout FILE]
                [--max-power 4] [--max-degree 3] [--max-nodes 7]
                [--min 0] [--max 1] [--max-denominator 1]
                [--domain rational] [--planner portfolio|adaptive-order|experience-order]
                [--equivalence rational|rational-q|rational-q-modular|rational-q-witness] [--domain-cache none|equal-64]
                [--expression-planner grammar|indexed-grammar|cached-grammar]
-               [--operators "+-*/" (optional ^, literale Exponenten 2..8)] [--experience SNAPSHOT]
-bruce research --strategy portfolio-quadratic --train DATEI [--holdout DATEI]
+               [--operators "+-*/" (optional ^, literal exponents 2..8)] [--experience SNAPSHOT]
+bruce research --strategy portfolio-quadratic --train FILE [--holdout FILE]
                [--planner portfolio|adaptive-order|experience-order] [--experience SNAPSHOT]
-               [--max-power 4] [--max-degree 3] [gemeinsame Forschungsbudgets]
-bruce research --strategy portfolio-rational --train DATEI [--holdout DATEI]
+               [--max-power 4] [--max-degree 3] [shared research budgets]
+bruce research --strategy portfolio-rational --train FILE [--holdout FILE]
                [--domain rational] [--max-power 4] [--max-degree 3]
                [--planner portfolio|adaptive-order|experience-order] [--experience SNAPSHOT]
-               [gemeinsame Forschungsbudgets und Exportoptionen]
-bruce research --strategy portfolio --train DATEI [--max-power 4] [--max-degree 3]
+               [shared research budgets and export options]
+bruce research --strategy portfolio --train FILE [--max-power 4] [--max-degree 3]
                [--domain bigint|rational] [--planner portfolio]
-               [gemeinsame Forschungsbudgets und Exportoptionen]
+               [shared research budgets and export options]
 bruce compatibility-plan --from-run RUN --rules RULES --at X --output PLAN
-                  [--rule-store STORE statt --rules; --max-source-bytes N; Auswahlbudgets]
+                  [--rule-store STORE instead of --rules; --max-source-bytes N; selection budgets]
                   [--max-transfer-checkpoints N] [--transfer-cancellation none|checkpoints]
 bruce compatibility-apply PLAN --from-run RUN --rules RULES [--output RUN]
                   [--max-transfer-checkpoints N] [--transfer-cancellation none|checkpoints]
-                  [--rule-store STORE statt --rules]
-bruce compatibility --rule-store STORE --candidates KANDIDATENDATEI
-                  [alternativ zu --rules; bestehende Auswahl-/Sitzungsoptionen]
-bruce compatibility --rules REGELDATEI --candidates KANDIDATENDATEI
+                  [--rule-store STORE instead of --rules]
+bruce compatibility --rule-store STORE --candidates CANDIDATE_FILE
+                  [alternative to --rules; existing selection/session options]
+bruce compatibility --rules RULE_FILE --candidates CANDIDATE_FILE
                     [--max-candidates 4096] [--max-checks 1048576]
                     [--max-trace 65536] [--output RUN.bruce]
-bruce compatibility --rules REGELDATEI --from-run FORSCHUNG.bruce --at X
-                    [dieselben Budgets und Exportoptionen]
+bruce compatibility --rules RULE_FILE --from-run RESEARCH.bruce --at X
+                    [the same budgets and export options]
 
-Paar-Dateien: Header x,y; links Eingabe, rechts erwartete Ausgabe.
-Forschungsfamilie: a*x+b; bigint/int64 mit ganzzahligen Parametern in [min,max].
-Rational: gekuerzte Parameter n/d, n in [min,max], d bis max-denominator (Standard 8).
-power-affine: a*x^p+b mit p=1..max-power (maximal 8); Domäne standardmäßig bigint.
-Neue Eingaben werden zur Laufzeit verarbeitet; keine Wissensdatenbank nötig.
-Optional fuer Laufbefehle: --verification replay (zusaetzliche vollstaendige Replaypruefung).
-Gemeinsames Pruefpunktbudget: --max-session-checkpoints N (mit --verification replay).
-Dazu optional: --verification-cancellation phase-boundaries (Signale an Pruefgrenzen beachten).
-Fuer Fortsetzungsimporte im Erstlauf: --execution-cancellation resume-import-checkpoints.
-Fuer Forschungsquellen der Z-Auswahl im Erstlauf: --execution-cancellation compatibility-source-checkpoints.
-Fuer Gridquellen im Erstlauf: --execution-cancellation grid-source-checkpoints.
-Fuer beide Importe in Grid-Forschung: --execution-cancellation grid-and-experience-checkpoints.
-Fuer Erfahrungsimporte im Erstlauf: --execution-cancellation experience-checkpoints (mit --verification replay).
-Fuer Grid-Stapel/Fortsetzungen: --verification-cancellation grid-query-boundaries (auch im Replay).
-Fuer Int64-/exakte Forschung einschliesslich Grid-Forschung: --verification-cancellation research-checkpoints (auch im Replay).
-Fuer Grid-Stapel/Fortsetzungen: --serialization-cancellation grid-record-checkpoints.
-Fuer Bundle-Pruefsummen: --serialization-cancellation digest-checkpoints (mit --verification replay).
-Fuer Z-Kompatibilitaet: --verification-cancellation compatibility-checkpoints (auch im Replay).
-Fuer Bruchvergleich: --verification-cancellation comparison-checkpoints (auch im Replay).
-Dazu optional: --max-replay-bytes N (Bundlebytes vor Replay begrenzen; 0 sperrt den Replay).
-Zusätzlich: --max-serialized-bytes N (Bundlegröße nach SERIALIZING begrenzen).
-Ohne --output wird nichts gespeichert. Exporte werden niemals überschrieben.
-Ctrl+C beendet die Suche mit logischer Abbruchposition (replaybar).
-VERIFIED_ON_SAMPLES bestätigt die geprüften Paare, keinen allgemeinen Beweis.
-Ausgabe: JSON, Ganzzahlen ohne Float-Rundung. Fehler: JSON auf stderr, Exit 2.
+Pair files: header x,y; input on the left, expected output on the right.
+Research family: a*x+b; bigint/int64 with integer parameters in [min,max].
+Rational: reduced parameters n/d, n in [min,max], d up to max-denominator (default 8).
+power-affine: a*x^p+b with p=1..max-power (at most 8); bigint is the default domain.
+New input is processed at runtime; no knowledge base is required.
+Optional for run commands: --verification replay (an additional complete replay check).
+Shared checkpoint budget: --max-session-checkpoints N (with --verification replay).
+Optional: --verification-cancellation phase-boundaries (honor signals at verification boundaries).
+For resume imports during initial execution: --execution-cancellation resume-import-checkpoints.
+For compatibility-selection research sources during initial execution: --execution-cancellation compatibility-source-checkpoints.
+For grid sources during initial execution: --execution-cancellation grid-source-checkpoints.
+For both imports in grid research: --execution-cancellation grid-and-experience-checkpoints.
+For experience imports during initial execution: --execution-cancellation experience-checkpoints (with --verification replay).
+For grid batches/resumes: --verification-cancellation grid-query-boundaries (also during replay).
+For Int64/exact research, including grid research: --verification-cancellation research-checkpoints (also during replay).
+For grid batches/resumes: --serialization-cancellation grid-record-checkpoints.
+For bundle digests: --serialization-cancellation digest-checkpoints (with --verification replay).
+For Z compatibility: --verification-cancellation compatibility-checkpoints (also during replay).
+For rational-function comparison: --verification-cancellation comparison-checkpoints (also during replay).
+Optional: --max-replay-bytes N (limit bundle bytes before replay; 0 disables replay).
+Additionally: --max-serialized-bytes N (limit bundle size after SERIALIZING).
+Nothing is stored without --output. Exports are never overwritten.
+Ctrl+C stops the search at a logical cancellation point (replayable).
+VERIFIED_ON_SAMPLES confirms the checked pairs, not a general proof.
+Output: JSON, integers without floating-point rounding. Errors: JSON on stderr, exit 2.
 )";
 }
 }
@@ -411,8 +603,42 @@ int main(int argc,char** argv) {
 #if BRUCE_BUILD_MOD_NANOCELL
         if(command=="nanocell") return bruce::nanocell_cli(argc,argv);
 #endif
+#if BRUCE_BUILD_MOD_COCKPIT
+        if(command=="cockpit") return bruce::cockpit_cli(argc,argv);
+#endif
+#if BRUCE_BUILD_APPLICATION_DISPATCH
+        if(command=="dispatch") {
+            if(argc!=4) throw Error("Usage: bruce dispatch inspect|replay BUNDLE");
+            const auto bundle=read_bounded(argv[3],dispatch_max_payload_bytes+1024);
+            if(std::string(argv[2])=="inspect") {
+                std::cout << inspect_dispatch(bundle) << '\n';
+                return 0;
+            }
+            if(std::string(argv[2])=="replay") {
+                std::cout << render_dispatch(replay_dispatch(bundle)) << '\n';
+                return 0;
+            }
+            throw Error("Usage: bruce dispatch inspect|replay BUNDLE");
+        }
+#endif
         if(command=="rules-stage" || command=="rules-activate" || command=="rules-status") return bruce::rule_store_cli(argc,argv);
         if(command=="rules-propose" || command=="rules-approve") return bruce::rule_review(argc,argv);
+#if BRUCE_BUILD_PHASE_DAG
+        if(command=="phase-dag") {
+            if(argc!=4)
+                throw Error("Usage: bruce phase-dag inspect BUNDLE");
+            const std::string subcommand=argv[2];
+            if(subcommand=="inspect") {
+                std::cout << inspect_phase_dag_application_bundle(read_bounded(argv[3])) << '\n';
+                return 0;
+            }
+            if(subcommand=="replay") {
+                std::cout << replay_phase_dag_session(read_bounded(argv[3])).report() << '\n';
+                return 0;
+            }
+            throw Error("Usage: bruce phase-dag inspect BUNDLE");
+        }
+#endif
         if(command=="--version") {
             if(argc!=2)throw Error("VersionTakesNoArguments");
             std::cout << "{\"contract\":\"bruce-version-v1\",\"version\":" << json_string(BRUCE_VERSION) << "}\n";
@@ -553,51 +779,158 @@ int main(int argc,char** argv) {
             if(argc<3) throw Error("Usage: bruce language interpret|select|execute|replay");
             const std::string action=argv[2];
             if(action=="interpret") {
-                const auto args=options(argc,argv,3,{"--text","--train","--holdout","--max-bits","--max-denominator","--max-candidates","--max-operations","--max-trace","--max-results","--output"});
+                const auto args=options(argc,argv,3,{"--text","--train","--holdout","--train-alias","--holdout-alias","--grammar","--max-bits","--max-denominator","--max-candidates","--max-operations","--max-trace","--max-results","--output"});
                 const auto text=required(args,"--text");
                 const auto training=read_bounded(required(args,"--train"),1024*1024);
                 const auto holdout=read_bounded(required(args,"--holdout"),1024*1024);
-                LanguageRequestV1 request;
-                request.text=text;
-                request.inputs={{"train",training,sha256(training)},{"holdout",holdout,sha256(holdout)}};
-                request.max_bits=integer<unsigned>(get(args,"--max-bits","4096"));
-                request.max_denominator=integer<unsigned>(get(args,"--max-denominator","8"));
-                request.budget.candidates=integer<std::uint64_t>(get(args,"--max-candidates","100000"));
-                request.budget.operations=integer<std::uint64_t>(get(args,"--max-operations","1000000"));
-                request.budget.trace_events=integer<std::uint64_t>(get(args,"--max-trace","100002"));
-                request.budget.results=integer<std::uint64_t>(get(args,"--max-results","128"));
-                LanguageDraftV1 draft;
-                try { draft=interpret_language(request); }
-                catch(const Error& error) {
-                    if(std::string_view(error.what())!="MissingLanguageAlias") throw;
-                    request.inputs[0].alias="left";
-                    request.inputs[1].alias="right";
-                    draft=interpret_language(std::move(request));
-                }
-                if(draft.status==LanguageInterpretationStatus::unsupported) throw Error("UnsupportedLanguageText");
-                export_exclusive(required(args,"--output"),pack_language_draft(draft));
-                std::cout<<render_language_draft_cli(draft,"language-interpretation-v1")<<'\n';
+                const auto grammar=get(args,"--grammar","v1");
+                if(grammar=="v3") {
+                    LanguageRequestV3 request;
+                    request.text=text;
+                    request.inputs={{get(args,"--train-alias","train"),training,sha256(training)},
+                                    {get(args,"--holdout-alias","holdout"),holdout,sha256(holdout)}};
+                    request.max_bits=integer<unsigned>(get(args,"--max-bits","4096"));
+                    request.max_denominator=integer<unsigned>(get(args,"--max-denominator","8"));
+                    request.budget.candidates=integer<std::uint64_t>(get(args,"--max-candidates","100000"));
+                    request.budget.operations=integer<std::uint64_t>(get(args,"--max-operations","1000000"));
+                    request.budget.trace_events=integer<std::uint64_t>(get(args,"--max-trace","100002"));
+                    request.budget.results=integer<std::uint64_t>(get(args,"--max-results","128"));
+                    const auto draft=interpret_language_v3(std::move(request));
+                    if(draft.status==LanguageInterpretationStatus::unsupported) throw Error("UnsupportedLanguageText");
+                    export_exclusive(required(args,"--output"),pack_language_draft_v3(draft));
+                    std::cout<<render_language_draft_cli(draft,"language-interpretation-v3")<<'\n';
+                } else if(grammar=="v2") {
+                    LanguageRequestV2 request;
+                    request.text=text;
+                    request.inputs={{get(args,"--train-alias","train"),training,sha256(training)},
+                                    {get(args,"--holdout-alias","holdout"),holdout,sha256(holdout)}};
+                    request.max_bits=integer<unsigned>(get(args,"--max-bits","4096"));
+                    request.max_denominator=integer<unsigned>(get(args,"--max-denominator","8"));
+                    request.budget.candidates=integer<std::uint64_t>(get(args,"--max-candidates","100000"));
+                    request.budget.operations=integer<std::uint64_t>(get(args,"--max-operations","1000000"));
+                    request.budget.trace_events=integer<std::uint64_t>(get(args,"--max-trace","100002"));
+                    request.budget.results=integer<std::uint64_t>(get(args,"--max-results","128"));
+                    const auto draft=interpret_language_v2(std::move(request));
+                    if(draft.status==LanguageInterpretationStatus::unsupported) throw Error("UnsupportedLanguageText");
+                    export_exclusive(required(args,"--output"),pack_language_draft_v2(draft));
+                    std::cout<<render_language_draft_cli(draft,"language-interpretation-v2")<<'\n';
+                } else if(grammar=="v1") {
+                    if(args.contains("--train-alias") || args.contains("--holdout-alias"))
+                        throw Error("LanguageAliasOptionsRequireV2");
+                    LanguageRequestV1 request;
+                    request.text=text;
+                    request.inputs={{"train",training,sha256(training)},{"holdout",holdout,sha256(holdout)}};
+                    request.max_bits=integer<unsigned>(get(args,"--max-bits","4096"));
+                    request.max_denominator=integer<unsigned>(get(args,"--max-denominator","8"));
+                    request.budget.candidates=integer<std::uint64_t>(get(args,"--max-candidates","100000"));
+                    request.budget.operations=integer<std::uint64_t>(get(args,"--max-operations","1000000"));
+                    request.budget.trace_events=integer<std::uint64_t>(get(args,"--max-trace","100002"));
+                    request.budget.results=integer<std::uint64_t>(get(args,"--max-results","128"));
+                    LanguageDraftV1 draft;
+                    try { draft=interpret_language(request); }
+                    catch(const Error& error) {
+                        if(std::string_view(error.what())!="MissingLanguageAlias") throw;
+                        request.inputs[0].alias="left";
+                        request.inputs[1].alias="right";
+                        draft=interpret_language(std::move(request));
+                    }
+                    if(draft.status==LanguageInterpretationStatus::unsupported) throw Error("UnsupportedLanguageText");
+                    export_exclusive(required(args,"--output"),pack_language_draft(draft));
+                    std::cout<<render_language_draft_cli(draft,"language-interpretation-v1")<<'\n';
+                } else throw Error("UnsupportedLanguageGrammar");
             } else if(action=="select") {
                 if(argc<4) throw Error("Usage: bruce language select DRAFT --alternative ID --output SELECTED_DRAFT");
                 const auto args=options(argc,argv,4,{"--alternative","--output"});
-                const auto draft=unpack_language_draft(read_bounded(argv[3]));
-                const auto selected=select_language_alternative(draft,required(args,"--alternative"));
-                export_exclusive(required(args,"--output"),pack_language_draft(selected));
-                std::cout<<render_language_draft_cli(selected,"language-selection-v1")<<'\n';
+                const auto bytes=read_bounded(argv[3]);
+                if(bytes.starts_with("BRUCE_LANGUAGE_DRAFT_V3\n")) {
+                    const auto draft=unpack_language_draft_v3(bytes);
+                    const auto selected=select_language_alternative_v3(draft,required(args,"--alternative"));
+                    export_exclusive(required(args,"--output"),pack_language_draft_v3(selected));
+                    std::cout<<render_language_draft_cli(selected,"language-selection-v3")<<'\n';
+                } else if(bytes.starts_with("BRUCE_LANGUAGE_DRAFT_V2\n")) {
+                    const auto draft=unpack_language_draft_v2(bytes);
+                    const auto selected=select_language_alternative_v2(draft,required(args,"--alternative"));
+                    export_exclusive(required(args,"--output"),pack_language_draft_v2(selected));
+                    std::cout<<render_language_draft_cli(selected,"language-selection-v2")<<'\n';
+                } else {
+                    const auto draft=unpack_language_draft(bytes);
+                    const auto selected=select_language_alternative(draft,required(args,"--alternative"));
+                    export_exclusive(required(args,"--output"),pack_language_draft(selected));
+                    std::cout<<render_language_draft_cli(selected,"language-selection-v1")<<'\n';
+                }
             } else if(action=="execute") {
                 if(argc<4) throw Error("Usage: bruce language execute DRAFT --output LANGUAGE_RUN");
                 const auto args=options(argc,argv,4,{"--output"});
-                const auto draft=unpack_language_draft(read_bounded(argv[3]));
-                const auto run=execute_language_draft(draft);
-                export_exclusive(required(args,"--output"),pack_language_mod_run(run));
-                std::cout<<"{\"contract\":\"language-execution-v1\",\"result\":"<<render_language_run(run)<<"}\n";
+                const auto bytes=read_bounded(argv[3]);
+                if(bytes.starts_with("BRUCE_LANGUAGE_DRAFT_V3\n")) {
+                    const auto draft=unpack_language_draft_v3(bytes);
+                    const auto run=execute_language_draft_v3(draft);
+                    export_exclusive(required(args,"--output"),pack_language_mod_run_v3(run));
+                    std::cout<<"{\"contract\":\"language-execution-v3\",\"result\":"<<render_language_run_v3(run)<<"}\n";
+                } else if(bytes.starts_with("BRUCE_LANGUAGE_DRAFT_V2\n")) {
+                    const auto draft=unpack_language_draft_v2(bytes);
+                    const auto run=execute_language_draft_v2(draft);
+                    export_exclusive(required(args,"--output"),pack_language_mod_run_v2(run));
+                    std::cout<<"{\"contract\":\"language-execution-v2\",\"result\":"<<render_language_run_v2(run)<<"}\n";
+                } else {
+                    const auto draft=unpack_language_draft(bytes);
+                    const auto run=execute_language_draft(draft);
+                    export_exclusive(required(args,"--output"),pack_language_mod_run(run));
+                    std::cout<<"{\"contract\":\"language-execution-v1\",\"result\":"<<render_language_run(run)<<"}\n";
+                }
             } else if(action=="replay") {
                 if(argc!=4) throw Error("Usage: bruce language replay LANGUAGE_RUN");
-                const auto run=replay_language_cli(read_bounded(argv[3]));
-                std::cout<<"{\"contract\":\"language-replay-v1\",\"result\":"<<render_language_run(run)<<"}\n";
+                const auto bytes=read_bounded(argv[3]);
+                if(language_run_is_v3(bytes)) {
+                    const auto run=replay_language_cli_v3(bytes);
+                    std::cout<<"{\"contract\":\"language-replay-v3\",\"result\":"<<render_language_run_v3(run)<<"}\n";
+                } else if(language_run_is_v2(bytes)) {
+                    const auto run=replay_language_cli_v2(bytes);
+                    std::cout<<"{\"contract\":\"language-replay-v2\",\"result\":"<<render_language_run_v2(run)<<"}\n";
+                } else {
+                    const auto run=replay_language_cli(bytes);
+                    std::cout<<"{\"contract\":\"language-replay-v1\",\"result\":"<<render_language_run(run)<<"}\n";
+                }
             } else throw Error("UnknownLanguageAction: "+action);
         }
 #else
+        }
+#endif
+#if BRUCE_BUILD_MOD_DIALOGUE
+        else if(command=="dialogue") {
+            if(argc<3) throw Error("Usage: bruce dialogue interpret|select|confirm|replay");
+            const std::string action=argv[2];
+            if(action=="interpret") {
+                const auto args=options(argc,argv,3,{"--text","--output"});
+                const auto draft=interpret_dialogue_v1(required(args,"--text"));
+                if(draft.status==DialogueStatus::unsupported) throw Error("UnsupportedDialogueText");
+                export_exclusive(required(args,"--output"),pack_dialogue_draft_v1(draft));
+                std::cout<<render_dialogue_cli(draft,"dialogue-interpretation-v1")<<'\n';
+            } else if(action=="select") {
+                if(argc<4) throw Error("Usage: bruce dialogue select DRAFT --alternative ID --output SELECTED_DRAFT");
+                const auto args=options(argc,argv,4,{"--alternative","--output"});
+                const auto draft=unpack_dialogue_draft_v1(read_bounded(argv[3]));
+                const auto selected=select_dialogue_alternative_v1(draft,required(args,"--alternative"));
+                export_exclusive(required(args,"--output"),pack_dialogue_draft_v1(selected));
+                std::cout<<render_dialogue_cli(selected,"dialogue-selection-v1")<<'\n';
+            } else if(action=="confirm") {
+                if(argc<4) throw Error("Usage: bruce dialogue confirm DRAFT --output DIALOGUE_RUN");
+                const auto args=options(argc,argv,4,{"--output"});
+                const auto draft=unpack_dialogue_draft_v1(read_bounded(argv[3]));
+                const auto run=confirm_dialogue_draft_v1(draft);
+                export_exclusive(required(args,"--output"),pack_dialogue_run_v1(run));
+                std::cout<<render_dialogue_run_cli(run,"dialogue-confirmation-v1")<<'\n';
+            } else if(action=="replay") {
+                if(argc!=4) throw Error("Usage: bruce dialogue replay DIALOGUE_DRAFT");
+                const auto bytes=read_bounded(argv[3]);
+                if(bytes.starts_with("BRUCE_DIALOGUE_RUN_V1\n")) {
+                    const auto run=unpack_dialogue_run_v1(bytes);
+                    std::cout<<render_dialogue_run_cli(run,"dialogue-replay-v1")<<'\n';
+                } else {
+                    const auto draft=unpack_dialogue_draft_v1(bytes);
+                    std::cout<<render_dialogue_cli(draft,"dialogue-replay-v1")<<'\n';
+                }
+            } else throw Error("UnknownDialogueAction: "+action);
         }
 #endif
         else if(command=="evidence") {
@@ -785,9 +1118,14 @@ int main(int argc,char** argv) {
                     std::cout<<controlled_transfer_report(report,control,bool(checkpoint))<<'\n';
                 }
             } else if(action=="inspect") {
-                if(argc!=4) throw Error("Usage: bruce experience inspect SNAPSHOT");
-                const auto result=execute_experience(ExperienceInspectTask{read_bounded(argv[3],experience_byte_limit)});
-                std::cout << result.report << '\n';
+                if(argc<4) throw Error("Usage: bruce experience inspect SNAPSHOT");
+                auto management=parse_management_inspection_options(
+                    argc,argv,4,"Usage: bruce experience inspect SNAPSHOT");
+                const auto checkpoint=management.checkpoint();
+                const auto snapshot=checkpoint ? LocalFiles::read(argv[3],experience_byte_limit,checkpoint) :
+                    read_bounded(argv[3],experience_byte_limit);
+                const auto result=execute_experience(ExperienceInspectTask{snapshot},checkpoint);
+                std::cout << management.render(result.report) << '\n';
             } else if(action=="add") {
                 const auto args=options(argc,argv,3,{"--store","--from-run","--output","--max-transfer-checkpoints","--transfer-cancellation"});
                 TransferControl control;const auto checkpoint=transfer_checkpoint(args,control);
