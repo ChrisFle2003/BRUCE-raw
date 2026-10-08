@@ -1,34 +1,32 @@
-# Sicherheitsrichtlinie
+# Security policy
 
-## Unterstützte Versionen
+## Supported versions
 
-Der aktive Entwicklungsstand ist Core 0.102 auf dem Standardbranch. Für ältere
-Stände und historische Dokumentationspakete sind keine Sicherheitsupdates oder
-Backports zugesagt.
+The active development state is Core 0.102 on the default branch. No security
+updates or backports are promised for older states or historical documentation
+packages.
 
-## Sicherheitslücken melden
+## Reporting vulnerabilities
 
-Bitte veröffentliche Sicherheitslücken, mögliche Geheimnisse oder
-Angriffsdetails nicht in einem öffentlichen Issue, Pull Request oder
-Diskussionsbeitrag.
+Do not publish security vulnerabilities, possible secrets, or attack details
+in a public issue, pull request, or discussion.
 
-1. Nutze in der Repository-Ansicht unter **Security** die Funktion **Report a
-   vulnerability**, sofern sie verfügbar ist.
-2. Falls diese Funktion nicht verfügbar ist, kontaktiere einen Maintainer nur
-   über einen von ihm oder ihr bereits öffentlich angegebenen privaten
-   Kontaktweg. Dieses Repository erfindet keinen E-Mail- oder Chat-Kanal.
-3. Gib eine minimale Reproduktion, betroffene Version oder Commit, mögliche
-   Auswirkungen und sichere Schritte zur Verifikation an. Entferne Tokens,
-   personenbezogene Daten und private Pfade.
+1. In the repository view, use **Security** → **Report a vulnerability** when
+   it is available.
+2. If it is unavailable, contact a maintainer only through a private channel
+   that they have already published. This repository does not invent an email
+   address or chat channel.
+3. Include a minimal reproduction, the affected version or commit, likely
+   impact, and safe verification steps. Remove tokens, personal data, and
+   private paths.
 
-Für diese Richtlinie ist kein Reaktionszeit-SLA zugesagt. Repository-Eigentümer
-sollten vor einer öffentlichen Veröffentlichung die private
-Vulnerability-Reporting-Funktion von GitHub aktivieren oder einen belastbaren
-privaten Meldeweg veröffentlichen.
+No response-time SLA is promised by this policy. Before public disclosure,
+repository owners should enable GitHub's private vulnerability-reporting
+feature or publish a reliable private reporting channel.
 
-## Umfang
+## Scope
 
-Relevant sind insbesondere der Build- und Installationspfad, Parser für lokale
-Eingabedateien, gespeicherte Replay- und Exportdateien sowie die GitHub-Actions-
-Konfiguration. Die Prüfung eines gemeldeten Problems garantiert weder eine
-sofortige Korrektur noch eine Veröffentlichung als Security Advisory.
+Relevant areas include the build and installation path, parsers for local
+input files, stored replay and export files, and GitHub Actions configuration.
+Reviewing a reported problem guarantees neither an immediate fix nor a
+Security Advisory publication.
