@@ -1,6 +1,6 @@
 BRUCE Core
 Copyright 2026 Christopher Flegel
 
-Diese Distribution bündelt keine Laufzeitbibliotheken Dritter. Die verwendeten
-Systemabhängigkeiten und ihre getrennten Lizenzbedingungen sind in
-DEPENDENCIES.md dokumentiert.
+This distribution bundles no third-party runtime libraries. The system
+dependencies in use and their separate license terms are documented in
+DEPENDENCIES.md.
