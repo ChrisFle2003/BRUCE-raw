@@ -1,6 +1,6 @@
-# Historie
+# History
 
-Der vollständige frühere Root-Einstieg ist als [HISTORY.md](../../HISTORY.md)
-erhalten. Er dient der Nachvollziehbarkeit; für aktuelle Aussagen zuerst den
-[Dokumentationsindex](../README.md) und den
-[Blueprint](../architecture/03-blueprint-consolidation.md) lesen.
+The complete former root entry point is preserved as
+[HISTORY.md](../../HISTORY.md). It supports traceability; for current claims,
+read the [documentation index](../README.md) and the
+[Blueprint](../architecture/03-blueprint-consolidation.md) first.
