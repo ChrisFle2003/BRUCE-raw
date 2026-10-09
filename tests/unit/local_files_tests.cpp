@@ -42,6 +42,15 @@ int main(){
         expect_error([&]{LocalFiles::publish_new(output,"replacement");},"ExportExistsOrUnavailable");
         if(LocalFiles::read(output,8)!="original")throw Error("ExistingExportChanged");
         clean();
+        const auto atomic_target=root/"atomic-publication";
+        LocalFiles::publish_new_atomically(atomic_target,"retained");
+        expect_error([&]{LocalFiles::publish_new_atomically(atomic_target,"replacement");},"ExportExistsOrUnavailable");
+        if(LocalFiles::read(atomic_target,8)!="retained")throw Error("AtomicPublicationOverwroteTarget");
+        const auto atomic_symlink=root/"atomic-symlink";
+        if(::symlink(atomic_target.c_str(),atomic_symlink.c_str())!=0)throw Error("TestSymlinkFailed");
+        expect_error([&]{LocalFiles::publish_new_atomically(atomic_symlink,"replacement");},"ExportExistsOrUnavailable");
+        if(!std::filesystem::is_symlink(atomic_symlink) || LocalFiles::read(atomic_target,8)!="retained")throw Error("AtomicPublicationReplacedSymlink");
+        clean();
         const auto cleanup_target=root/"cleanup-failure";
         blocked_unlink_target=cleanup_target.string();
         expect_error([&]{LocalFiles::publish_new(cleanup_target,"published");},"ExportTemporaryCleanupFailed");

@@ -257,12 +257,12 @@ RuntimeModRegistryV1 RuntimeModRegistryV1::open(const std::string& mod_root, con
     check_directory(root + "/packages", true);
     if (!exists(root + "/truststore.pub")) {
         if (exists(root + "/journal.v1") || exists(root + "/registry.v1")) throw Error("RuntimeModTrustStoreMissing");
-        LocalFiles::publish_new(root + "/truststore.pub", trust_bytes(trust));
+        LocalFiles::publish_new_atomically(root + "/truststore.pub", trust_bytes(trust));
     }
     check_trust(root, trust);
     if (!exists(root + "/journal.v1")) {
         if (exists(root + "/registry.v1")) throw Error("RuntimeModJournalMissing");
-        LocalFiles::publish_new(root + "/journal.v1", journal_header);
+        LocalFiles::publish_new_atomically(root + "/journal.v1", journal_header);
     }
     (void)load(root); sync_directory(root);
     return RuntimeModRegistryV1(root, trust);
@@ -288,7 +288,7 @@ void RuntimeModRegistryV1::install(const RuntimeDataModPackageV1& package) {
     const auto path = root_ + "/packages/" + package.package_digest() + ".brucemod";
     if (exists(path)) {
         if (read_private(path, max_runtime_mod_package_bytes_v1) != package.bytes()) throw Error("RuntimeModInstalledPackageMismatch");
-    } else LocalFiles::publish_new(path, package.bytes());
+    } else LocalFiles::publish_new_atomically(path, package.bytes());
     state.records.push_back({package.manifest().mod_id, package.manifest().version, package.package_digest(), RuntimeModStateV1::installed_inactive});
     std::sort(state.records.begin(), state.records.end(), [](const auto& a, const auto& b) { return std::pair{a.mod_id,a.version} < std::pair{b.mod_id,b.version}; });
     advance(state); append(root_, state);

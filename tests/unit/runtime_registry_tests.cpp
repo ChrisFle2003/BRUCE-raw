@@ -10,7 +10,22 @@
 #include <sys/stat.h>
 #include <sys/resource.h>
 #include <sys/wait.h>
+#include <sys/syscall.h>
+#include <fcntl.h>
 #include <unistd.h>
+
+// Interrupt the actual publication path after the target first exists. The
+// legacy link/unlink path stops before unlink; atomic rename stops before fsync.
+// These interposed calls are confined to this test executable.
+std::string interrupted_publication_target;
+extern "C" int unlink(const char* path) {
+    if (!interrupted_publication_target.empty() && std::filesystem::exists(interrupted_publication_target)) ::_exit(73);
+    return ::unlinkat(AT_FDCWD, path, 0);
+}
+extern "C" int fsync(int fd) {
+    if (!interrupted_publication_target.empty() && std::filesystem::exists(interrupted_publication_target)) ::_exit(73);
+    return static_cast<int>(::syscall(SYS_fsync, fd));
+}
 
 namespace {
 void require(bool value, const char* message) { if (!value) throw bruce::Error(message); }
@@ -143,6 +158,11 @@ void store_tampering() {
     require(::symlink((path + ".real").c_str(), path.c_str()) == 0, "symlink failed");
     rejected([&] { registry.activate("user.power", "1.0.0"); });
     require(registry.generation() == 1, "failed activation changed generation");
+    std::filesystem::remove(path);
+    std::filesystem::rename(path + ".real", path);
+    require(::link(path.c_str(), (path + ".foreign-link").c_str()) == 0, "hardlink failed");
+    rejected([&] { registry.activate("user.power", "1.0.0"); });
+    require(registry.generation() == 1, "multiply linked package activation changed generation");
 }
 void failed_append_recovery() {
     TemporaryRoot temp; const auto trust = bruce::read_runtime_mod_truststore_v1(trust_bytes());
@@ -161,6 +181,38 @@ void failed_append_recovery() {
     require(std::filesystem::file_size(temp.path + "/journal.v1") == journal_size, "partial append was not recovered");
     registry.activate("user.power", "1.0.0");
     require(registry.generation() == 2, "retry after recovery failed");
+}
+void interrupted_initial_publication() {
+    const auto trust = bruce::read_runtime_mod_truststore_v1(trust_bytes());
+    const auto mod = package();
+    for (const std::string member_name : {"truststore.pub", "journal.v1", "package"}) {
+        TemporaryRoot temp;
+        const auto root = temp.path + "/mods";
+        const bool is_package = member_name == "package";
+        const auto target = root + (is_package ? "/packages/" + mod.package_digest() + ".brucemod" : "/" + member_name);
+        if (is_package) (void)bruce::RuntimeModRegistryV1::open(root, trust);
+        const auto child = ::fork(); require(child >= 0, "fork failed");
+        if (child == 0) {
+            interrupted_publication_target = target;
+            try {
+                auto registry = bruce::RuntimeModRegistryV1::open(root, trust);
+                if (is_package) registry.install(mod);
+            } catch (...) { ::_exit(2); }
+            ::_exit(3);
+        }
+        int status;
+        require(::waitpid(child, &status, 0) == child && WIFEXITED(status) && WEXITSTATUS(status) == 73,
+            "publication interruption was not observed");
+        // Retrying initialisation or installation must retain validated bytes
+        // and a usable registry even when a process dies before directory sync.
+        auto recovered = bruce::RuntimeModRegistryV1::open(root, trust);
+        require(recovered.generation() == 0 && recovered.records().empty(), "publication created a premature state commit");
+        recovered.install(mod);
+        recovered.activate("user.power", "1.0.0");
+        require(bruce::RuntimeModRegistryV1::open_existing(root).active_tree().route(
+            bruce::normalize_route_text_v1("3/4 hoch 2")).status == bruce::RouteStatusV1::matched,
+            "initial publication interruption made the registry unusable");
+    }
 }
 void concurrency_and_permissions() {
     TemporaryRoot temp; const auto trust = bruce::read_runtime_mod_truststore_v1(trust_bytes());
@@ -190,6 +242,6 @@ void concurrency_and_permissions() {
 }
 }
 int main() {
-    try { lifecycle(); conflicts(); integrity_and_recovery(); upgrade_and_collision(); store_tampering(); failed_append_recovery(); concurrency_and_permissions(); std::cout << "runtime registry contracts passed\n"; return 0; }
+    try { interrupted_initial_publication(); lifecycle(); conflicts(); integrity_and_recovery(); upgrade_and_collision(); store_tampering(); failed_append_recovery(); concurrency_and_permissions(); std::cout << "runtime registry contracts passed\n"; return 0; }
     catch (const std::exception& e) { std::cerr << e.what() << '\n'; return 1; }
 }

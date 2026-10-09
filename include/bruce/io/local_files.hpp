@@ -8,6 +8,9 @@ class LocalFiles {
 public:
     static std::string read(const std::string& path,std::size_t limit=max_file_bytes,const ReplayCheckpoint& checkpoint={});
     static void publish_new(const std::string& path,std::string_view content,const ReplayCheckpoint& checkpoint={});
+    // Linux no-replace rename publishes one private inode atomically, including
+    // across process interruption. No link/unlink fallback is permitted.
+    static void publish_new_atomically(const std::string& path,std::string_view content);
     // Durable snapshot replacement. Caller owns locking and validates the old state.
     static void replace_atomically(const std::string& path,std::string_view content);
     static std::string rule_target(const std::string& path);

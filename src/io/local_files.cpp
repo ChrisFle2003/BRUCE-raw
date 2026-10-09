@@ -8,6 +8,8 @@
 #include <fstream>
 #include <fcntl.h>
 #include <sys/file.h>
+#include <sys/syscall.h>
+#include <linux/fs.h>
 #include <unistd.h>
 namespace bruce {
 namespace {
@@ -57,7 +59,8 @@ std::string LocalFiles::read(const std::string& path,std::size_t limit,const Rep
     if(!input.eof()) throw Error("FileReadError");
     return result;
 }
-void LocalFiles::publish_new(const std::string& path,std::string_view content,const ReplayCheckpoint& checkpoint) {
+namespace {
+void publish_new_file(const std::string& path,std::string_view content,const ReplayCheckpoint& checkpoint,bool atomic) {
     if(checkpoint)checkpoint();
     if(content.size()>max_file_bytes) throw Error("BundleByteLimit");
     const auto parent=std::filesystem::path(path).parent_path();
@@ -88,10 +91,18 @@ void LocalFiles::publish_new(const std::string& path,std::string_view content,co
         closed=true;
         if(close_result!=0) throw Error("ExportCloseFailure");
         if(checkpoint)checkpoint();
-        // Unlike rename(), link() never replaces an existing destination.
-        if(::link(temp.c_str(),path.c_str())!=0)
-            throw Error("ExportExistsOrUnavailable: "+std::string(std::strerror(errno)));
-        if(::unlink(temp.c_str())!=0) throw Error("ExportTemporaryCleanupFailed");
+        if(atomic) {
+            // A single namespace operation avoids a second hard link surviving
+            // process death. Unsupported filesystems fail closed, without a
+            // link/unlink fallback or replacement of an existing destination.
+            if(::syscall(SYS_renameat2,AT_FDCWD,temp.c_str(),AT_FDCWD,path.c_str(),RENAME_NOREPLACE)!=0)
+                throw Error("ExportExistsOrUnavailable: "+std::string(std::strerror(errno)));
+        } else {
+            // Unlike rename(), link() never replaces an existing destination.
+            if(::link(temp.c_str(),path.c_str())!=0)
+                throw Error("ExportExistsOrUnavailable: "+std::string(std::strerror(errno)));
+            if(::unlink(temp.c_str())!=0) throw Error("ExportTemporaryCleanupFailed");
+        }
         if(::fsync(directory_fd)!=0) throw Error("ExportCommitDurabilityUnknown");
     } catch(...) {
         if(!closed) ::close(fd);
@@ -100,6 +111,13 @@ void LocalFiles::publish_new(const std::string& path,std::string_view content,co
         throw;
     }
     ::close(directory_fd);
+}
+}
+void LocalFiles::publish_new(const std::string& path,std::string_view content,const ReplayCheckpoint& checkpoint) {
+    publish_new_file(path,content,checkpoint,false);
+}
+void LocalFiles::publish_new_atomically(const std::string& path,std::string_view content) {
+    publish_new_file(path,content,{},true);
 }
 std::string LocalFiles::rule_target(const std::string& path){
     return std::filesystem::weakly_canonical(std::filesystem::absolute(path)).string();
