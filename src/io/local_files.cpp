@@ -19,7 +19,8 @@ struct Descriptor {
     Descriptor& operator=(const Descriptor&)=delete;
 };
 void commit(const std::string& path,const std::string& bytes){
-    Descriptor directory(::open(std::filesystem::path(path).parent_path().c_str(),O_RDONLY|O_DIRECTORY));
+    const auto parent=std::filesystem::path(path).parent_path();
+    Descriptor directory(::open(parent.empty()?".":parent.c_str(),O_RDONLY|O_DIRECTORY));
     std::string temp=path+".tmp.XXXXXX";
     Descriptor file(::mkstemp(temp.data()));
     try {
@@ -35,6 +36,10 @@ void commit(const std::string& path,const std::string& bytes){
         if(::fsync(directory.fd)!=0)throw Error("RuleStoreCommitDurabilityUnknown");
     }catch(...){::unlink(temp.c_str());throw;}
 }
+}
+void LocalFiles::replace_atomically(const std::string& path,std::string_view content) {
+    if(content.size()>max_file_bytes)throw Error("InputByteLimit");
+    commit(path,std::string(content));
 }
 std::string LocalFiles::read(const std::string& path,std::size_t limit,const ReplayCheckpoint& checkpoint) {
     if(checkpoint)checkpoint();

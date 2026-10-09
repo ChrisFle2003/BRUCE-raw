@@ -8,6 +8,8 @@ class LocalFiles {
 public:
     static std::string read(const std::string& path,std::size_t limit=max_file_bytes,const ReplayCheckpoint& checkpoint={});
     static void publish_new(const std::string& path,std::string_view content,const ReplayCheckpoint& checkpoint={});
+    // Durable snapshot replacement. Caller owns locking and validates the old state.
+    static void replace_atomically(const std::string& path,std::string_view content);
     static std::string rule_target(const std::string& path);
     // Receives the canonical target used in the history's content binding.
     static RuleHistory load_rules(const std::string& target,bool allow_missing=false,const ReplayCheckpoint& checkpoint={});
