@@ -3,6 +3,7 @@
 #include "bruce/application/compatibility_transfer.hpp"
 #include "bruce/application/experience_transfer.hpp"
 #include "rule_store.hpp"
+#include "runtime_mod_cli.hpp"
 #include "rule_review.hpp"
 #include "bruce/application/research.hpp"
 #include "bruce/application/experience_task.hpp"
@@ -422,6 +423,13 @@ bruce --version
 bruce contracts
 bruce task-contracts
 bruce gate-contracts
+bruce mods verify PACKAGE --trust-store PATH
+bruce mods install PACKAGE --mod-root PATH --trust-store PATH
+bruce mods list --mod-root PATH
+bruce mods activate MOD_ID VERSION --mod-root PATH
+bruce mods disable MOD_ID --mod-root PATH
+bruce route --text TEXT --mod-root PATH [--output REPORT]
+bruce route replay REPORT --mod-root PATH
 bruce compare --left-numerator A0,A1,... --left-denominator B0,B1,...
               --right-numerator C0,C1,... --right-denominator D0,D1,...
               [--domain-policy quadratic|modular|modular-witness]
@@ -587,7 +595,7 @@ For Z compatibility: --verification-cancellation compatibility-checkpoints (also
 For rational-function comparison: --verification-cancellation comparison-checkpoints (also during replay).
 Optional: --max-replay-bytes N (limit bundle bytes before replay; 0 disables replay).
 Additionally: --max-serialized-bytes N (limit bundle size after SERIALIZING).
-Nothing is stored without --output. Exports are never overwritten.
+Run exports require --output and are never overwritten. Mod lifecycle commands update --mod-root.
 Ctrl+C stops the search at a logical cancellation point (replayable).
 VERIFIED_ON_SAMPLES confirms the checked pairs, not a general proof.
 Output: JSON, integers without floating-point rounding. Errors: JSON on stderr, exit 2.
@@ -600,6 +608,7 @@ int main(int argc,char** argv) {
     try {
         if(argc<2 || std::string(argv[1])=="--help" || std::string(argv[1])=="help") { help(); return 0; }
         const std::string command=argv[1];
+        if(command=="mods" || command=="route") return bruce::runtime_mod_cli(argc,argv);
 #if BRUCE_BUILD_MOD_NANOCELL
         if(command=="nanocell") return bruce::nanocell_cli(argc,argv);
 #endif

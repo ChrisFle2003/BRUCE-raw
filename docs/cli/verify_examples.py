@@ -60,6 +60,27 @@ with tempfile.TemporaryDirectory(prefix='bruce-cli-reference-') as directory:
     inputs = {p.name: p.read_text() for p in sorted(work.iterdir())}
     version = call('version', ['--version'])
     assert version['version'] == '0.102.0'
+    # Public test-only RFC 8032 fixtures. No fixture key is implicitly trusted.
+    fixture_dir = ROOT / 'tests/fixtures/runtime_mods'
+    (work / 'test-data.brucemod').write_bytes((fixture_dir / 'math-rational-power-v1.brucemod').read_bytes())
+    (work / 'test-only-trust.pub').write_bytes((fixture_dir / 'test-truststore-v1.pub').read_bytes())
+    call('mods-verify', ['mods', 'verify', 'test-data.brucemod', '--trust-store', 'test-only-trust.pub'],
+         expected={'verified': True})
+    installed = call('mods-install', ['mods', 'install', 'test-data.brucemod', '--mod-root', 'runtime-mods',
+        '--trust-store', 'test-only-trust.pub'])
+    assert installed['records'][0]['state'] == 'installed_inactive'
+    call('mods-list', ['mods', 'list', '--mod-root', 'runtime-mods'])
+    call('route-inactive', ['route', '--text', '3/4 hoch 2', '--mod-root', 'runtime-mods'],
+         expected={'status': 'UNKNOWN', 'selected_template': None})
+    call('mods-activate', ['mods', 'activate', 'user.math-rational-power', '1.0.0', '--mod-root', 'runtime-mods'])
+    routed = call('route-active', ['route', '--text', '3/4 hoch 2', '--mod-root', 'runtime-mods', '--output', 'route.report'],
+         expected={'status': 'MATCHED', 'selected_template': 'math.rational.power.v1'})
+    assert routed['candidate_addresses'] == [[1, 1, 5]]
+    assert call('route-replay', ['route', 'replay', 'route.report', '--mod-root', 'runtime-mods']) == routed
+    call('mods-disable', ['mods', 'disable', 'user.math-rational-power', '--mod-root', 'runtime-mods'])
+    call('route-disabled', ['route', '--text', '3/4 hoch 2', '--mod-root', 'runtime-mods'], expected={'status': 'UNKNOWN'})
+    call('route-stale-report', ['route', 'replay', 'route.report', '--mod-root', 'runtime-mods'],
+         code=2, expected={'error': 'RouteRegistryDigestMismatch'})
     call('rules-propose', ['rules-propose', 'old.rules', 'rules.txt', 'change.proposal'], expected={'approved': False})
     call('rules-unchanged', ['rules-propose', 'old.rules', 'old.rules', 'same.proposal'], code=2, expected={'error': 'RuleProposalUnchanged'})
     call('rules-no-terminal', ['rules-approve', 'change.proposal', 'old.rules', 'approved.rules'], code=2, expected={'error': 'RuleApprovalRequiresTerminal'})
@@ -289,7 +310,8 @@ with tempfile.TemporaryDirectory(prefix='bruce-cli-reference-') as directory:
 
 source = (ROOT / 'apps/bruce_cli.cpp').read_text()
 nanocell_source = (ROOT / 'apps/nanocell_cli.hpp').read_text()
-options = sorted(set(re.findall(r'"(--[a-z][a-z-]*)"', source + nanocell_source)))
+runtime_mod_source = (ROOT / 'apps/runtime_mod_cli.hpp').read_text()
+options = sorted(set(re.findall(r'"(--[a-z][a-z-]*)"', source + nanocell_source + runtime_mod_source)))
 manual = '\n'.join((HERE / f).read_text() for f in ['README.md', 'commands.md', 'formats.md', 'results-and-control.md'])
 missing = [option for option in options if option not in manual]
 if missing:
@@ -317,7 +339,7 @@ index += ['### `compatibility-plan`', '',
           '`plan-add`: `--from-run`, `--store`, `--max-source-bytes`, `--max-store-bytes`, `--output`, `--max-transfer-checkpoints`, `--transfer-cancellation`.', '',
           '`apply-add`: Plan als Positionsargument, danach `--from-run`, `--store`, `--output`, `--max-transfer-checkpoints`, `--transfer-cancellation`.', '',
           '### `language`', '',
-          '`interpret`: `--text`, `--train`, `--holdout`, `--max-bits`, `--max-denominator`, `--max-candidates`, `--max-operations`, `--max-trace`, `--max-results`, `--output`.', '',
+          '`interpret`: `--text`, `--train`, `--holdout`, `--grammar`, `--train-alias`, `--holdout-alias`, `--max-bits`, `--max-denominator`, `--max-candidates`, `--max-operations`, `--max-trace`, `--max-results`, `--output`.', '',
           '`select`: Entwurf als Positionsargument; `--alternative`, `--output`.', '',
           '`execute`: Entwurf als Positionsargument; `--output`.', '',
           '`replay`: Lauf als Positionsargument; keine Optionen.', '',
@@ -329,6 +351,14 @@ index += ['### `compatibility-plan`', '',
           '### `nanocell`', '',
           '`run`: ' + ', '.join(f'`{name}`' for name in sorted(set(re.findall(r'"(--[a-z][a-z-]*)"', nanocell_source)))) + '.', '',
           '`replay`: Lauf als Positionsargument; keine Optionen.', '',
+          '### `mods` und `route`', '',
+          '`mods verify`: Paket als Positionsargument; `--trust-store`.', '',
+          '`mods install`: Paket als Positionsargument; `--mod-root`, `--trust-store`.', '',
+          '`mods list`: `--mod-root`.', '',
+          '`mods activate`: Mod-ID und Version als Positionsargumente; `--mod-root`.', '',
+          '`mods disable`: Mod-ID als Positionsargument; `--mod-root`.', '',
+          '`route`: `--text`, `--mod-root`, optional `--output`.', '',
+          '`route replay`: Report als Positionsargument; `--mod-root`.', '',
           '## Diagnose-Literale', '',
           'Aus `Error("…")`, Stopaufrufen und Zuweisungen von `stop_reason` in `src/`, `include/` und der CLI. Dies sind vollständige gefundene Textliterale bzw. Präfixe; dynamisch zusammengesetzte Suffixe und Betriebssystemmeldungen sind nicht enumerierbar. Nicht jeder interne Fehler ist bei jedem CLI-Aufruf erreichbar. Quellverweise zeigen die Entstehungsstelle.', '',
           '| Literal / Präfix | Quelle |', '| --- | --- |']
@@ -360,6 +390,7 @@ for path in HERE.glob('*.md'):
     '- Relative Markdown-Dateilinks im Handbuch geprüft.\n'
     '- Eingaben, Argumente und vollständige JSON-Antworten stehen in `examples.json`.\n'
     '- NanoCell-Beispiele prüfen den äußeren Mod-Export, identisches Replay, `INCOMPLETE`, Kontextablehnung, ungültiges Hex und unbekannte Technik.\n'
+    '- Runtime-Daten-Mod-Beispiele prüfen explizites Testvertrauen, inaktive Installation, Aktivierung, Route-Export, identisches Replay, Deaktivierung und Ablehnung einer veralteten Registry-Version.\n'
     '- TaskSpec-Beispiele prüfen explizite Rollen, Asset-Digests, native Evidenz ohne Lern-/Publikations-Gates, identisches Replay und Ablehnung eines Spec als Lauf.\n'
     '- Negative Beispiele prüfen Parserfehler, doppelte Optionen, Holdout-Überlappung, BigInt-Division, Exportverweigerung, die drei Sitzungsbudgets sowie ungewählte und nicht unterstützte Spracheingaben.\n'
     '- Signaloptionen wurden auf gültige Konfiguration und erfolgreiches Replay geprüft; diese Dokumentationsprüfung misst keine Signallatenz und injiziert keine Signale.\n'

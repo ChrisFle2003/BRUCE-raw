@@ -12,12 +12,70 @@
 | `bruce gate-contracts` | Versionierter Forschungs-Gatevertrag mit Ablehnungsgründen und Priorität; keine Argumente, keine Prüfung eines konkreten Laufs |
 | `bruce task-contracts` | Acht Anwendungstypen und Architekturgrenzen; keine weiteren Argumente |
 
-`contracts` ist kein vollständiges JSON-Schema für Ergebnisse und enthält nicht alle numerischen Grenzwerte. `task-contracts` nennt `research-int64`, `research-exact`, `grid`, `grid-batch`, `grid-resume`, `grid-research`, `fraction-comparison`, `compatibility`. Es weist ausdrücklich auf fehlende dynamische Plugins und uneinheitliche mathematische Budgeteinheiten hin.
+`contracts` ist kein vollständiges JSON-Schema für Ergebnisse und enthält nicht alle numerischen Grenzwerte. `task-contracts` nennt `research-int64`, `research-exact`, `grid`, `grid-batch`, `grid-resume`, `grid-research`, `fraction-comparison`, `compatibility`. Es weist ausdrücklich auf fehlende dynamische Ausführungsplugins und uneinheitliche mathematische Budgeteinheiten hin. Die folgenden Daten-Mods sind ein separater Routingpfad und ergänzen diesen Anwendungskatalog nicht.
+
+## `mods` und `route` – signierte Daten-Mods zur Laufzeit
+
+**IMPLEMENTIERT UND BELEGT:** Daten-Mods ergänzen nummerierte Tree-Knoten und
+kontrollierte Textmuster ohne Neu-Kompilieren. Die Zuordnung wählt ein Template;
+sie führt keine Berechnung aus und begründet keinen mathematischen Beweis.
+Diese Befehle sind unabhängig von den statischen Language-/NanoCell-Buildoptionen.
+
+| Aufruf | Wirkung |
+| --- | --- |
+| `bruce mods verify PACKAGE --trust-store PATH` | Begrenztes Paketformat, Hash, Ed25519-Vertrauen und Daten-Schema prüfen; keine Installation |
+| `bruce mods install PACKAGE --mod-root PATH --trust-store PATH` | Im persönlichen Mod-Verzeichnis installieren; Zustand `installed_inactive` |
+| `bruce mods list --mod-root PATH` | Installierte IDs, Versionen, Paket-Digests, Zustände sowie Generation/Journal-Digest als JSON |
+| `bruce mods activate MOD_ID VERSION --mod-root PATH` | Signatur, Mount-Konflikte und Golden-Fälle erneut prüfen und diese Version aktivieren |
+| `bruce mods disable MOD_ID --mod-root PATH` | Aktive Version deaktivieren; Dateien bleiben erhalten |
+| `bruce route --text TEXT --mod-root PATH [--output REPORT]` | Text durch den aktiven Tree routen; optional neuen JSON-Report exportieren |
+| `bruce route replay REPORT --mod-root PATH` | Gespeicherten Report gegen denselben aktiven Tree und dieselben Paketidentitäten erneut prüfen |
+
+Alle Pfade sind explizit. Es gibt keine automatischen Benutzerpfade oder
+mitgelieferten vertrauenswürdigen Schlüssel. `install` legt `--mod-root` privat
+an; dessen Elternverzeichnis muss existieren. Bei einem bestehenden Verzeichnis
+sind Nutzerbesitz und Rechte `0700` erforderlich. Vertrauen wird bei der ersten
+Installation in `truststore.pub` festgelegt und muss bei weiteren Installationen
+identisch sein. Die übrigen Befehle öffnen diese bestehende Registry; sie
+erzeugen keinen leeren Ersatz, wenn sie fehlt. Installations- und Zustandsdaten
+werden gesperrt, atomar veröffentlicht und journalisiert.
+
+V1 erlaubt ausschließlich deklarative Datenpakete bis 1 MiB, keine ausführbaren
+Worker. Ein expliziter Truststore wird bis 65536 Bytes eingelesen. Paketformat
+und Schlüsselverwaltung sind im [V1-Vertrag](../../tests/fixtures/runtime_mods/README.md)
+beschrieben. Dessen öffentlicher Testschlüssel darf nicht in Produktionsinstallationen
+vertraut werden. `verify` prüft noch keine Mount-Konflikte oder Ausführung der
+Golden-Fälle; das übernimmt die Registry bei Installation/Aktivierung.
+
+`route` akzeptiert höchstens 4096 UTF-8-Bytes. ASCII-Großbuchstaben und
+Whitespace werden normalisiert; Wörter, Reihenfolge und vollständige Muster
+müssen passen. Keine oder mehrere passende Zeilen ergeben `UNKNOWN` bzw.
+`AMBIGUOUS` mit Exit 0, genau eine ergibt `MATCHED`. Nur dann ist
+`selected_template` gesetzt, sonst `null`. Es gibt keine wahrscheinliche Auswahl.
+
+`route-report-v1` enthält `text`, `registry_digest`, `status`,
+`candidate_addresses`, `selected_template` und `active_packages` mit ID, Version
+und vollständigem Paket-Digest. Tree und Paketliste stammen aus einem gemeinsam
+gesperrten Snapshot. Report und Replay-Datei sind auf 1 MiB inklusive finaler
+Newline begrenzt; eine größere Kandidatenliste führt zu `RouteReportTooLarge`
+bevor ein Export erstellt wird. `--output` schreibt den vollständigen Report mit finaler
+Newline exklusiv; vorhandene Ziele werden abgewiesen. Replay akzeptiert exakt
+diesen kanonischen Report und vergleicht alle Felder. Ein geänderter aktiver Tree
+führt zu `RouteRegistryDigestMismatch`, ein geänderter Befund bei gleicher
+Tree-Version zu `RouteReportMismatch`. Ein anderer aktiver Pakethash wird auch
+dann erkannt, wenn beide Versionen dieselben Tree-Knoten haben. Der Report ist
+ein Reproduktionsbeleg, kein signierter Herkunftsnachweis.
+
+Erfolg liefert ausschließlich JSON auf stdout. Parser-, Vertrauens-, Datei-
+und Zustandsfehler liefern JSON auf stderr und Exit 2. Signaturen und
+Truststore-Inhalte werden nicht ausgegeben. `install`, `activate` und `disable`
+ändern die ausdrücklich gewählte Registry auch ohne `--output`.
 
 ## `language` – optionale deterministische Language-Mod
 
 ```text
 bruce language interpret --text TEXT --train TRAIN.csv --holdout HOLDOUT.csv
+               [--grammar v1|v2|v3] [--train-alias ALIAS --holdout-alias ALIAS]
                [--max-bits N] [--max-denominator N] [--max-candidates N]
                [--max-operations N] [--max-trace N] [--max-results N] --output DRAFT
 bruce language select DRAFT --alternative ID --output SELECTED_DRAFT
@@ -27,7 +85,15 @@ bruce language replay LANGUAGE_RUN
 
 `interpret` liest beide CSV-Dateien begrenzt ein und schreibt ausschließlich einen kanonischen Entwurf. `--text`, `--train`, `--holdout` und `--output` sind Pflicht. Die sechs optionalen Grenzen entsprechen der rationalen Core-Anfrage: `--max-bits` (Standard 4096), `--max-denominator` (8), `--max-candidates` (100000), `--max-operations` (1000000), `--max-trace` (100002) und `--max-results` (128). Für diese Optionen gelten die bestehenden Grenzen der exakten Forschung. Andere Forschungs-, Sitzungs-, Replay- oder Ausführungsoptionen sind im Sprachpfad nicht zulässig. `interpret` startet den Core nicht.
 
-Die deterministische Mini-Grammatik erkennt genau zwei normalisierte Sätze: `Untersuche @train mit @holdout auf rationale Formeln.` und `Untersuche @left und @right auf rationale Formeln.` Die Eingabepfade heißen in beiden Fällen ausschließlich `--train` und `--holdout`. Beim ersten Satz werden ihre Bytes intern als `train`/`holdout` gebunden; beim zweiten als `left`/`right`, in derselben Reihenfolge. Die zweite Form liefert zwei Alternativen und erfordert `select`; `--alternative` nimmt exakt eine der ausgegebenen IDs. Nicht erkannter Text, ungültiges UTF-8 und eine fehlende Auswahl führen zu Exit 2 ohne neuen Export.
+Die Standardgrammatik `--grammar v1` erkennt genau zwei normalisierte Sätze: `Untersuche @train mit @holdout auf rationale Formeln.` und `Untersuche @left und @right auf rationale Formeln.` Die Eingabepfade heißen in beiden Fällen ausschließlich `--train` und `--holdout`. Beim ersten Satz werden ihre Bytes intern als `train`/`holdout` gebunden; beim zweiten als `left`/`right`, in derselben Reihenfolge. Die zweite Form liefert zwei Alternativen und erfordert `select`; `--alternative` nimmt exakt eine der ausgegebenen IDs. Nicht erkannter Text, ungültiges UTF-8 und eine fehlende Auswahl führen zu Exit 2 ohne neuen Export.
+
+`--grammar v2` und `v3` wählen die separat versionierten kontrollierten
+Grammatiken. Beide akzeptieren `--train-alias` und `--holdout-alias` (Standard
+`train` und `holdout`) für die beiden expliziten CSV-Eingaben. V1 weist diese
+Aliasoptionen mit `LanguageAliasOptionsRequireV2` ab. Unbekannte Grammatikwerte
+führen zu `UnsupportedLanguageGrammar`; die Grammatikwahl macht den Sprachpfad
+nicht zu einem allgemeinen Chat. Der neue `route`-Befehl ist ein separater
+Tree-Router und verwendet diese Language-Grammatiken nicht.
 
 `select` nimmt einen Entwurf als einziges Positionsargument sowie `--alternative` und `--output`. `execute` nimmt einen kanonischen, gegebenenfalls ausgewählten Entwurf und `--output`. `replay` nimmt nur den Sprachlauf als Positionsargument. Der Befehl existiert nur mit `BRUCE_BUILD_MOD_LANGUAGE=ON`; mit `OFF` folgt die normale `UnknownCommand: language`-Route. Entwurf und Lauf werden vor Verwendung kanonisch geprüft; alle Exporte sind exklusiv und überschreiben vorhandene Ziele nicht.
 

@@ -1,7 +1,7 @@
 # BRUCE Core 0.102.0 – CLI manual
 
-Current as of 4 October 2026. This reference describes the implemented Linux
-CLI in `apps/bruce_cli.cpp`, `apps/nanocell_cli.hpp`, and
+Current as of 9 October 2026. This reference describes the implemented Linux
+CLI in `apps/bruce_cli.cpp`, `apps/runtime_mod_cli.hpp`, `apps/nanocell_cli.hpp`, and
 `apps/rule_review.hpp`, together with the parsers and executors they invoke.
 Architecture designs and planned capabilities are not guaranteed CLI features.
 Rights holder: Christopher Flegel.
@@ -9,7 +9,7 @@ Rights holder: Christopher Flegel.
 ## Contents
 
 1. [Installation, invocation, and conventions](#installation-and-startup)
-2. [Integrated CLI reference: overview, claim scope, and audit](CLI_REFERENCE.md)
+2. [Integrated CLI reference: overview, claim scope, and audit](bruce-cli-reference.md)
 3. [All commands, options, defaults, and limits](commands.md)
 4. [Input files, numbers, and exports](formats.md)
 5. [JSON results, budgets, cancellation, and errors](results-and-control.md)
@@ -90,14 +90,18 @@ or the full path to the built file. Every example can instead use
   complete search or mathematical proof. Evaluate `INCOMPLETE`,
   `NO_CANDIDATE`, `REFUTED`, `UNDECIDED`, and ambiguity in the JSON. NanoCell
   `NO_MATCH` and `CONTEXT_REJECTED` are also ordinary responses.
-- Without `--output`, no mathematical bundle is exported. Rule proposals and
+- Without `--output`, no mathematical bundle or route report is exported. Mod
+  installation/activation/deactivation update the explicitly selected `--mod-root`.
+  Rule proposals and
   individual file approvals use positional arguments for their output file;
-  `rules-activate` updates the named store. A redirect such as
-  `> result.json` saves only JSON output, not a replay file.
+  `rules-activate` updates the named store. For mathematical run commands, a
+  redirect such as `> result.json` saves JSON output rather than a replay bundle.
+  For `route`, stdout and `--output` contain the same replayable JSON report.
 - Exports must not already exist. `experience replace` does not overwrite a
   file either. Target directories must exist. The exception is
   `rules-activate`, which atomically replaces the named rule store and its
-  journal after explicit approval.
+  journal after explicit approval. Mod lifecycle commands also update their
+  private installation journal and recoverable registry snapshot.
 
 ## First complete research run
 
@@ -133,7 +137,14 @@ holdout confirms additional concrete number pairs. By contrast, `compare` can
 prove statements about two explicitly supplied rational functions over the
 rational numbers; the relevant domain of definition is part of that statement.
 
-The CLI has no network protocol, dynamic strategy plugins, GPU control, or
+The [runtime data-mod commands](commands.md#mods-und-route--signierte-daten-mods-zur-laufzeit)
+install signed user-scoped Tree routing data without recompilation and remain
+inactive until explicit activation. `route` selects a template deterministically;
+it does not run the selected template. Reports bind replay to the active Tree
+and package versions. There is no default installation path or implicit trusted
+key; every installation path and initial trust store is explicit.
+
+The CLI has no network protocol, executable dynamic strategy plugins, GPU control, or
 universal time/RAM limit. Grid and numerical Z compatibility still use bounded
 integers. Exact BigInt/rational-function research is a separate path.
 

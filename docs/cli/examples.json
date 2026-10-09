@@ -33,6 +33,252 @@
       }
     },
     {
+      "example": "mods-verify",
+      "argv": [
+        "mods",
+        "verify",
+        "test-data.brucemod",
+        "--trust-store",
+        "test-only-trust.pub"
+      ],
+      "exit_code": 0,
+      "stream": "stdout",
+      "json": {
+        "contract": "runtime-mod-verification-v1",
+        "verified": true,
+        "mod_id": "user.math-rational-power",
+        "version": "1.0.0",
+        "package_digest": "e7adbb33c660d74d7ef090dd1d61c2252a99854a92512678090f0cd459f55c2e"
+      }
+    },
+    {
+      "example": "mods-install",
+      "argv": [
+        "mods",
+        "install",
+        "test-data.brucemod",
+        "--mod-root",
+        "runtime-mods",
+        "--trust-store",
+        "test-only-trust.pub"
+      ],
+      "exit_code": 0,
+      "stream": "stdout",
+      "json": {
+        "contract": "runtime-mod-registry-v1",
+        "generation": 1,
+        "journal_digest": "bc9c4b56f290d996fa61a13522a0c0b4ff228022b0cf31e77d3e2356fef5fee5",
+        "records": [
+          {
+            "mod_id": "user.math-rational-power",
+            "version": "1.0.0",
+            "package_digest": "e7adbb33c660d74d7ef090dd1d61c2252a99854a92512678090f0cd459f55c2e",
+            "state": "installed_inactive"
+          }
+        ]
+      }
+    },
+    {
+      "example": "mods-list",
+      "argv": [
+        "mods",
+        "list",
+        "--mod-root",
+        "runtime-mods"
+      ],
+      "exit_code": 0,
+      "stream": "stdout",
+      "json": {
+        "contract": "runtime-mod-registry-v1",
+        "generation": 1,
+        "journal_digest": "bc9c4b56f290d996fa61a13522a0c0b4ff228022b0cf31e77d3e2356fef5fee5",
+        "records": [
+          {
+            "mod_id": "user.math-rational-power",
+            "version": "1.0.0",
+            "package_digest": "e7adbb33c660d74d7ef090dd1d61c2252a99854a92512678090f0cd459f55c2e",
+            "state": "installed_inactive"
+          }
+        ]
+      }
+    },
+    {
+      "example": "route-inactive",
+      "argv": [
+        "route",
+        "--text",
+        "3/4 hoch 2",
+        "--mod-root",
+        "runtime-mods"
+      ],
+      "exit_code": 0,
+      "stream": "stdout",
+      "json": {
+        "contract": "route-report-v1",
+        "text": "3/4 hoch 2",
+        "registry_digest": "e7bc7bb90cdb8596b1367be21875d9867b6fd13708242af35ae64df5527c9b3b",
+        "status": "UNKNOWN",
+        "candidate_addresses": [],
+        "selected_template": null,
+        "active_packages": []
+      }
+    },
+    {
+      "example": "mods-activate",
+      "argv": [
+        "mods",
+        "activate",
+        "user.math-rational-power",
+        "1.0.0",
+        "--mod-root",
+        "runtime-mods"
+      ],
+      "exit_code": 0,
+      "stream": "stdout",
+      "json": {
+        "contract": "runtime-mod-registry-v1",
+        "generation": 2,
+        "journal_digest": "a4fd69b055a737eeb3a725ead883eef415053bb9207a06f91bcdc8012bf1730a",
+        "records": [
+          {
+            "mod_id": "user.math-rational-power",
+            "version": "1.0.0",
+            "package_digest": "e7adbb33c660d74d7ef090dd1d61c2252a99854a92512678090f0cd459f55c2e",
+            "state": "active"
+          }
+        ]
+      }
+    },
+    {
+      "example": "route-active",
+      "argv": [
+        "route",
+        "--text",
+        "3/4 hoch 2",
+        "--mod-root",
+        "runtime-mods",
+        "--output",
+        "route.report"
+      ],
+      "exit_code": 0,
+      "stream": "stdout",
+      "json": {
+        "contract": "route-report-v1",
+        "text": "3/4 hoch 2",
+        "registry_digest": "e5e96aad3840bdd88d2b44a41bc3054d6600c2c0698d95539833944947caaf1b",
+        "status": "MATCHED",
+        "candidate_addresses": [
+          [
+            1,
+            1,
+            5
+          ]
+        ],
+        "selected_template": "math.rational.power.v1",
+        "active_packages": [
+          {
+            "mod_id": "user.math-rational-power",
+            "version": "1.0.0",
+            "package_digest": "e7adbb33c660d74d7ef090dd1d61c2252a99854a92512678090f0cd459f55c2e"
+          }
+        ]
+      }
+    },
+    {
+      "example": "route-replay",
+      "argv": [
+        "route",
+        "replay",
+        "route.report",
+        "--mod-root",
+        "runtime-mods"
+      ],
+      "exit_code": 0,
+      "stream": "stdout",
+      "json": {
+        "contract": "route-report-v1",
+        "text": "3/4 hoch 2",
+        "registry_digest": "e5e96aad3840bdd88d2b44a41bc3054d6600c2c0698d95539833944947caaf1b",
+        "status": "MATCHED",
+        "candidate_addresses": [
+          [
+            1,
+            1,
+            5
+          ]
+        ],
+        "selected_template": "math.rational.power.v1",
+        "active_packages": [
+          {
+            "mod_id": "user.math-rational-power",
+            "version": "1.0.0",
+            "package_digest": "e7adbb33c660d74d7ef090dd1d61c2252a99854a92512678090f0cd459f55c2e"
+          }
+        ]
+      }
+    },
+    {
+      "example": "mods-disable",
+      "argv": [
+        "mods",
+        "disable",
+        "user.math-rational-power",
+        "--mod-root",
+        "runtime-mods"
+      ],
+      "exit_code": 0,
+      "stream": "stdout",
+      "json": {
+        "contract": "runtime-mod-registry-v1",
+        "generation": 3,
+        "journal_digest": "cb902cf601bdc976c06a3396a39763af6ca9a8cb00bc88480f87eb9727ae212e",
+        "records": [
+          {
+            "mod_id": "user.math-rational-power",
+            "version": "1.0.0",
+            "package_digest": "e7adbb33c660d74d7ef090dd1d61c2252a99854a92512678090f0cd459f55c2e",
+            "state": "disabled"
+          }
+        ]
+      }
+    },
+    {
+      "example": "route-disabled",
+      "argv": [
+        "route",
+        "--text",
+        "3/4 hoch 2",
+        "--mod-root",
+        "runtime-mods"
+      ],
+      "exit_code": 0,
+      "stream": "stdout",
+      "json": {
+        "contract": "route-report-v1",
+        "text": "3/4 hoch 2",
+        "registry_digest": "e7bc7bb90cdb8596b1367be21875d9867b6fd13708242af35ae64df5527c9b3b",
+        "status": "UNKNOWN",
+        "candidate_addresses": [],
+        "selected_template": null,
+        "active_packages": []
+      }
+    },
+    {
+      "example": "route-stale-report",
+      "argv": [
+        "route",
+        "replay",
+        "route.report",
+        "--mod-root",
+        "runtime-mods"
+      ],
+      "exit_code": 2,
+      "stream": "stderr",
+      "json": {
+        "error": "RouteRegistryDigestMismatch"
+      }
+    },
+    {
       "example": "rules-propose",
       "argv": [
         "rules-propose",
@@ -1031,6 +1277,7 @@
         "contract": "language-interpretation-v1",
         "status": "UNDERSTOOD",
         "grammar_version": "language-grammar-v1",
+        "raw_text": "Untersuche @train mit @holdout auf rationale Formeln.",
         "normalized_text": "untersuche @train mit @holdout auf rationale formeln.",
         "alternatives": [
           {
@@ -1569,6 +1816,7 @@
         "contract": "language-interpretation-v1",
         "status": "AMBIGUOUS",
         "grammar_version": "language-grammar-v1",
+        "raw_text": "Untersuche @left und @right auf rationale Formeln.",
         "normalized_text": "untersuche @left und @right auf rationale formeln.",
         "alternatives": [
           {
@@ -1625,6 +1873,7 @@
         "contract": "language-selection-v1",
         "status": "AMBIGUOUS",
         "grammar_version": "language-grammar-v1",
+        "raw_text": "Untersuche @left und @right auf rationale Formeln.",
         "normalized_text": "untersuche @left und @right auf rationale formeln.",
         "alternatives": [
           {

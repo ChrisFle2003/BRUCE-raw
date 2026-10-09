@@ -3,6 +3,9 @@
 **IMPLEMENTIERT UND BELEGT:** `runtime_package_contracts` verifies these bytes
 against the codec and mounts the verified rational-power routing fragment.
 The package only identifies a template; it does not supply or execute a solver.
+`math-rational-power-ambiguous-v1.brucemod` uses the same published test key
+and contains two matching child nodes. Its golden case requires `AMBIGUOUS`;
+the real CLI integration verifies that no template is selected and replay agrees.
 
 ## Test keys (public and deliberately non-secret)
 
