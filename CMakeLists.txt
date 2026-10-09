@@ -59,6 +59,7 @@ add_library(bruce_core
     src/evidence/bundle.cpp
     src/evidence/chain.cpp
     src/token/task_spec.cpp
+    src/tree/registry.cpp
     src/application/tokenized_task_run.cpp
     src/io/local_files.cpp)
 target_include_directories(bruce_core PUBLIC include)
@@ -129,6 +130,10 @@ endif()
 target_compile_options(bruce PRIVATE -Wall -Wextra -Werror)
 include(CTest)
 if(BUILD_TESTING)
+    add_executable(bruce_tree_registry_tests tests/unit/tree_registry_tests.cpp)
+    target_link_libraries(bruce_tree_registry_tests PRIVATE bruce_core)
+    target_compile_options(bruce_tree_registry_tests PRIVATE -Wall -Wextra -Werror)
+    add_test(NAME tree_registry_contracts COMMAND bruce_tree_registry_tests)
     add_executable(bruce_management_inspection_control_tests tests/unit/management_inspection_control_tests.cpp)
     target_link_libraries(bruce_management_inspection_control_tests PRIVATE bruce_core)
     target_compile_options(bruce_management_inspection_control_tests PRIVATE -Wall -Wextra -Werror)
