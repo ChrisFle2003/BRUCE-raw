@@ -61,6 +61,7 @@ add_library(bruce_core
     src/token/task_spec.cpp
     src/tree/registry.cpp
     src/tree/normalizer.cpp
+    src/mod/runtime_package.cpp
     src/application/tokenized_task_run.cpp
     src/io/local_files.cpp)
 target_include_directories(bruce_core PUBLIC include)
@@ -131,6 +132,11 @@ endif()
 target_compile_options(bruce PRIVATE -Wall -Wextra -Werror)
 include(CTest)
 if(BUILD_TESTING)
+    add_executable(bruce_runtime_package_tests tests/unit/runtime_package_tests.cpp)
+    target_link_libraries(bruce_runtime_package_tests PRIVATE bruce_core OpenSSL::Crypto)
+    target_compile_definitions(bruce_runtime_package_tests PRIVATE BRUCE_RUNTIME_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/runtime_mods")
+    target_compile_options(bruce_runtime_package_tests PRIVATE -Wall -Wextra -Werror)
+    add_test(NAME runtime_package_contracts COMMAND bruce_runtime_package_tests)
     add_executable(bruce_tree_registry_tests tests/unit/tree_registry_tests.cpp)
     target_link_libraries(bruce_tree_registry_tests PRIVATE bruce_core)
     target_compile_options(bruce_tree_registry_tests PRIVATE -Wall -Wextra -Werror)
