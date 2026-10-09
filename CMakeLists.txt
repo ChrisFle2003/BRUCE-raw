@@ -63,6 +63,7 @@ add_library(bruce_core
     src/tree/normalizer.cpp
     src/mod/runtime_package.cpp
     src/mod/runtime_registry.cpp
+    src/mod/local_builder.cpp
     src/application/tokenized_task_run.cpp
     src/io/local_files.cpp)
 target_include_directories(bruce_core PUBLIC include)
@@ -102,7 +103,7 @@ target_compile_options(bruce_mod_catalog PRIVATE -Wall -Wextra -Werror)
 configure_file(cmake/version.hpp.in generated/bruce/version.hpp @ONLY)
 file(GLOB_RECURSE BRUCE_SOURCE_INPUTS CONFIGURE_DEPENDS
     RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
-    "include/*.hpp" "src/*.cpp" "mods/*.cpp" "mods/CMakeLists.txt" "apps/*.cpp" "apps/*.hpp" "cmake/*"
+    "include/*.hpp" "src/*.cpp" "src/*.hpp" "mods/*.cpp" "mods/CMakeLists.txt" "apps/*.cpp" "apps/*.hpp" "cmake/*"
     "scripts/*.py" "tests/*.cpp" "tests/*.py" "tests/fixtures/*")
 list(APPEND BRUCE_SOURCE_INPUTS CMakeLists.txt DEPENDENCIES.md LICENSE NOTICE THIRD_PARTY_NOTICES.md)
 list(SORT BRUCE_SOURCE_INPUTS)
@@ -118,6 +119,9 @@ configure_file(cmake/build-info.json.in build-info.json.in @ONLY)
 file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/metadata/$<CONFIG>/build-info.json"
     INPUT "${CMAKE_CURRENT_BINARY_DIR}/build-info.json.in")
 add_executable(bruce apps/bruce_cli.cpp)
+add_executable(bruce-mod-builder apps/local_mod_builder.cpp)
+target_link_libraries(bruce-mod-builder PRIVATE bruce_core)
+target_compile_options(bruce-mod-builder PRIVATE -Wall -Wextra -Werror)
 target_include_directories(bruce PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated")
 target_link_libraries(bruce PRIVATE bruce_core bruce_mod_catalog)
 if(BRUCE_BUILD_MOD_LANGUAGE)
@@ -133,6 +137,11 @@ endif()
 target_compile_options(bruce PRIVATE -Wall -Wextra -Werror)
 include(CTest)
 if(BUILD_TESTING)
+    add_executable(bruce_local_builder_tests tests/unit/local_builder_tests.cpp)
+    target_link_libraries(bruce_local_builder_tests PRIVATE bruce_core)
+    target_compile_definitions(bruce_local_builder_tests PRIVATE BRUCE_RUNTIME_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/runtime_mods")
+    target_compile_options(bruce_local_builder_tests PRIVATE -Wall -Wextra -Werror)
+    add_test(NAME local_builder_contracts COMMAND bruce_local_builder_tests)
     add_executable(bruce_runtime_registry_tests tests/unit/runtime_registry_tests.cpp)
     target_link_libraries(bruce_runtime_registry_tests PRIVATE bruce_core OpenSSL::Crypto)
     target_compile_options(bruce_runtime_registry_tests PRIVATE -Wall -Wextra -Werror)
@@ -202,6 +211,7 @@ if(BUILD_TESTING)
         ${CMAKE_CURRENT_SOURCE_DIR}/scripts/with-host-deps.sh)
     add_test(NAME task_spec_workflows COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/test_task_spec.py $<TARGET_FILE:bruce>)
     add_test(NAME runtime_mod_workflows COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/test_runtime_mods.py $<TARGET_FILE:bruce>)
+    add_test(NAME local_builder_cli_contracts COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/test_local_builder_cli.py $<TARGET_FILE:bruce-mod-builder>)
     if(BRUCE_BUILD_MOD_NANOCELL)
         add_test(NAME nanocell_cli_workflows COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tests/mods/nanocell/test_nanocell.py $<TARGET_FILE:bruce>)
     endif()
@@ -542,7 +552,7 @@ if(BUILD_TESTING)
     target_compile_options(bruce_comparison_replay_control_tests PRIVATE -Wall -Wextra -Werror)
     add_test(NAME comparison_replay_control COMMAND bruce_comparison_replay_control_tests)
 endif()
-install(TARGETS bruce RUNTIME DESTINATION bin)
+install(TARGETS bruce bruce-mod-builder RUNTIME DESTINATION bin)
 
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/metadata/$<CONFIG>/build-info.json"
     "${CMAKE_CURRENT_BINARY_DIR}/source-files.sha256" DEPENDENCIES.md LICENSE NOTICE THIRD_PARTY_NOTICES.md DESTINATION share/bruce)

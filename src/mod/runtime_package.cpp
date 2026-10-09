@@ -2,6 +2,7 @@
 #include "bruce/core/json.hpp"
 #include "bruce/core/types.hpp"
 #include "bruce/evidence/bundle.hpp"
+#include "runtime_package_builder.hpp"
 #include <openssl/evp.h>
 #include <algorithm>
 #include <array>
@@ -240,6 +241,39 @@ std::string_view take_field(std::string_view bytes, std::size_t& offset) {
     const auto result = bytes.substr(offset, size);
     offset += size;
     return result;
+}
+}
+namespace runtime_package_builder_detail {
+std::string unsigned_bytes(std::string_view metadata, std::string_view tree, std::string_view golden) {
+    // Validate all public source bytes before any output is published.
+    auto manifest = parse_json(metadata);
+    fields(manifest, {"mod_id", "version", "signing_key_id"});
+    (void)parse_tree(tree);
+    (void)parse_golden(golden);
+    const auto field = [](std::string_view value) { return std::to_string(value.size()) + ':' + std::string(value); };
+    const auto member = [&](std::string_view name, std::string_view value) { return field(name) + field(value); };
+    const auto payload = member("tree.json", tree) + member("tests/golden-cases.json", golden);
+    for (const auto name : {"schema_version", "host_abi_version", "tree_schema_version", "token_normalization_version"}) {
+        Json version(Json::Kind::number); version.number = 1;
+        manifest.object.emplace(name, std::move(version));
+    }
+    Json owner(Json::Kind::string); owner.text = "user";
+    manifest.object.emplace("owner_scope", std::move(owner));
+    Json digest(Json::Kind::string); digest.text = sha256(payload);
+    manifest.object.emplace("payload_sha256", std::move(digest));
+    Json capabilities(Json::Kind::array);
+    for (const auto name : {"dataset.read", "tree.extend"}) {
+        Json capability(Json::Kind::string); capability.text = name;
+        capabilities.array.push_back(std::move(capability));
+    }
+    manifest.object.emplace("capabilities", std::move(capabilities));
+    const auto manifest_bytes = canonical(manifest);
+    (void)parse_manifest(manifest_bytes);
+    const auto bytes = std::string(package_header) + member("manifest.json", manifest_bytes) + payload;
+    // Reserve enough space for the final canonical signature member and LF.
+    if (bytes.size() + member("signature.ed25519", std::string(128, '0')).size() + 1 > max_runtime_mod_package_bytes_v1)
+        throw Error("RuntimeModPackageTooLarge");
+    return bytes;
 }
 }
 RuntimeDataModPackageV1 unpack_runtime_data_mod_package_v1(std::string_view bytes) {
