@@ -10,6 +10,8 @@ from pathlib import Path
 BIN = str(Path(sys.argv.pop(1)).resolve())
 UNIQUE = 'Untersuche @train mit @holdout auf rationale Formeln.'
 AMBIGUOUS = 'Untersuche @left und @right auf rationale Formeln.'
+V2_UNIQUE = 'Analysiere @train anhand @holdout auf rationale Beziehungen.'
+V3_UNIQUE = 'Prüfe @train gegen @holdout auf rationale Formeln.'
 MOD_HEADER = b'BRUCE_MOD_RUN_V1\n'
 
 
@@ -71,6 +73,7 @@ class LanguageWorkflows(unittest.TestCase):
             self.assertEqual(interpretation['contract'], 'language-interpretation-v1')
             self.assertEqual(interpretation['status'], 'UNDERSTOOD')
             self.assertEqual(interpretation['grammar_version'], 'language-grammar-v1')
+            self.assertEqual(interpretation['raw_text'], UNIQUE)
             self.assertEqual(interpretation['alternatives'][0]['id'], 'rational-portfolio-v1')
             self.assertIsNone(interpretation['selected_id'])
             self.assertEqual({item['alias']: item['digest'] for item in interpretation['inputs']}, {
@@ -227,6 +230,101 @@ class LanguageWorkflows(unittest.TestCase):
             self.assertEqual(execution['result']['core']['result']['operations_used'], 1)
             self.assertEqual(execution['result']['core']['result']['strategy_runs'][0]['stop_reason'],
                              'OperationBudgetExceeded')
+            self.assertEqual(self.call('language', 'replay', run)['result'], execution['result'])
+
+    def test_v2_free_language_is_explicit_and_replayable(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            train, holdout = self.samples(root)
+            draft, run = root / 'draft-v2', root / 'run-v2'
+            interpretation = self.interpret(V2_UNIQUE, train, holdout, draft, '--grammar', 'v2')
+            self.assertEqual(interpretation['contract'], 'language-interpretation-v2')
+            self.assertEqual(interpretation['status'], 'UNDERSTOOD')
+            self.assertEqual(interpretation['grammar_version'], 'language-grammar-v2')
+            self.assertEqual(interpretation['raw_text'], V2_UNIQUE)
+            self.assertEqual(interpretation['normalized_text'],
+                             'untersuche @train mit @holdout auf rationale formeln.')
+            self.assertTrue(draft.read_bytes().startswith(b'BRUCE_LANGUAGE_DRAFT_V2\n'))
+            execution = self.call('language', 'execute', draft, '--output', run)
+            self.assertEqual(execution['contract'], 'language-execution-v2')
+            self.assertEqual(execution['result']['contract'], 'language-run-v2')
+            self.assertTrue(execution['result']['core']['execution']['replay_verified'])
+            self.assertEqual(self.call('language', 'replay', run),
+                             {'contract': 'language-replay-v2', 'result': execution['result']})
+            stored = run.read_bytes()
+            self.assertTrue(stored.startswith(b'BRUCE_MOD_RUN_V1\n'))
+            fields = unpack_mod_run(stored)
+            self.assertEqual(fields[6], b'bruce-language-draft-v2')
+            self.assertEqual(fields[9], b'bruce-language-run-v2')
+            self.assertEqual(run.read_bytes(), stored)
+
+    def test_v2_unknown_text_maps_to_exact_error_without_draft(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            train, holdout = self.samples(root)
+            target = root / 'unsupported-v2'
+            failure = self.call('language', 'interpret', '--grammar', 'v2', '--text',
+                                'Finde die beste Formel.', '--train', train,
+                                '--holdout', holdout, '--output', target, ok=False)
+            self.assertEqual(failure, {'error': 'UnsupportedLanguageText'})
+            self.assertFalse(target.exists())
+
+    def test_v3_free_language_is_explicit_and_replayable(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            train, holdout = self.samples(root)
+            draft, run = root / 'draft-v3', root / 'run-v3'
+            interpretation = self.interpret(V3_UNIQUE, train, holdout, draft, '--grammar', 'v3')
+            self.assertEqual(interpretation['contract'], 'language-interpretation-v3')
+            self.assertEqual(interpretation['status'], 'UNDERSTOOD')
+            self.assertEqual(interpretation['grammar_version'], 'language-grammar-v3')
+            self.assertEqual(interpretation['raw_text'], V3_UNIQUE)
+            self.assertEqual(interpretation['normalized_text'],
+                             'untersuche @train mit @holdout auf rationale formeln.')
+            self.assertTrue(draft.read_bytes().startswith(b'BRUCE_LANGUAGE_DRAFT_V3\n'))
+            execution = self.call('language', 'execute', draft, '--output', run)
+            self.assertEqual(execution['contract'], 'language-execution-v3')
+            self.assertEqual(execution['result']['contract'], 'language-run-v3')
+            self.assertTrue(execution['result']['core']['execution']['replay_verified'])
+            self.assertEqual(self.call('language', 'replay', run),
+                             {'contract': 'language-replay-v3', 'result': execution['result']})
+            stored = run.read_bytes()
+            fields = unpack_mod_run(stored)
+            self.assertEqual(fields[6], b'bruce-language-draft-v3')
+            self.assertEqual(fields[9], b'bruce-language-run-v3')
+            self.assertEqual(run.read_bytes(), stored)
+
+    def test_v3_unknown_text_maps_to_exact_error_without_draft(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            train, holdout = self.samples(root)
+            target = root / 'unsupported-v3'
+            failure = self.call('language', 'interpret', '--grammar', 'v3', '--text',
+                                'Finde die beste Formel.', '--train', train,
+                                '--holdout', holdout, '--output', target, ok=False)
+            self.assertEqual(failure, {'error': 'UnsupportedLanguageText'})
+            self.assertFalse(target.exists())
+
+    def test_v2_ambiguity_is_visible_and_requires_selection(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            train, holdout = self.samples(root)
+            draft, selected, run = root / 'ambiguous-v2', root / 'selected-v2', root / 'run-v2'
+            text = 'Analysiere @left und @right auf rationale Formeln.'
+            result = self.interpret(text, train, holdout, draft, '--grammar', 'v2',
+                                    '--train-alias', 'left', '--holdout-alias', 'right')
+            self.assertEqual(result['contract'], 'language-interpretation-v2')
+            self.assertEqual(result['status'], 'AMBIGUOUS')
+            self.assertEqual([item['id'] for item in result['alternatives']],
+                             ['train=left;holdout=right', 'train=right;holdout=left'])
+            error = self.call('language', 'execute', draft, '--output', run, ok=False)
+            self.assertIn('UnselectedLanguageAlternative', error['error'])
+            self.assertFalse(run.exists())
+            selection = self.call('language', 'select', draft, '--alternative',
+                                  'train=left;holdout=right', '--output', selected)
+            self.assertEqual(selection['contract'], 'language-selection-v2')
+            execution = self.call('language', 'execute', selected, '--output', run)
+            self.assertEqual(execution['contract'], 'language-execution-v2')
             self.assertEqual(self.call('language', 'replay', run)['result'], execution['result'])
 
     def test_existing_research_json_and_bundle_are_stable(self):
