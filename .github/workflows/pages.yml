@@ -1,0 +1,76 @@
+name: Website Pages
+
+on:
+  push:
+    branches: [main-beta-001]
+    paths: ['website/**', 'README.md', 'CONTRIBUTING.md', 'SECURITY.md', 'LICENSE', 'CMakeLists.txt', 'CNAME', 'docs/**', 'examples/**', '.github/workflows/ci.yml', '.github/workflows/pages.yml']
+  pull_request:
+    paths: ['website/**', 'README.md', 'CONTRIBUTING.md', 'SECURITY.md', 'LICENSE', 'CMakeLists.txt', 'CNAME', 'docs/**', 'examples/**', '.github/workflows/ci.yml', '.github/workflows/pages.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: website-pages-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      pages: read
+    defaults:
+      run:
+        working-directory: website
+    steps:
+      - name: Check out source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      - name: Set up locked package manager
+        uses: pnpm/action-setup@v4
+        with:
+          package_json_file: website/package.json
+      - name: Install locked dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Configure Pages
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main-beta-001'
+        id: pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: false
+      - name: Test content rendering
+        run: pnpm test
+      - name: Build production site
+        env:
+          SITE_URL: ${{ vars.SITE_URL || steps.pages.outputs.base_url || 'https://chrisfle2003.github.io/My-Bruce-AI/' }}
+        run: pnpm build && pnpm check && pnpm check:package
+      - name: Install browser
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Check browser interactions and layouts
+        env:
+          SITE_URL: ${{ vars.SITE_URL || steps.pages.outputs.base_url || 'https://chrisfle2003.github.io/My-Bruce-AI/' }}
+        run: pnpm test:browser
+      - name: Upload Pages artifact
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main-beta-001'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: website/_site
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main-beta-001'
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy static site
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,161 @@
+[
+  {
+    "source": "README.md",
+    "url": "docs/getting-started/",
+    "title": "Getting started",
+    "group": "Start here",
+    "description": "Build BRUCE, run your first commands, and understand the evidence boundary."
+  },
+  {
+    "source": "docs/cli/README.md",
+    "url": "docs/cli/",
+    "title": "CLI manual",
+    "group": "Start here",
+    "description": "Installation, invocation conventions, and the supported application boundaries."
+  },
+  {
+    "source": "docs/cli/commands.md",
+    "url": "docs/commands/",
+    "title": "Commands",
+    "group": "Usage",
+    "description": "Research, exact calculation, Grid, and signed data-mod workflows.",
+    "translation": "content/en/commands.md",
+    "sourceHash": "98b9c106846a69a4b220cd1a99c64436db012461cd507bddbfbada0a11279f79"
+  },
+  {
+    "source": "docs/cli/formats.md",
+    "url": "docs/formats/",
+    "title": "Input formats",
+    "group": "Usage",
+    "description": "Numeric conventions, research CSV pairs, and export formats.",
+    "translation": "content/en/formats.md",
+    "sourceHash": "ba62590b575d752e697a254a8ec66381126f65cb6e7e4d45a2c771e2c75fa003"
+  },
+  {
+    "source": "docs/cli/results-and-control.md",
+    "url": "docs/results/",
+    "title": "Result semantics",
+    "group": "Usage",
+    "description": "Read statuses, distinguish sample checks from proof, and understand budgets.",
+    "translation": "content/en/results.md",
+    "sourceHash": "d2c13e75c2185cf00c99aafe68b3d8d76ad4f7d3205711cbbd737fb35005970d"
+  },
+  {
+    "source": "docs/cli/local-files.md",
+    "url": "docs/local-files/",
+    "title": "Local files",
+    "group": "Usage",
+    "description": "Explicit exports, human confirmation, and publication failure semantics.",
+    "translation": "content/en/local-files.md",
+    "sourceHash": "ff19a05cdeddfe843a555d9e5a150a96d6b22a508020aab7d7227d0b318e7f1a"
+  },
+  {
+    "source": "docs/architecture/03-blueprint-consolidation.md",
+    "url": "docs/architecture/",
+    "title": "Architecture",
+    "group": "Reference",
+    "description": "Current source-backed architecture and the boundaries of Core 0.102."
+  },
+  {
+    "source": "docs/contracts/06-control-and-publication.md",
+    "url": "docs/control/",
+    "title": "Control and publication",
+    "group": "Reference",
+    "description": "Shared control semantics, checkpoints, and the publication contract."
+  },
+  {
+    "source": "CONTRIBUTING.md",
+    "url": "docs/contributing/",
+    "title": "Contributing",
+    "group": "Project",
+    "description": "Contribution agreement, local environment, and expected checks."
+  },
+  {
+    "source": "SECURITY.md",
+    "url": "docs/security/",
+    "title": "Security",
+    "group": "Project",
+    "description": "Supported versions and the private vulnerability reporting process."
+  },
+  {
+    "source": "LICENSE",
+    "url": "docs/license/",
+    "title": "License",
+    "group": "Project",
+    "description": "BRUCE Proprietary License. All rights reserved.",
+    "kind": "text"
+  },
+  {
+    "source": "examples/affine-training.csv",
+    "url": "docs/data/affine-training/",
+    "title": "Affine training",
+    "group": "Data files",
+    "description": "The tutorial\u2019s training pairs for y = 2*x + 3.",
+    "kind": "csv"
+  },
+  {
+    "source": "examples/affine-holdout.csv",
+    "url": "docs/data/affine-holdout/",
+    "title": "Affine holdout",
+    "group": "Data files",
+    "description": "Additional inputs for checking the affine training hypothesis.",
+    "kind": "csv"
+  },
+  {
+    "source": "examples/power-training.csv",
+    "url": "docs/data/power-training/",
+    "title": "Power training",
+    "group": "Data files",
+    "description": "Repository sample pairs for the power-affine research family.",
+    "kind": "csv"
+  },
+  {
+    "source": "examples/compatibility-candidates.csv",
+    "url": "docs/data/compatibility-candidates/",
+    "title": "Compatibility candidates",
+    "group": "Data files",
+    "description": "Candidate records consumed by the compatibility selection example.",
+    "kind": "csv"
+  },
+  {
+    "source": "examples/local-data-mods/math-rational-power/manifest.json",
+    "url": "docs/data/manifest/",
+    "title": "Manifest",
+    "group": "Data files",
+    "description": "Package manifest: the example\u2019s mod identifier, signing key identifier, and version.",
+    "kind": "json"
+  },
+  {
+    "source": "examples/local-data-mods/math-rational-power/tree.json",
+    "url": "docs/data/tree/",
+    "title": "Tree",
+    "group": "Data files",
+    "description": "Declarative Tree routing data for the local rational-power example.",
+    "kind": "json"
+  },
+  {
+    "source": "examples/local-data-mods/math-rational-power/golden-cases.json",
+    "url": "docs/data/golden-cases/",
+    "title": "Golden Cases",
+    "group": "Data files",
+    "description": "Expected routing cases used to check the rational-power example package.",
+    "kind": "json"
+  },
+  {
+    "source": "examples/power-selection.rules",
+    "url": "docs/data/power-selection/",
+    "title": "Selection rules",
+    "group": "Data files",
+    "description": "The power example\u2019s BRUCE_RULES_V1 snapshot, preserved as plain text.",
+    "kind": "text"
+  },
+  {
+    "source": ".github/workflows/ci.yml",
+    "url": "docs/ci-workflow/",
+    "title": "Core CI workflow",
+    "group": "Project",
+    "description": "The existing CMake, CTest, CLI verification, link check, and secret-scan workflow.",
+    "kind": "yaml",
+    "download": "workflows/ci.yml"
+  }
+]
