@@ -1,0 +1,105 @@
+diff --git a/apps/bruce_cli.cpp b/apps/bruce_cli.cpp
+--- a/apps/bruce_cli.cpp
++++ b/apps/bruce_cli.cpp
+@@ -1147,15 +1147,21 @@ int main(int argc,char** argv) {
+                 TransferControl control;const auto checkpoint=transfer_checkpoint(args,control);
+                 if(checkpoint) {
+                     const auto previous=args.contains("--store") ? LocalFiles::read(required(args,"--store"),experience_byte_limit,checkpoint) : "";
++                    const auto target=required(args,"--id");
++                    const auto reason=required(args,"--reason");
++                    const auto source=action=="replace" ? LocalFiles::read(required(args,"--from-run"),experience_byte_limit,checkpoint) : "";
+                     const ExperienceTask task=action=="replace"
+-                        ? ExperienceTask{ExperienceReplaceTask{previous,required(args,"--id"),required(args,"--reason"),LocalFiles::read(required(args,"--from-run"),experience_byte_limit,checkpoint)}}
+-                        : ExperienceTask{ExperienceRevokeTask{previous,required(args,"--id"),required(args,"--reason")}};
++                        ? ExperienceTask{ExperienceReplaceTask{previous,target,reason,source}}
++                        : ExperienceTask{ExperienceRevokeTask{previous,target,reason}};
+                     const auto result=execute_experience(task,checkpoint);
+                     LocalFiles::publish_new(required(args,"--output"),result.snapshot,checkpoint);
+                     std::cout<<controlled_transfer_report(result.report,control,true)<<'\n';
+                 } else {
+                     const auto previous=args.contains("--store") ? read_bounded(required(args,"--store"),experience_byte_limit) : "";
++                    const auto target=required(args,"--id");
++                    const auto reason=required(args,"--reason");
++                    const auto source=action=="replace" ? read_bounded(required(args,"--from-run"),experience_byte_limit) : "";
+                     const ExperienceTask task=action=="replace"
+-                        ? ExperienceTask{ExperienceReplaceTask{previous,required(args,"--id"),required(args,"--reason"),read_bounded(required(args,"--from-run"),experience_byte_limit)}}
+-                        : ExperienceTask{ExperienceRevokeTask{previous,required(args,"--id"),required(args,"--reason")}};
++                        ? ExperienceTask{ExperienceReplaceTask{previous,target,reason,source}}
++                        : ExperienceTask{ExperienceRevokeTask{previous,target,reason}};
+                     const auto result=execute_experience(task);
+                     export_exclusive(required(args,"--output"),result.snapshot);
+                     std::cout << result.report << '\n';
+diff --git a/tests/integration/test_experience_replace.py b/tests/integration/test_experience_replace.py
+--- a/tests/integration/test_experience_replace.py
++++ b/tests/integration/test_experience_replace.py
+@@ -46,6 +46,16 @@ class ReplaceTests(unittest.TestCase):
+   header,_,body=child.read_text().split('\n',2);changed=body.replace('target '+target,'target '+'0'*64,1)
+   child.write_text(header+'\n'+hashlib.sha256(changed.encode()).hexdigest()+'\n'+changed)
+   self.call('experience','inspect',child,ok=False)
++ def test_invalid_replace_returns_json_errors_in_both_execution_modes(self):
++  store,initial=self.initial();target=initial['records'][0]['id']
++  raw_output=self.root/'raw-invalid-replace'
++  raw_error=self.replace(store,target,self.root/'first',raw_output,ok=False,reason='same')
++  self.assertIn('error',raw_error);self.assertFalse(raw_output.exists())
++  controlled_output=self.root/'controlled-invalid-replace'
++  controlled_error=self.call('experience','replace','--store',store,'--id',target,'--reason','same',
++                             '--from-run',self.root/'first','--max-transfer-checkpoints',1000000,
++                             '--output',controlled_output,ok=False)
++  self.assertIn('error',controlled_error);self.assertFalse(controlled_output.exists())
+  def test_grid_replacement_and_ineligible_source(self):
+   t=self.root/'gridtrain';self.call('grid-batch','--paths','0,2;1,2;2,2','--output',t)
+   sources=[]
+diff --git a/tests/integration/test_cli_docs.py b/tests/integration/test_cli_docs.py
+--- a/tests/integration/test_cli_docs.py
++++ b/tests/integration/test_cli_docs.py
+@@ -40,7 +40,7 @@ class CliDocumentationTests(unittest.TestCase):
+         self.assertIn('v3', grammar['values'])
+         self.assertIn('language-interpretation-v3', command['output'])
+ 
+-    def test_examples_snapshot_orders_inputs_canonically(self):
++    def test_generated_cli_artifacts_match_their_verifier_output(self):
+         with tempfile.TemporaryDirectory() as directory:
+             snapshot = Path(directory) / 'source'
+             shutil.copytree(ROOT, snapshot, ignore=IGNORE)
+@@ -53,6 +53,12 @@ class CliDocumentationTests(unittest.TestCase):
+             self.assertEqual(result.returncode, 0, result.stderr)
+             inputs = json.loads((snapshot / 'docs/cli/examples.json').read_text())['inputs']
+             self.assertEqual(list(inputs), sorted(inputs))
++            for name in ['source-index.md', 'examples.json', 'validation.md']:
++                self.assertEqual(
++                    (snapshot / 'docs/cli' / name).read_bytes(),
++                    (ROOT / 'docs/cli' / name).read_bytes(),
++                    name,
++                )
+ 
+ 
+ if __name__ == '__main__':
+diff --git a/docs/cli/source-index.md b/docs/cli/source-index.md
+--- a/docs/cli/source-index.md
++++ b/docs/cli/source-index.md
+@@ -307 +307 @@
+-| `GateInspectionCancelled` | [apps/bruce_cli.cpp:1181](../../apps/bruce_cli.cpp) |
++| `GateInspectionCancelled` | [apps/bruce_cli.cpp:1187](../../apps/bruce_cli.cpp) |
+@@ -677 +677 @@
+-| `SHA-256 benötigt Web Crypto in einem sicheren Browser-Kontext.` | [mods/cockpit/src/cockpit_assets.cpp:243](../../mods/cockpit/src/cockpit_assets.cpp) |
++| `SHA-256 requires Web Crypto in a secure browser context.` | [mods/cockpit/src/cockpit_assets.cpp:243](../../mods/cockpit/src/cockpit_assets.cpp) |
+@@ -727 +727 @@
+-| `UnknownCommand: ` | [apps/bruce_cli.cpp:1203](../../apps/bruce_cli.cpp) |
++| `UnknownCommand: ` | [apps/bruce_cli.cpp:1209](../../apps/bruce_cli.cpp) |
+@@ -741 +741 @@
+-| `UnknownExperienceAction` | [apps/bruce_cli.cpp:1165](../../apps/bruce_cli.cpp) |
++| `UnknownExperienceAction` | [apps/bruce_cli.cpp:1171](../../apps/bruce_cli.cpp) |
+@@ -750 +750 @@
+-| `UnknownGateCancellation` | [apps/bruce_cli.cpp:1175](../../apps/bruce_cli.cpp) |
++| `UnknownGateCancellation` | [apps/bruce_cli.cpp:1181](../../apps/bruce_cli.cpp) |
+@@ -796 +796 @@
+-| `Usage: bruce assess-run RUN.bruce` | [apps/bruce_cli.cpp:1195](../../apps/bruce_cli.cpp) |
++| `Usage: bruce assess-run RUN.bruce` | [apps/bruce_cli.cpp:1201](../../apps/bruce_cli.cpp) |
+@@ -808,2 +808,2 @@
+-| `Usage: bruce gate-run RUN.bruce [--max-session-checkpoints N] [--max-replay-bytes N] [--cancellation none&#124;checkpoints]` | [apps/bruce_cli.cpp:1167](../../apps/bruce_cli.cpp) |
+-| `Usage: bruce inspect-run RUN.bruce` | [apps/bruce_cli.cpp:1198](../../apps/bruce_cli.cpp) |
++| `Usage: bruce gate-run RUN.bruce [--max-session-checkpoints N] [--max-replay-bytes N] [--cancellation none&#124;checkpoints]` | [apps/bruce_cli.cpp:1173](../../apps/bruce_cli.cpp) |
++| `Usage: bruce inspect-run RUN.bruce` | [apps/bruce_cli.cpp:1204](../../apps/bruce_cli.cpp) |
+@@ -817 +817 @@
+-| `Usage: bruce replay RUN.bruce` | [apps/bruce_cli.cpp:1201](../../apps/bruce_cli.cpp) |
++| `Usage: bruce replay RUN.bruce` | [apps/bruce_cli.cpp:1207](../../apps/bruce_cli.cpp) |

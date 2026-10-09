@@ -1,14 +1,18 @@
 # Architecture
 
-The current reference point is the
-[Blueprint consolidation](03-blueprint-consolidation.md). It separates the
-current implementation, remaining boundaries, and next acceptance checks.
+The [Blueprint consolidation](03-blueprint-consolidation.md) is the current
+architecture entry point. It states the evidence-backed core, its boundaries,
+and what does not follow from a successful CLI run.
 
-- [Identity and invariants](01-identity-and-invariants.md)
-- [System architecture](02-system-architecture.md)
+- [Repository structure](repository-structure.md) — tracked areas, source
+  domains, build flow, runtime flow, and mod boundaries.
+- [Identity and invariants](01-identity-and-invariants.md) — foundational
+  vocabulary and intended invariants; read its own status and date.
+- [System architecture](02-system-architecture.md) — architectural target
+  context, not by itself implementation evidence.
 - [Historical blueprint through Core 0.93](03-blueprint-history-through-093.md)
-- [Core mod system V1 – approved target architecture](../superpowers/specs/2026-10-03-core-mod-architecture-design.md)
-  – **IMPLEMENTED AND VERIFIED** for the runtime, catalog, and static
-  Language, NanoCell, and Cockpit mods; Phase-DAG remains a separate package.
+  — historical context only.
 
-The historically named file is context, not evidence of the current state.
+**DOCUMENTED / CONCEPT:** architecture, ADR, and planning documents can define
+or propose a boundary, but only source, tests, CI, reproducible runs, and
+generated CLI-validation evidence establish an implementation claim.

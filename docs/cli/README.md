@@ -130,10 +130,9 @@ formula prover are not implemented. With `BRUCE_BUILD_MOD_NANOCELL=ON`, the
 optional static [NanoCell mod](commands.md#nanocell--optionaler-statischer-nanocell-mod)
 runs three fixed byte techniques with bound context, writes new provenance-bound
 mod exports, and can only read historical direct V1 files. It is not part of
-the general research session. With `BRUCE_BUILD_MOD_COCKPIT=ON`, the local
-[Cockpit](commands.md#cockpit--optionaler-statischer-cockpit-mod) provides only the
-separate management contracts; it performs no independent domain research. A
-holdout confirms additional concrete number pairs. By contrast, `compare` can
+the general research session. The current CMake configuration defines no
+`BRUCE_BUILD_MOD_COCKPIT` option or Cockpit target; a Cockpit feature is
+**DOCUMENTED / CONCEPT**, not a current CLI capability. By contrast, `compare` can
 prove statements about two explicitly supplied rational functions over the
 rational numbers; the relevant domain of definition is part of that statement.
 

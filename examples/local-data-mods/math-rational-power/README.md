@@ -1,6 +1,6 @@
 # First local BRUCE data-mod: rational-power routing
 
-**IMPLEMENTIERT UND BELEGT:** `local_data_mod_example_workflows` builds these
+**IMPLEMENTED AND VERIFIED:** `local_data_mod_example_workflows` builds these
 inputs with a published test-only key in a fresh temporary directory, then
 verifies, installs, activates, routes, replays and disables the package through
 the real builder and runtime. It never reads the operator's project `.env`.

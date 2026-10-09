@@ -1,84 +1,112 @@
-# BRUCE: konsolidierte Architektur – Core 0.102
+# BRUCE: architecture consolidation — Core 0.102
 
-Stand: 04.10.2026. Dieses Dokument beschreibt den vorhandenen Quellbaum und ersetzt die frühere Folge sich überlagernder Fortschreibungen. [Historischer Stand](03-blueprint-history-through-093.md), [ursprüngliches Zielbild](02-system-architecture.md), [M0–M2-Matrix](../implementation/136-m0-m2-acceptance-matrix.md).
+**IMPLEMENTED AND VERIFIED:** this document consolidates the current
+source-tree boundaries for Core 0.102.0. Its implementation claims are tied to
+the linked CMake targets, headers, source files, and tests; it does not turn a
+roadmap, ADR, or historical acceptance record into a present-tense claim.
 
-## Einordnung
+For prior architecture context, see the
+[historical Blueprint through Core 0.93](03-blueprint-history-through-093.md).
+For the original target model, see [system architecture](02-system-architecture.md).
+For the current control boundary, see the
+[control and publication contract](../contracts/06-control-and-publication.md).
 
-BRUCE ist ein lokaler mathematischer Forschungskern mit CLI. Das Grid gehört zu diesem Kern. C++20, GMP/GMPXX und OpenSSL bilden die vorhandene Implementierungsbasis. Zusätzlich existieren die optionalen, statisch gebauten Language- und NanoCell-Mods. NanoCell bietet mit `nanocell run`/`replay` drei begrenzte Byte-Techniken und neue herkunftsgebundene Mod-Exporte; historische direkte V1-Dateien bleiben lesbar. Die allgemeine Ausführung ist sequenziell. Es gibt keine freie Sprachschnittstelle, keine NanoCell-Einbindung in `ApplicationTask`, kein Cockpit, keine GPU- und keine Phase-DAG-Ausführung.
+## Scope and evidence boundary
 
-Abgeschlossene Verarbeitung, bestandener Replay, Bestätigung auf Stichproben und mathematischer Beweis innerhalb eines benannten Bereichs sind verschiedene Aussagen. `VERIFIED_ON_SAMPLES` ist kein allgemeiner Beweis. Ein Digest bindet Bytes und authentifiziert keinen Menschen. Gateberichte sind Befunde, keine Berechtigungstoken.
+BRUCE is a local Linux mathematical research CLI. The CMake build is C++20 and
+links GMP/GMPXX and OpenSSL Crypto. It contains bounded research, Grid,
+compatibility, evidence, replay, experience, rule, local-file, and routing
+paths. The `bruce` CLI and the `bruce-mod-builder` local data-mod builder are
+defined in `CMakeLists.txt`.
 
-## Gemeinsamer Laufweg
+**IMPLEMENTED AND VERIFIED:** the optional static `Language` and `NanoCell`
+mods are compiled through `BRUCE_BUILD_MOD_LANGUAGE` and
+`BRUCE_BUILD_MOD_NANOCELL`. They are selected at configuration time and linked
+into the fixed mod catalog; they are not dynamically loaded executable
+plugins. Signed runtime data mods are a separate mechanism: they provide
+validated Tree routing data and do not execute package-supplied code.
+
+**DOCUMENTED / CONCEPT:** free-form dialogue, a general formula prover, GPU
+execution, and Phase-DAG execution. The current CMake configuration contains
+no `BRUCE_BUILD_MOD_COCKPIT` option or Cockpit target. Therefore a buildable
+Cockpit feature is **NOT DERIVABLE FROM THE REPOSITORY**, regardless of
+planning records or unbuilt source fragments.
+
+Completion, successful replay, sample confirmation, and a proof within a
+named domain are distinct claims. `VERIFIED_ON_SAMPLES` is not a general proof;
+a digest binds bytes but does not authenticate a person; a gate report is an
+assessment, not an authorization token.
+
+## Current processing model
 
 ```mermaid
 flowchart TD
-    CLI[CLI: Argumente und Dateien] --> Task[ApplicationTask: acht Laufarten]
-    Task --> Execute[Fachliche Ausführer]
-    Execute --> Run[ApplicationRun]
-    Run --> Bundle[Versioniertes natives Bundle]
-    Bundle --> Replay[Gemeinsamer Replay]
-    Replay --> Assessment[Ergebnisbewertung]
-    Replay --> Gates[Auswahl- und Quellenprüfung]
-    Bundle --> Transfer[Expliziter Übergabeplan]
-    Transfer --> Recheck[Erneute Quellen- und Zielprüfung]
-    Recheck --> Experience[Neuer Erfahrungssnapshot]
-    Recheck --> Selection[Neue numerische Z-Auswahl]
+    CLI[Explicit CLI arguments and named files] --> Parse[Parsing and validation]
+    Parse --> Task[ApplicationTask or dedicated management command]
+    Task --> Execute[Bounded mathematical or compatibility processing]
+    Execute --> Result[Application result or command result]
+    Result --> Bundle[Versioned evidence or replay bundle when requested]
+    Bundle --> Replay[Replay, assessment, and applicable gates]
+    Replay --> Transfer[Explicit compatibility or experience transfer]
+    Transfer --> Local[Explicit local publication]
+    Parse --> Mods[Static mod command or runtime data-mod routing]
 ```
 
-Die Pfeile beschreiben aufrufbare Wege, keinen automatisch laufenden Aufgabenplaner. Der optionale Sitzungscontroller besitzt die linearen Phasen CREATED → EXECUTING → SERIALIZING → REPLAYING → READY beziehungsweise FAILED. Er orchestriert nicht sämtliche neueren Verwaltungs- und Übergabebefehle.
+The arrows describe callable, explicit paths; they do not describe a hidden
+scheduler, automatic promotion, or a universal execution graph. The optional
+session controller has the linear states `CREATED → EXECUTING → SERIALIZING →
+REPLAYING → READY` or `FAILED`; it does not orchestrate all management paths.
 
-## Verantwortlichkeiten und Grenzen
+## Responsibilities and boundaries
 
-| Baustein | Aktueller Einstieg | Grenze |
+| Area | Current entry points | Boundary |
 | --- | --- | --- |
-| Acht gemeinsame Auftrag-/Laufvarianten | [application_task.hpp](../../include/bruce/application/application_task.hpp) | Forschung Int64, exakte Forschung, Grid, Grid-Stapel, Grid-Fortsetzung, Grid-Forschung, Bruchvergleich, Kompatibilität; keine dynamische Registrierung |
-| Ergebnisbewertung und Gates | [application_replay.cpp](../../src/application/application_replay.cpp), [application_gates.cpp](../../src/application/application_gates.cpp) | In-Memory-Bewertung prüft keine Herkunft; bundlebasierte Wege führen Replay aus |
-| Fachliche Gateentscheidung | [research_gates.cpp](../../src/application/research_gates.cpp) | Von JSON getrennt, unveränderte eingebaute Zulassungsregeln |
-| Darstellung | [core/json.cpp](../../src/core/json.cpp), [research_gate_render.cpp](../../src/application/research_gate_render.cpp) | Keine fachliche Berechtigung aus formatierten Feldern |
-| Erfahrungsein- und -ausgänge | [experience_task.hpp](../../include/bruce/application/experience_task.hpp) | Vier separate Aktionen add/revoke/replace/inspect; nicht Teil der acht allgemeinen Laufvarianten |
-| Erfahrungsrouting | [experience_routing.cpp](../../src/application/experience_routing.cpp) | Kontextgebundene Stimmen für vorhandene Strategiereihenfolgen, kein allgemeines Lernen |
-| Erfahrungsquellenaudit | [experience_source.cpp](../../src/application/experience_source.cpp) | Erneuter Replay und bestehende Eignungsprüfung; keine Regelpromotion |
-| Erfahrungssnapshots | [experience/store.hpp](../../include/bruce/experience/store.hpp), [store.cpp](../../src/experience/store.cpp) | Öffentlicher Header ohne Forschungs-/Planungstypen; Implementierung hängt weiterhin vom Anwendungsaudit ab |
-| Regelvorschläge und Historien | [rule_proposal.hpp](../../include/bruce/application/rule_proposal.hpp), [rule_history.hpp](../../include/bruce/application/rule_history.hpp) | Anwendungsmodelle ohne Terminal; keine Identitätsprüfung |
-| Lokaler Regeldialog | [rule_store.hpp](../../apps/rule_store.hpp) | Argumente, Vorprüfung und menschliche Bestätigung |
-| Lokale Dateipersistenz | [local_files.hpp](../../include/bruce/io/local_files.hpp), [local_files.cpp](../../src/io/local_files.cpp) | Lesen, exklusiver Export, Regelspeicherladen und bestätigter gesperrter Wechsel; lokales Linux-Modell |
-| Erfahrungstransfer | [experience_transfer.hpp](../../include/bruce/application/experience_transfer.hpp) | Feste Aktion add; Quelle/Basis und Bytes gebunden, erneuter Import |
-| Z-Auswahltransfer | [compatibility_transfer.hpp](../../include/bruce/application/compatibility_transfer.hpp) | Quelle/kanonische Regeln/Stelle/Budgets gebunden, erneute Auswahl |
-| Optionale NanoCell-Mod | [nanocell.hpp](../../include/bruce/mods/nanocell/nanocell.hpp), [mod.hpp](../../include/bruce/mods/nanocell/mod.hpp), [nanocell_cli.hpp](../../apps/nanocell_cli.hpp) | Acht-Byte-Kern, drei feste Referenztechniken und `BRUCE_MOD_RUN_V1` für neue Exporte; direkte V1-Replays read-only, kein allgemeiner Auftragstyp oder Gate |
-| Mod-Runtime und fester Katalog | [mod_api.hpp](../../include/bruce/mod/mod_api.hpp), [catalog.hpp](../../include/bruce/mod/catalog.hpp) | Manifestprüfung, feste Language-/NanoCell-Registrierung und Core-Adapter für die acht bestehenden Auftragstypen; keine dynamischen Plugins |
-| Optionale Language-Mod | [language_run.hpp](../../include/bruce/mods/language/language_run.hpp), [bruce_cli.cpp](../../apps/bruce_cli.cpp) | Zwei feste Satzmuster, CMake-Schalter `BRUCE_BUILD_MOD_LANGUAGE`, neuer äußerer Mod-Run und direkter V1-Replay; kein freier Dialog |
+| Application tasks and results | [`application_task.hpp`](../../include/bruce/application/application_task.hpp) | Eight fixed task/run variants: research, exact research, Grid, Grid batch, Grid resume, Grid research, fraction comparison, and compatibility; no dynamic task registration. |
+| Assessment and gates | [`application_task.hpp`](../../include/bruce/application/application_task.hpp), [`research_gates.cpp`](../../src/application/research_gates.cpp) | In-memory assessment does not verify provenance. Bundle-oriented paths replay before exposing a verified assessment. |
+| Mathematical and compatibility work | [`math/`](../../include/bruce/math), [`compatibility/`](../../include/bruce/compatibility), [`application/`](../../src/application) | Bounded domain-specific processing; CLI exit code 0 is not a complete-search or general-proof claim. |
+| Evidence and replay | [`evidence/`](../../include/bruce/evidence), [`application_replay.cpp`](../../src/application/application_replay.cpp) | Versioned bytes, digests, and replay bind a stated artifact; they do not authenticate a human author. |
+| Experience and transfers | [`experience_task.hpp`](../../include/bruce/application/experience_task.hpp), [`experience_transfer.hpp`](../../include/bruce/application/experience_transfer.hpp), [`compatibility_transfer.hpp`](../../include/bruce/application/compatibility_transfer.hpp) | Explicit source and target checks; no general learning system or automatic rule promotion. |
+| Rules and local files | [`rule_proposal.hpp`](../../include/bruce/application/rule_proposal.hpp), [`local_files.hpp`](../../include/bruce/io/local_files.hpp) | Local Linux file and terminal-confirmation model; confirmation binds content and is not an identity boundary. |
+| Static mods | [`mod_api.hpp`](../../include/bruce/mod/mod_api.hpp), [`catalog.hpp`](../../include/bruce/mod/catalog.hpp), [`mods/`](../../mods) | Fixed catalog plus optional Language/NanoCell sources; no third-party binary discovery or loading. |
+| Runtime data mods | [`runtime_package.hpp`](../../include/bruce/mod/runtime_package.hpp), [`runtime_registry.hpp`](../../include/bruce/mod/runtime_registry.hpp), [`tree/`](../../include/bruce/tree) | Explicitly trusted, signed, schema-checked routing data. Installation and activation are distinct; routes select templates and do not execute them. |
 
-Die früheren Aussagen „Experience hat keinen Anwendungseinstieg“, „Gateentscheidungen benötigen Forschungs-JSON“ und „es gibt kein Übergabeobjekt“ gelten nicht mehr. Vollständige Bibliotheksentkopplung ist dennoch nicht erreicht: insbesondere Store → Anwendungsaudit bleibt eine tatsächliche Abhängigkeit. Es gibt keine allgemeine Plugin- oder Übergaberegistrierung.
+## Explicit local control
 
-## Regelhoheit im vereinbarten lokalen Betrieb
+The [local human rule approval contract](../contracts/05-human-rule-approval.md)
+defines the current local model. `rules-propose`/`rules-approve` create a
+confirmed, exclusive new rule-file export without activation. `rules-stage`,
+`rules-activate`, and `rules-status` manage an explicitly named active numeric
+rule store, generation, base binding, and durable journal. A terminal dialogue
+is a user-interface control, not an identity boundary against other programs
+run by the same user.
 
-[ADR-013](../adr/013-human-rule-authority.md) verlangt die konkrete menschliche Bestätigung einer Regeländerung. Getrennte Konten, Signierschlüssel und ein externer Aktivierungsdienst sind gemäß Nutzerentscheidung keine Voraussetzung des lokalen Modells.
+`compatibility --rule-store` reads the named active rule revision into that
+invocation. Direct `--rules` file paths remain explicit. Rejection histories,
+migration, and journal rotation are not established as general capabilities.
 
-Zwei implementierte Wege sind getrennt zu betrachten:
+## Control, publication, and verification
 
-- `rules-propose`/`rules-approve`: bestätigter exklusiver Export einer neuen Regeldatei; keine Aktivierung.
-- `rules-stage`/`rules-activate`/`rules-status`: expliziter aktiver numerischer Regelspeicher mit Generation, Basisbindung und dauerhaftem Journal bestätigter Wechsel. Nach Bestätigung erfolgt erneute Prüfung unter Schreibsperre und atomarer gemeinsamer Dateiersatz.
+The [control and publication contract](../contracts/06-control-and-publication.md)
+is the current reference for checkpoints, cancellation, error envelopes, and
+publication boundaries. Session, gate, transfer, and management flows have
+intentionally distinct contracts. Their counters are not universal measures of
+mathematical operations, wall time, or process memory.
 
-`compatibility --rule-store` übernimmt die aktuelle Fassung einmal in den Auftrag. Direkte `--rules`-Dateiwege bleiben möglich. Der Terminaldialog ist eine Bedienkontrolle, keine Identitätsgrenze gegen Programme desselben Benutzers. Abgelehnte Entscheidungen, Migration und Journalrotation sind nicht implementiert. Kein globaler Schutz aller Regelarten wird behauptet. [Vollständiger Vertrag](../contracts/05-human-rule-approval.md).
+`scripts/verify_control_flow.py` and its linked acceptance record document a
+specific reproducible control profile. That evidence does not replace a full
+architecture acceptance or broaden the core’s claim scope. The
+[CLI manual](../cli/README.md) remains the command and file-format authority.
 
-## Steuerung und Nachweise
+## Local working areas and next decisions
 
-Der [konsolidierte Bestandsvertrag](../contracts/06-control-and-publication.md) ist der aktuelle Einstieg für Abdeckung, Prioritäten, Fehlerhüllen und Veröffentlichung. Sitzungscontroller, Gateprüfung und Transfercontroller bleiben getrennte Wege. Ihre Punkte sind keine universellen Rechen-, Zeit- oder Speichermaße.
+`runs/`, `build*/`, and `.worktrees/` are ignored local working areas. The
+reversible semantic Python-index experiment is archived under
+`runs/retired-semantic-index/`; it is not an active build component.
 
-Die fünf Transferbefehle, einschließlich direktem kontrolliertem `experience add`, steuern Dateilesen, Quellen-/Regelprüfung, native Verarbeitung und Exportvorbereitung bis vor Veröffentlichung. Die allgemeine Session umfasst ihre angebundenen Ausführungs-/Serialisierungs-/Replaypunkte, aber nicht den nachfolgenden CLI-Dateiexport. Die übrigen Verwaltungswege sind nicht pauschal integriert. Einzelne Systemaufrufe und Fachoperationen bleiben atomar.
-
-Die Z-Auswahl ist keine Erfahrungsquelle. Der unabhängige Forschungsbefund verzweigt separat in Auswahl und Erfahrungsimport; beide Ziele prüfen ihn erneut. Die Grafik oben zeigt diese Verzweigung. Es gibt keinen automatischen Aufgabenplaner und keine implizite Regelpromotion.
-
-## Abnahme und nächste Arbeit
-
-Die [Abnahme Core 0.101](../implementation/182-control-consolidation-usage.md) und ihr [ausführbarer Prüfer](../../scripts/verify_control_flow.py) verbinden Forschung, Gates, beide Übergaben, Replay/Audit und negative Quellen-/Budget-/Freigabefälle. Der Bericht hält Version, Binärdigest, Eingaben, Aufrufe, Antworten und Artefaktdigests fest. [CLI-Anleitung](../cli/control-overview.md).
-
-Das [Profil Core 0.93](../implementation/174-local-cli-acceptance-profile.md) bleibt ein historischer Nachweis. Keine dieser Abnahmen ersetzt die M0–M2-Gesamtabnahme des ursprünglichen Zielbilds.
-
-Nächste Architekturarbeit: explizite Entscheidung über Controller-/Fehlerharmonisierung und Erweiterung der tatsächlich benötigten Verwaltungswege. Unterschiedliche Fehlerprioritäten dürfen dabei nicht stillschweigend geändert werden. Freie Sprache, NanoCell-Einbindung in den allgemeinen `ApplicationTask`-Lauf, Cockpit, Phase-DAG und GPU bleiben eigene Pakete. Suchoptimierung bleibt nachrangig.
-
-## Auslieferung und Herkunft
-
-Auf Bruce-AI ist `/home/chris/Desktop/Bruce_raw/build/bruce` maßgeblich. Änderungen werden per SCP übertragen; lokale Prüfung und Remoteprüfung werden getrennt dokumentiert. Core 0.102 verlagert die Dateiverantwortung in einen gemeinsamen lokalen Adapter; mathematische und Steuerungsverträge bleiben unverändert. [Adapterabnahme](../implementation/183-local-file-adapter-usage.md), [ADR-014](../adr/014-local-file-adapter.md).
-
-Die historischen Ausbaupakete [0.94](../implementation/175-transfer-control-usage.md), [0.95](../implementation/176-transfer-planning-control-usage.md), [0.96](../implementation/177-transfer-input-control-usage.md), [0.97](../implementation/178-transfer-rule-store-control-usage.md), [0.98](../implementation/179-transfer-export-control-usage.md), [0.99](../implementation/180-transfer-rule-validation-control-usage.md) und [0.100](../implementation/181-native-z-rule-control-usage.md) bleiben zur Herkunft erhalten. Für den aktuellen Gesamtvertrag ist die oben verlinkte Konsolidierung maßgeblich.
+**OPEN DECISION:** the next architectural work must explicitly choose whether
+and how to harmonize controllers, failure models, or additional management
+paths. Any such work must preserve existing command-specific behavior unless a
+migration is stated and tested. **PROPOSAL:** treat free-form language,
+NanoCell integration into `ApplicationTask`, a Cockpit, Phase-DAG execution,
+and GPU work as separate, testable packages rather than implied extensions of
+the current core.
