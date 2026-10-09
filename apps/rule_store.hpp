@@ -2,6 +2,7 @@
 #include "bruce/application/rule_history.hpp"
 #include "bruce/io/local_files.hpp"
 #include "bruce/core/json.hpp"
+#include "management_inspection_cli.hpp"
 #include <iostream>
 #include <sstream>
 #include <unistd.h>
@@ -12,8 +13,13 @@ inline std::string active_rule_snapshot(const std::string& path,const ReplayChec
 inline int rule_store_cli(int argc,char** argv){
     const std::string command=argv[1];
     if(command=="rules-status"){
-        if(argc!=3)throw Error("Usage: rules-status STORE");
-        const auto path=LocalFiles::rule_target(argv[2]);std::cout<<LocalFiles::load_rules(path).report()<<'\n';return 0;
+        if(argc<3)throw Error("Usage: rules-status STORE");
+        auto management=parse_management_inspection_options(argc,argv,3,"Usage: rules-status STORE");
+        const auto checkpoint=management.checkpoint();
+        if(checkpoint)checkpoint();
+        const auto path=LocalFiles::rule_target(argv[2]);
+        const auto report=LocalFiles::load_rules(path,false,checkpoint).report();
+        std::cout<<management.render(report)<<'\n';return 0;
     }
     if(command=="rules-stage"){
         if(argc!=5)throw Error("Usage: rules-stage STORE NEW PROPOSAL");

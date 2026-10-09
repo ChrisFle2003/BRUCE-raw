@@ -75,6 +75,39 @@ class ExperienceTests(unittest.TestCase):
         learned=self.research(3,'--planner','experience-order','--experience',revoked)
         self.assertEqual(learned['experience_records_used'],1)
         self.call('experience','add','--from-run',self.root/'source1','--output',store,ok=False)
+    def test_management_inspect_control_is_opt_in_and_read_only(self):
+        store,_=self.store();before=store.read_bytes()
+        plain_bytes=subprocess.run([BIN,'experience','inspect',str(store)],capture_output=True,check=True).stdout
+        plain=json.loads(plain_bytes)
+        controlled_bytes=subprocess.run([BIN,'experience','inspect',str(store),
+                                         '--max-management-checkpoints','1000000'],capture_output=True,check=True).stdout
+        controlled=json.loads(controlled_bytes)
+        self.assertEqual(controlled['contract'],'management-inspection-v1')
+        self.assertEqual(controlled['result'],plain)
+        self.assertIn(b'"result":'+plain_bytes.rstrip(b'\n')+b',"usage":',controlled_bytes)
+        self.assertEqual(controlled['usage']['model'],'management-checkpoints-v1')
+        used=controlled['usage']['checkpoints'];self.assertGreater(used,0)
+        exact=self.call('experience','inspect',store,'--max-management-checkpoints',used)
+        self.assertEqual(exact['result'],plain)
+        stopped=self.call('experience','inspect',store,'--max-management-checkpoints',used-1,ok=False)
+        self.assertIn('ManagementCheckpointBudgetExceeded',stopped['error'])
+        none=self.call('experience','inspect',store,'--management-cancellation','none')
+        self.assertEqual(none['result'],plain)
+        missing=self.root/'missing-management-source'
+        stopped=self.call('experience','inspect',missing,'--max-management-checkpoints',0,ok=False)
+        self.assertIn('ManagementCheckpointBudgetExceeded',stopped['error'])
+        malformed=self.root/'malformed-management-source';malformed.write_bytes(before+b'bad')
+        malformed_error=self.call('experience','inspect',malformed,'--max-management-checkpoints',1000000,ok=False)
+        self.assertEqual(set(malformed_error),{'error'})
+        self.assertEqual(store.read_bytes(),before)
+        self.assertEqual(malformed.read_bytes(),before+b'bad')
+        self.assertEqual(subprocess.run([BIN,'experience','inspect',str(store)],capture_output=True,check=True).stdout,plain_bytes)
+        duplicate=self.call('experience','inspect',store,'--max-management-checkpoints',1,
+                            '--max-management-checkpoints',2,ok=False)
+        self.assertEqual(duplicate['error'],'DuplicateOption: --max-management-checkpoints')
+        invalid=self.call('experience','inspect',store,'--management-cancellation','invalid',ok=False)
+        self.assertEqual(invalid['error'],'UnknownManagementCancellation')
+
     def test_context_holdout_and_candidate_budget(self):
         store,_=self.store()
         mismatch=self.research(2,'--planner','experience-order','--experience',store,'--max-power',2)
