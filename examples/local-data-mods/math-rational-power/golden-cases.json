@@ -1,0 +1,1 @@
+[{"input":"3/4 hoch 2","status":"MATCHED","template_id":"math.rational.power.v1"},{"input":"3/0 hoch 2","status":"UNKNOWN","template_id":""},{"input":"3/4 potenz 2","status":"UNKNOWN","template_id":""}]

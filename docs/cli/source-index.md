@@ -177,7 +177,7 @@ Aus `Error("…")`, Stopaufrufen und Zuweisungen von `stop_reason` in `src/`, `i
 | `DuplicateOrOverlappingGridInput` | [src/application/grid_research.cpp:61](../../src/application/grid_research.cpp) |
 | `DuplicateOrOverlappingSampleInput` | [src/application/research_contract.cpp:87](../../src/application/research_contract.cpp) |
 | `DuplicateOrUnsortedTaskSpecAlias` | [src/token/task_spec.cpp:159](../../src/token/task_spec.cpp) |
-| `DuplicateRuntimeModJsonKey` | [src/mod/runtime_package.cpp:103](../../src/mod/runtime_package.cpp) |
+| `DuplicateRuntimeModJsonKey` | [src/mod/runtime_package.cpp:104](../../src/mod/runtime_package.cpp) |
 | `DuplicateTaskSpecFileAlias` | [apps/bruce_cli.cpp:741](../../apps/bruce_cli.cpp) |
 | `DuplicateTaskSpecRoleAsset` | [src/token/task_spec.cpp:117](../../src/token/task_spec.cpp) |
 | `DuplicateTrainingInput` | [src/application/research.cpp:19](../../src/application/research.cpp) |
@@ -392,15 +392,15 @@ Aus `Error("…")`, Stopaufrufen und Zuweisungen von `stop_reason` in `src/`, `i
 | `InvalidRuleRow: expected 10 fields` | [src/compatibility/snapshot.cpp:64](../../src/compatibility/snapshot.cpp) |
 | `InvalidRuleStage` | [src/application/rule_history.cpp:25](../../src/application/rule_history.cpp) |
 | `InvalidRuleWeight` | [src/compatibility/snapshot.cpp:73](../../src/compatibility/snapshot.cpp) |
-| `InvalidRuntimeModContainer` | [src/mod/runtime_package.cpp:236](../../src/mod/runtime_package.cpp) |
+| `InvalidRuntimeModContainer` | [src/mod/runtime_package.cpp:237](../../src/mod/runtime_package.cpp) |
 | `InvalidRuntimeModJournal` | [src/mod/runtime_registry.cpp:158](../../src/mod/runtime_registry.cpp) |
 | `InvalidRuntimeModJournalGeneration` | [src/mod/runtime_registry.cpp:176](../../src/mod/runtime_registry.cpp) |
-| `InvalidRuntimeModMember` | [src/mod/runtime_package.cpp:255](../../src/mod/runtime_package.cpp) |
+| `InvalidRuntimeModMember` | [src/mod/runtime_package.cpp:289](../../src/mod/runtime_package.cpp) |
 | `InvalidRuntimeModRegistry` | [src/mod/runtime_registry.cpp:81](../../src/mod/runtime_registry.cpp) |
-| `InvalidRuntimeModSchema` | [src/mod/runtime_package.cpp:16](../../src/mod/runtime_package.cpp) |
-| `InvalidRuntimeModSignatureEncoding` | [src/mod/runtime_package.cpp:259](../../src/mod/runtime_package.cpp) |
+| `InvalidRuntimeModSchema` | [src/mod/runtime_package.cpp:17](../../src/mod/runtime_package.cpp) |
+| `InvalidRuntimeModSignatureEncoding` | [src/mod/runtime_package.cpp:293](../../src/mod/runtime_package.cpp) |
 | `InvalidRuntimeModState` | [apps/runtime_mod_cli.hpp:36](../../apps/runtime_mod_cli.hpp) |
-| `InvalidRuntimeModTrustStore` | [src/mod/runtime_package.cpp:270](../../src/mod/runtime_package.cpp) |
+| `InvalidRuntimeModTrustStore` | [src/mod/runtime_package.cpp:304](../../src/mod/runtime_package.cpp) |
 | `InvalidSample` | [src/application/replay.cpp:35](../../src/application/replay.cpp) |
 | `InvalidSampleCount` | [src/application/research_contract.cpp:78](../../src/application/research_contract.cpp) |
 | `InvalidSampleCount: training 1..4096, holdout 0..4096` | [src/application/research.cpp:12](../../src/application/research.cpp) |
@@ -451,6 +451,7 @@ Aus `Error("…")`, Stopaufrufen und Zuweisungen von `stop_reason` in `src/`, `i
 | `LanguageModDraftRunMismatch` | [apps/bruce_cli.cpp:213](../../apps/bruce_cli.cpp) |
 | `LanguageRunByteLimit` | [mods/language/src/language_run.cpp:183](../../mods/language/src/language_run.cpp) |
 | `LanguageRunDigestMismatch` | [mods/language/src/language_run.cpp:192](../../mods/language/src/language_run.cpp) |
+| `LocalModBuildFailed` | [src/mod/local_builder.cpp:20](../../src/mod/local_builder.cpp) |
 | `ManagementCheckpointBudgetExceeded: checkpoints=` | [include/bruce/application/management_inspection_control.hpp:23](../../include/bruce/application/management_inspection_control.hpp) |
 | `ManagementCheckpointCounterOverflow` | [include/bruce/application/management_inspection_control.hpp:27](../../include/bruce/application/management_inspection_control.hpp) |
 | `ManagementInspectionCancelled` | [include/bruce/application/management_inspection_control.hpp:21](../../include/bruce/application/management_inspection_control.hpp) |
@@ -512,7 +513,7 @@ Aus `Error("…")`, Stopaufrufen und Zuweisungen von `stop_reason` in `src/`, `i
 | `NoncanonicalModCatalog` | [src/mod/catalog.cpp:17](../../src/mod/catalog.cpp) |
 | `NoncanonicalModRun` | [src/mod/mod_api.cpp:61](../../src/mod/mod_api.cpp) |
 | `NoncanonicalNanoCellModRun` | [mods/nanocell/src/mod.cpp:61](../../mods/nanocell/src/mod.cpp) |
-| `NoncanonicalRuntimeModJson` | [src/mod/runtime_package.cpp:138](../../src/mod/runtime_package.cpp) |
+| `NoncanonicalRuntimeModJson` | [src/mod/runtime_package.cpp:139](../../src/mod/runtime_package.cpp) |
 | `NoncanonicalTaskSpec` | [src/token/task_spec.cpp:260](../../src/token/task_spec.cpp) |
 | `NoncanonicalTaskSpecNumber` | [src/token/task_spec.cpp:29](../../src/token/task_spec.cpp) |
 | `NoncanonicalTaskSpecV1RoleAssetBinding` | [src/token/task_spec.cpp:110](../../src/token/task_spec.cpp) |
@@ -572,7 +573,7 @@ Aus `Error("…")`, Stopaufrufen und Zuweisungen von `stop_reason` in `src/`, `i
 | `RuleStoreWriteFailed` | [src/io/local_files.cpp:33](../../src/io/local_files.cpp) |
 | `RuntimeModAlreadyInstalled` | [src/mod/runtime_registry.cpp:282](../../src/mod/runtime_registry.cpp) |
 | `RuntimeModCommitDurabilityUnknown` | [src/mod/runtime_registry.cpp:153](../../src/mod/runtime_registry.cpp) |
-| `RuntimeModCryptoFailure` | [src/mod/runtime_package.cpp:294](../../src/mod/runtime_package.cpp) |
+| `RuntimeModCryptoFailure` | [src/mod/runtime_package.cpp:328](../../src/mod/runtime_package.cpp) |
 | `RuntimeModFileOpenFailed` | [src/mod/runtime_registry.cpp:26](../../src/mod/runtime_registry.cpp) |
 | `RuntimeModFileReadFailed` | [src/mod/runtime_registry.cpp:56](../../src/mod/runtime_registry.cpp) |
 | `RuntimeModFileStatFailed` | [src/mod/runtime_registry.cpp:45](../../src/mod/runtime_registry.cpp) |
@@ -585,15 +586,15 @@ Aus `Error("…")`, Stopaufrufen und Zuweisungen von `stop_reason` in `src/`, `i
 | `RuntimeModJournalWriteFailed` | [src/mod/runtime_registry.cpp:203](../../src/mod/runtime_registry.cpp) |
 | `RuntimeModNotActive` | [src/mod/runtime_registry.cpp:312](../../src/mod/runtime_registry.cpp) |
 | `RuntimeModNotInstalled` | [src/mod/runtime_registry.cpp:300](../../src/mod/runtime_registry.cpp) |
-| `RuntimeModPackageTooLarge` | [src/mod/runtime_package.cpp:246](../../src/mod/runtime_package.cpp) |
-| `RuntimeModPayloadDigestMismatch` | [src/mod/runtime_package.cpp:262](../../src/mod/runtime_package.cpp) |
+| `RuntimeModPackageTooLarge` | [src/mod/runtime_package.cpp:275](../../src/mod/runtime_package.cpp) |
+| `RuntimeModPayloadDigestMismatch` | [src/mod/runtime_package.cpp:296](../../src/mod/runtime_package.cpp) |
 | `RuntimeModRecordLimit` | [src/mod/runtime_registry.cpp:133](../../src/mod/runtime_registry.cpp) |
 | `RuntimeModRegistryJournalMismatch` | [src/mod/runtime_registry.cpp:187](../../src/mod/runtime_registry.cpp) |
 | `RuntimeModRevoked` | [src/mod/runtime_registry.cpp:301](../../src/mod/runtime_registry.cpp) |
 | `RuntimeModRootCreateFailed` | [src/mod/runtime_registry.cpp:38](../../src/mod/runtime_registry.cpp) |
 | `RuntimeModRootRequired` | [src/mod/runtime_registry.cpp:254](../../src/mod/runtime_registry.cpp) |
-| `RuntimeModSignatureInvalid` | [src/mod/runtime_package.cpp:295](../../src/mod/runtime_package.cpp) |
-| `RuntimeModSigningKeyUntrusted` | [src/mod/runtime_package.cpp:289](../../src/mod/runtime_package.cpp) |
+| `RuntimeModSignatureInvalid` | [src/mod/runtime_package.cpp:329](../../src/mod/runtime_package.cpp) |
+| `RuntimeModSigningKeyUntrusted` | [src/mod/runtime_package.cpp:323](../../src/mod/runtime_package.cpp) |
 | `RuntimeModStoreByteLimit` | [src/mod/runtime_registry.cpp:58](../../src/mod/runtime_registry.cpp) |
 | `RuntimeModStoreLockFailed` | [src/mod/runtime_registry.cpp:67](../../src/mod/runtime_registry.cpp) |
 | `RuntimeModTrustStoreChanged` | [src/mod/runtime_registry.cpp:76](../../src/mod/runtime_registry.cpp) |
@@ -645,7 +646,7 @@ Aus `Error("…")`, Stopaufrufen und Zuweisungen von `stop_reason` in `src/`, `i
 | `TruncatedSamples` | [src/application/replay.cpp:33](../../src/application/replay.cpp) |
 | `UnchangedExperienceReplacement` | [src/experience/store.cpp:67](../../src/experience/store.cpp) |
 | `Unexpected NanoCell final state` | [mods/nanocell/src/nanocell.cpp:351](../../mods/nanocell/src/nanocell.cpp) |
-| `UnexpectedRuntimeModMember` | [src/mod/runtime_package.cpp:258](../../src/mod/runtime_package.cpp) |
+| `UnexpectedRuntimeModMember` | [src/mod/runtime_package.cpp:292](../../src/mod/runtime_package.cpp) |
 | `Unknown NanoCell byte opcode` | [mods/nanocell/src/nanocell.cpp:43](../../mods/nanocell/src/nanocell.cpp) |
 | `Unknown NanoCell encoded opcode` | [mods/nanocell/src/nanocell.cpp:311](../../mods/nanocell/src/nanocell.cpp) |
 | `Unknown NanoCell reference technique` | [mods/nanocell/src/nanocell.cpp:71](../../mods/nanocell/src/nanocell.cpp) |
@@ -715,8 +716,8 @@ Aus `Error("…")`, Stopaufrufen und Zuweisungen von `stop_reason` in `src/`, `i
 | `UnsupportedLanguageText` | [apps/bruce_cli.cpp:808](../../apps/bruce_cli.cpp) |
 | `UnsupportedRouteNormalization` | [src/tree/registry.cpp:80](../../src/tree/registry.cpp) |
 | `UnsupportedRuleSource` | [src/compatibility/snapshot.cpp:71](../../src/compatibility/snapshot.cpp) |
-| `UnsupportedRuntimeModCapability` | [src/mod/runtime_package.cpp:228](../../src/mod/runtime_package.cpp) |
-| `UnsupportedRuntimeModVersion` | [src/mod/runtime_package.cpp:219](../../src/mod/runtime_package.cpp) |
+| `UnsupportedRuntimeModCapability` | [src/mod/runtime_package.cpp:229](../../src/mod/runtime_package.cpp) |
+| `UnsupportedRuntimeModVersion` | [src/mod/runtime_package.cpp:220](../../src/mod/runtime_package.cpp) |
 | `UnsupportedTaskSpecNormalization` | [src/token/task_spec.cpp:133](../../src/token/task_spec.cpp) |
 | `UnsupportedTaskSpecRoute` | [apps/bruce_cli.cpp:739](../../apps/bruce_cli.cpp) |
 | `UnsupportedTaskSpecVersion` | [src/token/task_spec.cpp:132](../../src/token/task_spec.cpp) |

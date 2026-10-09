@@ -5,7 +5,7 @@
 - Geprüfte CLI-Version: 0.102.0.
 - 150 dokumentierte CLI-Aufrufe ausgeführt; erwartete Exitcodes und gezielte fachliche Aussagen geprüft.
 - Alle 84 im CLI-Quelltext gefundenen Optionsnamen sind im erklärenden Handbuch enthalten.
-- 635 Diagnose-Literale/Präfixe mit Quellverweis erfasst.
+- 636 Diagnose-Literale/Präfixe mit Quellverweis erfasst.
 - Relative Markdown-Dateilinks im Handbuch geprüft.
 - Eingaben, Argumente und vollständige JSON-Antworten stehen in `examples.json`.
 - NanoCell-Beispiele prüfen den äußeren Mod-Export, identisches Replay, `INCOMPLETE`, Kontextablehnung, ungültiges Hex und unbekannte Technik.
