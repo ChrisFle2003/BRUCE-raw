@@ -5,6 +5,7 @@
 #include <vector>
 
 namespace bruce {
+struct NormalizedRouteInputV1;
 using TreeAddressV1 = std::vector<std::uint32_t>;
 
 enum class HostClaimScopeV1 {
@@ -15,9 +16,11 @@ struct TreeNodeV1 {
     TreeAddressV1 id;
     std::string key;
     std::string template_id;
-    std::vector<std::string> aliases;
+    std::vector<std::string> aliases; // Metadata; matching uses only route_pattern.
     HostClaimScopeV1 claim_scope = HostClaimScopeV1::unknown;
     std::string owner_id;
+    // Empty for structural nodes; other patterns match a complete token sequence.
+    std::vector<std::string> route_pattern;
     bool operator==(const TreeNodeV1&) const = default;
 };
 struct TreeFragmentV1 {
@@ -37,6 +40,7 @@ public:
     const std::vector<TreeNodeV1>& nodes() const noexcept { return nodes_; }
     const TreeNodeV1* find(const TreeAddressV1& address) const noexcept;
     TreeRegistryV1 mount(TreeFragmentV1 fragment, std::string_view owner_id) const;
+    RouteResultV1 route(const NormalizedRouteInputV1& input) const;
     std::string digest() const;
 private:
     explicit TreeRegistryV1(std::vector<TreeNodeV1> nodes);

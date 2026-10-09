@@ -60,6 +60,7 @@ add_library(bruce_core
     src/evidence/chain.cpp
     src/token/task_spec.cpp
     src/tree/registry.cpp
+    src/tree/normalizer.cpp
     src/application/tokenized_task_run.cpp
     src/io/local_files.cpp)
 target_include_directories(bruce_core PUBLIC include)

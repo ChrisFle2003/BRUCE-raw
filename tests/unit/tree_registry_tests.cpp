@@ -1,4 +1,5 @@
 #include "bruce/tree/registry.hpp"
+#include "bruce/tree/normalizer.hpp"
 #include "bruce/core/types.hpp"
 #include <iostream>
 #include <utility>
@@ -98,6 +99,116 @@ void foreign_nodes_and_nested_mounts() {
     const auto root_extension = original.mount({{0}, {node({2}, "science"), node({2,1}, "power")}}, "user.science");
     require(root_extension.find({2,1}) && !original.find({2}), "Logical root extension failed");
 }
+void controlled_core_routes() {
+    const auto core = bruce::core_tree_registry_v1();
+    const auto normalized = bruce::normalize_route_text_v1(" \t3/4 PLUS\r\n5/6 \v");
+    require(normalized.normalized_text == "3/4 plus 5/6", "ASCII normalization changed controlled input");
+    require(normalized.tokens == std::vector<std::string>{"3/4", "plus", "5/6"}, "Wrong route tokens");
+    const auto addition = core.route(normalized);
+    require(addition.status == bruce::RouteStatusV1::matched && addition.candidates.size() == 1,
+        "Addition did not produce one match");
+    require(addition.candidates[0].id == bruce::TreeAddressV1{1,1,1} &&
+        addition.candidates[0].template_id == "math.rational.add.v1", "Wrong addition candidate");
+    for (const auto& [input, id] : std::vector<std::pair<std::string, bruce::TreeAddressV1>>{
+        {"-3/4 minus 5", {1,1,2}}, {"3 mal -5/6", {1,1,3}}, {"3/4 durch 5/6", {1,1,4}}}) {
+        const auto result = core.route(bruce::normalize_route_text_v1(input));
+        require(result.status == bruce::RouteStatusV1::matched && result.candidates.size() == 1 &&
+            result.candidates[0].id == id,
+            "Canonical Core operation not matched");
+    }
+    for (const auto& input : {"", "3/4 adds 5/6", "3/4 plsu 5/6", "plus 3/4 5/6",
+        "3/4plus5/6", "3/4 plus 5/6 extra", "3/0 plus 1", "3/-4 plus 1", "+3 plus 1",
+        "3.0 plus 1", "3//4 plus 1", "--3 plus 1", "3/4 plus 5/6!", "3/4\xc2\xa0plus 5/6"}) {
+        const auto result = core.route(bruce::normalize_route_text_v1(input));
+        require(result.status == bruce::RouteStatusV1::unknown && result.candidates.empty(),
+            "Unsupported input was inferred or accepted");
+    }
+}
+void mod_patterns_and_collisions() {
+    auto power = node({1,1,5}, "power");
+    power.aliases = {"hoch"};
+    power.route_pattern = {"<rational>", "hoch", "<integer>"};
+    const auto core = bruce::core_tree_registry_v1();
+    const auto first = core.mount({{1,1}, {power}}, "user.power");
+    const auto result = first.route(bruce::normalize_route_text_v1("3/4 hoch 2"));
+    require(result.status == bruce::RouteStatusV1::matched && result.candidates.size() == 1 &&
+        result.candidates[0].id == bruce::TreeAddressV1{1,1,5}, "Mounted power route absent");
+    require(first.route(bruce::normalize_route_text_v1("3/4 hoch 2/1")).status == bruce::RouteStatusV1::unknown,
+        "Fraction matched integer placeholder");
+    require(first.route(bruce::normalize_route_text_v1("3/4 potenz 2")).status == bruce::RouteStatusV1::unknown,
+        "Undeclared synonym inferred");
+    auto other = power;
+    other.id = {1,1,6};
+    other.key = "other-power";
+    other.template_id = "math.rational.other-power.v1";
+    const auto collision = first.mount({{1,1}, {other}}, "user.other");
+    const auto ambiguous = collision.route(bruce::normalize_route_text_v1("3/4 hoch 2"));
+    require(ambiguous.status == bruce::RouteStatusV1::ambiguous && ambiguous.candidates.size() == 2,
+        "Collision chose a template or lost candidates");
+    require(ambiguous.candidates[0].id == bruce::TreeAddressV1{1,1,5} &&
+        ambiguous.candidates[1].id == bruce::TreeAddressV1{1,1,6} &&
+        ambiguous.candidates[0].owner_id == "user.power" && ambiguous.candidates[1].owner_id == "user.other",
+        "Ambiguous result omitted mod addresses or owners");
+    auto changed = power;
+    changed.route_pattern[1] = "potenz";
+    require(core.mount({{1,1}, {changed}}, "user.power").digest() != first.digest(),
+        "Route grammar change absent from registry digest");
+    require(core.route(bruce::normalize_route_text_v1("3/4 hoch 2")).status == bruce::RouteStatusV1::unknown,
+        "Mounted route leaked into original registry");
+}
+void invalid_patterns_are_rejected() {
+    const auto core = bruce::core_tree_registry_v1();
+    for (const auto& pattern : std::vector<std::vector<std::string>>{
+        {"<rational>", "HOCH", "<integer>"}, {"<rational>", " hoch", "<integer>"},
+        {"<rational>", "", "<integer>"}, {"<rational>", "hoch zwei", "<integer>"},
+        {"<decimal>", "hoch", "<integer>"}}) {
+        auto power = node({1,1,5}, "power");
+        power.route_pattern = pattern;
+        bool rejected = false;
+        try { (void)core.mount({{1,1}, {power}}, "user.power"); }
+        catch (const bruce::Error&) { rejected = true; }
+        require(rejected, "Noncanonical or unsupported route pattern accepted");
+    }
+    auto power = node({1,1,5}, "power");
+    power.route_pattern = {"<rational>", "hoch", "<integer>"};
+    power.template_id.clear();
+    bool rejected = false;
+    try { (void)core.mount({{1,1}, {power}}, "user.power"); }
+    catch (const bruce::Error&) { rejected = true; }
+    require(rejected, "Routed node without template accepted");
+}
+void normalization_boundaries_and_numeric_overlap() {
+    const auto normalized = bruce::normalize_route_text_v1(" Ä A\fB\vC ");
+    require(normalized.normalized_text == "Ä a b c", "Normalizer changed non-ASCII bytes or missed whitespace");
+    for (const auto& text : std::vector<std::string>{std::string(1, '\xff'), "\xc0\xaf", "\xe2\x82",
+        "\xed\xa0\x80", "\xf4\x90\x80\x80", "\xe2\x28\xa1"}) {
+        bool rejected = false;
+        try { (void)bruce::normalize_route_text_v1(text); }
+        catch (const bruce::Error&) { rejected = true; }
+        require(rejected, "Malformed UTF-8 accepted");
+    }
+    const auto core = bruce::core_tree_registry_v1();
+    auto input = bruce::normalize_route_text_v1("3/4 plus 5/6");
+    input.normalization_version = "unrecognized-v2";
+    bool rejected = false;
+    try { (void)core.route(input); } catch (const bruce::Error&) { rejected = true; }
+    require(rejected, "Unsupported normalization version accepted");
+    input = bruce::normalize_route_text_v1("3/4 plus 5/6");
+    input.tokens[1] = "minus";
+    rejected = false;
+    try { (void)core.route(input); } catch (const bruce::Error&) { rejected = true; }
+    require(rejected, "Forged normalized tokens accepted");
+    require(core.route(bruce::normalize_route_text_v1("-0003/0004 plus 9999999999999999999999999999999"))
+        .status == bruce::RouteStatusV1::matched, "Literal digit syntax was restricted to machine integers");
+    require(core.route(bruce::normalize_route_text_v1("3/000 plus 1")).status == bruce::RouteStatusV1::unknown,
+        "Zero denominator with leading zeroes accepted");
+    auto integer = node({1,1,5}, "integer-add");
+    integer.route_pattern = {"<integer>", "plus", "<integer>"};
+    const auto result = core.mount({{1,1}, {integer}}, "user.integer").route(bruce::normalize_route_text_v1("3 plus 5"));
+    require(result.status == bruce::RouteStatusV1::ambiguous && result.candidates.size() == 2 &&
+        result.candidates[0].id == bruce::TreeAddressV1{1,1,1} && result.candidates[1].id == bruce::TreeAddressV1{1,1,5},
+        "Overlapping numeric types selected a preferred route");
+}
 }
 int main() {
     try {
@@ -105,6 +216,10 @@ int main() {
         equivalent_insertion_order_has_one_digest();
         invalid_mounts_preserve_original_registry();
         foreign_nodes_and_nested_mounts();
+        controlled_core_routes();
+        mod_patterns_and_collisions();
+        invalid_patterns_are_rejected();
+        normalization_boundaries_and_numeric_overlap();
     } catch (const std::exception& error) {
         std::cerr << error.what() << '\n';
         return 1;
