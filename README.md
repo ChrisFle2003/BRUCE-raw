@@ -1,6 +1,6 @@
-# My_BRUCE_AI
+# BRUCE_raw
 
-BRUCE_raw is a bounded C++20 research core for local, reproducible
+BRUCE is a bounded C++20 research core for local, reproducible
 mathematical investigation. Its primary interface is the Linux command-line
 program `bruce`. The current CMake project version is **Core 0.102.0**.
 
