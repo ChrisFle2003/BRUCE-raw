@@ -1,4 +1,4 @@
-# BRUCE_raw
+# My_BRUCE_AI
 
 BRUCE_raw is a bounded C++20 research core for local, reproducible
 mathematical investigation. Its primary interface is the Linux command-line
