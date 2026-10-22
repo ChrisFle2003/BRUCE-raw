@@ -8,6 +8,15 @@
 
 namespace bruce {
 
+enum class BuiltinModBuildStateV1 { not_built, available };
+
+struct BuiltinModFeatureV1 {
+    std::string id;
+    std::string version;
+    BuiltinModBuildStateV1 build_state = BuiltinModBuildStateV1::not_built;
+    std::vector<ModCapabilityV1> capabilities;
+};
+
 class ModCatalogV1 {
 public:
     explicit ModCatalogV1(std::span<const ModManifestV1> manifests);
@@ -20,5 +29,6 @@ private:
 };
 
 [[nodiscard]] const ModCatalogV1& builtin_mod_catalog_v1();
+[[nodiscard]] std::span<const BuiltinModFeatureV1> builtin_mod_features_v1();
 
 } // namespace bruce

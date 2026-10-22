@@ -6,6 +6,8 @@ and what does not follow from a successful CLI run.
 
 - [Repository structure](repository-structure.md) — tracked areas, source
   domains, build flow, runtime flow, and mod boundaries.
+- [Local security boundaries](04-local-security-boundaries.md) — current
+  MCP, artifact, and external-exposure limits.
 - [Identity and invariants](01-identity-and-invariants.md) — foundational
   vocabulary and intended invariants; read its own status and date.
 - [System architecture](02-system-architecture.md) — architectural target

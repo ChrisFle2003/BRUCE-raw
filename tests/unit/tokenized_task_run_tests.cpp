@@ -60,7 +60,7 @@ void outer_replay_preserves_native_status_and_gates() {
         require(rendered.find(field)!=std::string::npos,"native incomplete/gate field lost");
     require(rendered.find(bruce::render_execution_session(run.session))!=std::string::npos,"native session evidence lost");
     require(run.spec_digest==bruce::sha256(run.spec_bytes) && run.native_bundle_digest==bruce::sha256(run.session.bundle),"digest binding lost");
-    require(std::variant_size_v<bruce::ApplicationTask> == 8,"application variants changed");
+    require(std::variant_size_v<bruce::ApplicationTask> == 10,"application variants changed");
 }
 void outer_round_trip_preserves_refuted_and_verified_samples() {
     for(const auto* expected:{"REFUTED","VERIFIED_ON_SAMPLES"}) {

@@ -14,7 +14,8 @@ cmake --build build-cli --target bruce bruce-mod-builder -j2
 
 ## 2. Privaten Schlüssel vorbereiten
 
-Die Datei `.env` liegt im Projekt-Root, wird nicht versioniert und enthält
+Lege etwa `signing.env` im Projekt-Root an und nimm sie in deine lokalen
+Ignore-Regeln auf. Sie enthält
 genau eine Zeile:
 
 ```text
@@ -24,7 +25,7 @@ BRUCE_MOD_ED25519_SEED_HEX=<64-kleinbuchstabige-Hex-Zeichen>
 Sie muss nur für dich lesbar sein:
 
 ```sh
-chmod 600 .env
+chmod 600 signing.env
 ```
 
 Den Inhalt niemals ausgeben, kopieren oder committen.
@@ -42,12 +43,11 @@ chmod 700 runs runs/local-data-mods
 ## 4. Paket bauen
 
 ```sh
-./build-cli/bruce-mod-builder \
-  --manifest examples/local-data-mods/math-rational-power/manifest.json \
-  --tree examples/local-data-mods/math-rational-power/tree.json \
-  --golden examples/local-data-mods/math-rational-power/golden-cases.json \
+./build-cli/bruce-mod-builder data \
+  examples/local-data-mods/math-rational-power \
   --output runs/local-data-mods/math-rational-power-v1.brucemod \
-  --trust-store-output runs/local-data-mods/local-math-v1.pub
+  --trust-store-output runs/local-data-mods/local-math-v1.pub \
+  --signing-env signing.env
 ```
 
 Der Builder schreibt ein signiertes Paket und den passenden öffentlichen
@@ -56,6 +56,7 @@ Truststore. Vorhandene Zieldateien werden nicht überschrieben.
 ## 5. Prüfen und installieren
 
 ```sh
+./build-cli/bruce mods inspect runs/local-data-mods/math-rational-power-v1.brucemod
 ./build-cli/bruce mods verify runs/local-data-mods/math-rational-power-v1.brucemod \
   --trust-store runs/local-data-mods/local-math-v1.pub
 ./build-cli/bruce mods install runs/local-data-mods/math-rational-power-v1.brucemod \
@@ -74,7 +75,7 @@ Route weiterhin `UNKNOWN`.
   --mod-root runs/local-data-mods/mods
 ./build-cli/bruce route --text '3/4 hoch 2' \
   --mod-root runs/local-data-mods/mods \
-  --output runs/local-data-mods/power.route.json
+  --output runs/local-data-mods/power.route.json --mod-details
 ```
 
 Du erhältst `MATCHED`, die Adresse `[1,1,5]` und die Vorlage
@@ -85,7 +86,7 @@ Berechnung von `9/16`.
 
 ```sh
 ./build-cli/bruce route replay runs/local-data-mods/power.route.json \
-  --mod-root runs/local-data-mods/mods
+  --mod-root runs/local-data-mods/mods --mod-details
 ```
 
 Replay bestätigt nur genau denselben aktiven Tree und dieselben Paketversionen.

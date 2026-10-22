@@ -7,6 +7,8 @@ using Checkpoint=std::function<bool(std::uint64_t)>;
 Run execute_native(Task t,const Checkpoint& c){return research(std::move(t),c);}
 ExactResearchRun execute_native(ExactResearchTask t,const Checkpoint& c){return exact_research(std::move(t),c);}
 GridRun execute_native(GridTask t,const Checkpoint&){return evaluate_grid(std::move(t));}
+GridStageSweepRun execute_native(GridStageSweepTask t,const Checkpoint&){return evaluate_grid_stage_sweep(std::move(t));}
+GridStageVerifyRun execute_native(GridStageVerifyTask t,const Checkpoint&){return evaluate_grid_stage_verify(std::move(t));}
 GridBatchRun execute_native(GridBatchTask t,const Checkpoint& c){return evaluate_grid_batch(std::move(t),c);}
 GridResumeRun execute_native(GridResumeTask t,const Checkpoint& c){return resume_grid_batch(std::move(t.parent),t.additional_queries,c);}
 GridResearchRun execute_native(GridResearchTask t,const Checkpoint& c){
@@ -18,12 +20,14 @@ template<class T> struct Codec;
 template<> struct Codec<Run>{static constexpr auto render=render_run;static constexpr auto pack=pack_run;};
 template<> struct Codec<ExactResearchRun>{static constexpr auto render=render_exact_research;static constexpr auto pack=pack_exact_research;};
 template<> struct Codec<GridRun>{static constexpr auto render=render_grid;static constexpr auto pack=pack_grid;};
+template<> struct Codec<GridStageSweepRun>{static constexpr auto render=render_grid_stage_sweep;static constexpr auto pack=pack_grid_stage_sweep;};
+template<> struct Codec<GridStageVerifyRun>{static constexpr auto render=render_grid_stage_verify;static constexpr auto pack=pack_grid_stage_verify;};
 template<> struct Codec<GridBatchRun>{static constexpr auto render=render_grid_batch;static constexpr auto pack=pack_grid_batch;};
 template<> struct Codec<GridResumeRun>{static constexpr auto render=render_grid_resume;static constexpr auto pack=pack_grid_resume;};
 template<> struct Codec<GridResearchRun>{static constexpr auto render=render_grid_research;static constexpr auto pack=pack_grid_research;};
 template<> struct Codec<FractionComparisonRun>{static constexpr auto render=render_fraction_comparison;static constexpr auto pack=pack_fraction_comparison;};
 template<> struct Codec<CompatibilityRun>{static constexpr auto render=render_compatibility;static constexpr auto pack=pack_compatibility;};
-constexpr std::array<std::string_view,8> names={"research-int64","research-exact","grid","grid-batch","grid-resume","grid-research","fraction-comparison","compatibility"};
+constexpr std::array<std::string_view,10> names={"research-int64","research-exact","grid","grid-batch","grid-resume","grid-research","fraction-comparison","compatibility","grid-stage-sweep","grid-stage-verify"};
 static_assert(names.size()==std::variant_size_v<ApplicationTask> && names.size()==std::variant_size_v<ApplicationRun>);
 }
 ApplicationRun execute_application(ApplicationTask task,const ExecutionControl& control){

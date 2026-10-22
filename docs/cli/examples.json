@@ -11,15 +11,48 @@
     "many.rules": "BRUCE_RULES_V1\nsnapshot many\nrule r0 positive value ge 0 0 1 manual -\nrule r1 positive value ge 0 0 1 manual -\nrule r2 positive value ge 0 0 1 manual -\nrule r3 positive value ge 0 0 1 manual -\nrule r4 positive value ge 0 0 1 manual -\nrule r5 positive value ge 0 0 1 manual -\nrule r6 positive value ge 0 0 1 manual -\nrule r7 positive value ge 0 0 1 manual -\nrule r8 positive value ge 0 0 1 manual -\nrule r9 positive value ge 0 0 1 manual -\nrule r10 positive value ge 0 0 1 manual -\nrule r11 positive value ge 0 0 1 manual -\nrule r12 positive value ge 0 0 1 manual -\nrule r13 positive value ge 0 0 1 manual -\nrule r14 positive value ge 0 0 1 manual -\nrule r15 positive value ge 0 0 1 manual -\nrule r16 positive value ge 0 0 1 manual -\nrule r17 positive value ge 0 0 1 manual -\nrule r18 positive value ge 0 0 1 manual -\nrule r19 positive value ge 0 0 1 manual -\nrule r20 positive value ge 0 0 1 manual -\nrule r21 positive value ge 0 0 1 manual -\nrule r22 positive value ge 0 0 1 manual -\nrule r23 positive value ge 0 0 1 manual -\nrule r24 positive value ge 0 0 1 manual -\nrule r25 positive value ge 0 0 1 manual -\nrule r26 positive value ge 0 0 1 manual -\nrule r27 positive value ge 0 0 1 manual -\nrule r28 positive value ge 0 0 1 manual -\nrule r29 positive value ge 0 0 1 manual -\nrule r30 positive value ge 0 0 1 manual -\nrule r31 positive value ge 0 0 1 manual -\nrule r32 positive value ge 0 0 1 manual -\nrule r33 positive value ge 0 0 1 manual -\nrule r34 positive value ge 0 0 1 manual -\nrule r35 positive value ge 0 0 1 manual -\nrule r36 positive value ge 0 0 1 manual -\nrule r37 positive value ge 0 0 1 manual -\nrule r38 positive value ge 0 0 1 manual -\nrule r39 positive value ge 0 0 1 manual -\nrule r40 positive value ge 0 0 1 manual -\nrule r41 positive value ge 0 0 1 manual -\nrule r42 positive value ge 0 0 1 manual -\nrule r43 positive value ge 0 0 1 manual -\nrule r44 positive value ge 0 0 1 manual -\nrule r45 positive value ge 0 0 1 manual -\nrule r46 positive value ge 0 0 1 manual -\nrule r47 positive value ge 0 0 1 manual -\nrule r48 positive value ge 0 0 1 manual -\nrule r49 positive value ge 0 0 1 manual -\nrule r50 positive value ge 0 0 1 manual -\nrule r51 positive value ge 0 0 1 manual -\nrule r52 positive value ge 0 0 1 manual -\nrule r53 positive value ge 0 0 1 manual -\nrule r54 positive value ge 0 0 1 manual -\nrule r55 positive value ge 0 0 1 manual -\nrule r56 positive value ge 0 0 1 manual -\nrule r57 positive value ge 0 0 1 manual -\nrule r58 positive value ge 0 0 1 manual -\nrule r59 positive value ge 0 0 1 manual -\nrule r60 positive value ge 0 0 1 manual -\nrule r61 positive value ge 0 0 1 manual -\nrule r62 positive value ge 0 0 1 manual -\nrule r63 positive value ge 0 0 1 manual -\nrule r64 positive value ge 0 0 1 manual -\nrule r65 positive value ge 0 0 1 manual -\nrule r66 positive value ge 0 0 1 manual -\nrule r67 positive value ge 0 0 1 manual -\nrule r68 positive value ge 0 0 1 manual -\nrule r69 positive value ge 0 0 1 manual -\nrule r70 positive value ge 0 0 1 manual -\nrule r71 positive value ge 0 0 1 manual -\nrule r72 positive value ge 0 0 1 manual -\nrule r73 positive value ge 0 0 1 manual -\nrule r74 positive value ge 0 0 1 manual -\nrule r75 positive value ge 0 0 1 manual -\nrule r76 positive value ge 0 0 1 manual -\nrule r77 positive value ge 0 0 1 manual -\nrule r78 positive value ge 0 0 1 manual -\nrule r79 positive value ge 0 0 1 manual -\nrule r80 positive value ge 0 0 1 manual -\nrule r81 positive value ge 0 0 1 manual -\nrule r82 positive value ge 0 0 1 manual -\nrule r83 positive value ge 0 0 1 manual -\nrule r84 positive value ge 0 0 1 manual -\nrule r85 positive value ge 0 0 1 manual -\nrule r86 positive value ge 0 0 1 manual -\nrule r87 positive value ge 0 0 1 manual -\nrule r88 positive value ge 0 0 1 manual -\nrule r89 positive value ge 0 0 1 manual -\nrule r90 positive value ge 0 0 1 manual -\nrule r91 positive value ge 0 0 1 manual -\nrule r92 positive value ge 0 0 1 manual -\nrule r93 positive value ge 0 0 1 manual -\nrule r94 positive value ge 0 0 1 manual -\nrule r95 positive value ge 0 0 1 manual -\nrule r96 positive value ge 0 0 1 manual -\nrule r97 positive value ge 0 0 1 manual -\nrule r98 positive value ge 0 0 1 manual -\nrule r99 positive value ge 0 0 1 manual -\nrule r100 positive value ge 0 0 1 manual -\nrule r101 positive value ge 0 0 1 manual -\nrule r102 positive value ge 0 0 1 manual -\nrule r103 positive value ge 0 0 1 manual -\nrule r104 positive value ge 0 0 1 manual -\nrule r105 positive value ge 0 0 1 manual -\nrule r106 positive value ge 0 0 1 manual -\nrule r107 positive value ge 0 0 1 manual -\nrule r108 positive value ge 0 0 1 manual -\nrule r109 positive value ge 0 0 1 manual -\nrule r110 positive value ge 0 0 1 manual -\nrule r111 positive value ge 0 0 1 manual -\nrule r112 positive value ge 0 0 1 manual -\nrule r113 positive value ge 0 0 1 manual -\nrule r114 positive value ge 0 0 1 manual -\nrule r115 positive value ge 0 0 1 manual -\nrule r116 positive value ge 0 0 1 manual -\nrule r117 positive value ge 0 0 1 manual -\nrule r118 positive value ge 0 0 1 manual -\nrule r119 positive value ge 0 0 1 manual -\nrule r120 positive value ge 0 0 1 manual -\nrule r121 positive value ge 0 0 1 manual -\nrule r122 positive value ge 0 0 1 manual -\nrule r123 positive value ge 0 0 1 manual -\nrule r124 positive value ge 0 0 1 manual -\nrule r125 positive value ge 0 0 1 manual -\nrule r126 positive value ge 0 0 1 manual -\nrule r127 positive value ge 0 0 1 manual -\n",
     "nanocell-context.txt": "nanocell-reference-context-v1",
     "old.rules": "BRUCE_RULES_V1\nsnapshot old\n",
+    "phase-context-a.txt": "nanocell-reference-context-v1",
+    "phase-context-b.txt": "private-phase-context-v1",
+    "phase-context-v3.txt": "nanocell-reference-context-v1",
+    "phase-dag-v2-invalid.spec": "BRUCE_PHASE_DAG_SPEC_INVALID\n",
+    "phase-dag-v2.spec": "BRUCE_PHASE_DAG_SPEC_V1\ndag-id=cli-example\nmax-started-nodes=3\nmax-receipt-bytes=65536\nmax-trace-entries=32\n\nnode=a\ndepends=\ncore=1020a54050607080\nactive-index=2\ncontext-id=reference.context_1\ncontext-file=phase-context-a.txt\ntechnique=masked-match-v1\nmax-operations=16\nmax-trace-entries=18\n\nnode=b\ndepends=a\ncore=1020a54050607080\nactive-index=2\ncontext-id=private.context_1\ncontext-file=phase-context-b.txt\ntechnique=rotate-match-v1\nmax-operations=16\nmax-trace-entries=18\n\nnode=gate\ndepends=a,b\nadapter=evidence-gate-v1\n",
+    "phase-dag-v3-invalid.spec": "BRUCE_PHASE_DAG_SPEC_V1\n",
+    "phase-dag-v3.spec": "BRUCE_PHASE_DAG_SPEC_V3\ndag-id=cli-example-v3\nmax-started-nodes=3\nmax-receipt-bytes=65536\nmax-trace-entries=32\n\nnode=a\ndepends=\ncore=1020a54050607080\nactive-index=2\ncontext-id=reference.context_1\ncontext-file=phase-context-v3.txt\ntechnique=masked-match-v1\nmax-operations=16\nmax-trace-entries=18\n\nnode=gate1\ndepends=a\nadapter=payload-gate-v1\n\nnode=gate2\ndepends=gate1\nadapter=payload-gate-v1\n",
     "rules.txt": "BRUCE_RULES_V1\nsnapshot demo\nrule positive positive value ge 0 0 1 manual -\n",
     "square-hold.csv": "x,y\n3,9\n",
     "square-new-hold.csv": "x,y\n4,16\n",
     "square.csv": "x,y\n0,0\n1,1\n2,4\n",
     "target-hold.csv": "x,y\n7,49\n",
     "target.csv": "x,y\n4,16\n5,25\n6,36\n",
+    "test-only-next-trust.pub": "BRUCE_RUNTIME_MOD_TRUSTSTORE_V1\ntest-next-rfc8032:3d4017c3e843895a92b70aa74d1b7ebc9c982ccf2ec4968cc0cd55f12af4660c\n",
     "train.csv": "x,y\n0,3\n1,5\n4,11\n"
   },
   "examples": [
+    {
+      "example": "mcp-invalid-port",
+      "argv": [
+        "mcp",
+        "--port",
+        "0"
+      ],
+      "exit_code": 2,
+      "stream": "stderr",
+      "json": {
+        "error": "InvalidMcpPort"
+      }
+    },
+    {
+      "example": "mcp-extra-arguments",
+      "argv": [
+        "mcp",
+        "--jobs"
+      ],
+      "exit_code": 2,
+      "stream": "stderr",
+      "json": {
+        "error": "InvalidMcpArguments"
+      }
+    },
     {
       "example": "version",
       "argv": [
@@ -30,6 +63,27 @@
       "json": {
         "contract": "bruce-version-v1",
         "version": "0.102.0"
+      }
+    },
+    {
+      "example": "mods-inspect",
+      "argv": [
+        "mods",
+        "inspect",
+        "test-data.brucemod"
+      ],
+      "exit_code": 0,
+      "stream": "stdout",
+      "json": {
+        "contract": "mod-package-inspection-v2",
+        "kind": "data",
+        "mod_id": "user.math-rational-power",
+        "version": "1.0.0",
+        "package_digest": "e7adbb33c660d74d7ef090dd1d61c2252a99854a92512678090f0cd459f55c2e",
+        "capabilities": [
+          "dataset.read",
+          "tree.extend"
+        ]
       }
     },
     {
@@ -44,11 +98,67 @@
       "exit_code": 0,
       "stream": "stdout",
       "json": {
-        "contract": "runtime-mod-verification-v1",
-        "verified": true,
+        "contract": "mod-package-verification-v2",
+        "kind": "data",
         "mod_id": "user.math-rational-power",
         "version": "1.0.0",
-        "package_digest": "e7adbb33c660d74d7ef090dd1d61c2252a99854a92512678090f0cd459f55c2e"
+        "package_digest": "e7adbb33c660d74d7ef090dd1d61c2252a99854a92512678090f0cd459f55c2e",
+        "capabilities": [
+          "dataset.read",
+          "tree.extend"
+        ],
+        "verified": true
+      }
+    },
+    {
+      "example": "mods-list-builtins",
+      "argv": [
+        "mods",
+        "list"
+      ],
+      "exit_code": 0,
+      "stream": "stdout",
+      "json": {
+        "contract": "bruce-mod-catalog-v2",
+        "entries": [
+          {
+            "id": "language",
+            "version": "language-mod-v1",
+            "origin": "builtin",
+            "kind": "builtin",
+            "build_state": "available",
+            "lifecycle_state": null,
+            "package_digest": null,
+            "capabilities": [
+              "core.task.submit",
+              "language.interpret"
+            ]
+          },
+          {
+            "id": "mcp",
+            "version": "mcp-mod-v1",
+            "origin": "builtin",
+            "kind": "builtin",
+            "build_state": "available",
+            "lifecycle_state": null,
+            "package_digest": null,
+            "capabilities": [
+              "presentation"
+            ]
+          },
+          {
+            "id": "nanocell",
+            "version": "nanocell-mod-v1",
+            "origin": "builtin",
+            "kind": "builtin",
+            "build_state": "available",
+            "lifecycle_state": null,
+            "package_digest": null,
+            "capabilities": [
+              "nanocell.execute"
+            ]
+          }
+        ]
       }
     },
     {
@@ -65,15 +175,57 @@
       "exit_code": 0,
       "stream": "stdout",
       "json": {
-        "contract": "runtime-mod-registry-v1",
-        "generation": 1,
-        "journal_digest": "bc9c4b56f290d996fa61a13522a0c0b4ff228022b0cf31e77d3e2356fef5fee5",
-        "records": [
+        "contract": "bruce-mod-catalog-v2",
+        "entries": [
           {
-            "mod_id": "user.math-rational-power",
+            "id": "language",
+            "version": "language-mod-v1",
+            "origin": "builtin",
+            "kind": "builtin",
+            "build_state": "available",
+            "lifecycle_state": null,
+            "package_digest": null,
+            "capabilities": [
+              "core.task.submit",
+              "language.interpret"
+            ]
+          },
+          {
+            "id": "mcp",
+            "version": "mcp-mod-v1",
+            "origin": "builtin",
+            "kind": "builtin",
+            "build_state": "available",
+            "lifecycle_state": null,
+            "package_digest": null,
+            "capabilities": [
+              "presentation"
+            ]
+          },
+          {
+            "id": "nanocell",
+            "version": "nanocell-mod-v1",
+            "origin": "builtin",
+            "kind": "builtin",
+            "build_state": "available",
+            "lifecycle_state": null,
+            "package_digest": null,
+            "capabilities": [
+              "nanocell.execute"
+            ]
+          },
+          {
+            "id": "user.math-rational-power",
             "version": "1.0.0",
+            "origin": "installed",
+            "kind": "data",
+            "build_state": null,
+            "lifecycle_state": "installed_inactive",
             "package_digest": "e7adbb33c660d74d7ef090dd1d61c2252a99854a92512678090f0cd459f55c2e",
-            "state": "installed_inactive"
+            "capabilities": [
+              "dataset.read",
+              "tree.extend"
+            ]
           }
         ]
       }
@@ -89,15 +241,87 @@
       "exit_code": 0,
       "stream": "stdout",
       "json": {
-        "contract": "runtime-mod-registry-v1",
-        "generation": 1,
-        "journal_digest": "bc9c4b56f290d996fa61a13522a0c0b4ff228022b0cf31e77d3e2356fef5fee5",
-        "records": [
+        "contract": "bruce-mod-catalog-v2",
+        "entries": [
           {
-            "mod_id": "user.math-rational-power",
+            "id": "language",
+            "version": "language-mod-v1",
+            "origin": "builtin",
+            "kind": "builtin",
+            "build_state": "available",
+            "lifecycle_state": null,
+            "package_digest": null,
+            "capabilities": [
+              "core.task.submit",
+              "language.interpret"
+            ]
+          },
+          {
+            "id": "mcp",
+            "version": "mcp-mod-v1",
+            "origin": "builtin",
+            "kind": "builtin",
+            "build_state": "available",
+            "lifecycle_state": null,
+            "package_digest": null,
+            "capabilities": [
+              "presentation"
+            ]
+          },
+          {
+            "id": "nanocell",
+            "version": "nanocell-mod-v1",
+            "origin": "builtin",
+            "kind": "builtin",
+            "build_state": "available",
+            "lifecycle_state": null,
+            "package_digest": null,
+            "capabilities": [
+              "nanocell.execute"
+            ]
+          },
+          {
+            "id": "user.math-rational-power",
             "version": "1.0.0",
+            "origin": "installed",
+            "kind": "data",
+            "build_state": null,
+            "lifecycle_state": "installed_inactive",
             "package_digest": "e7adbb33c660d74d7ef090dd1d61c2252a99854a92512678090f0cd459f55c2e",
-            "state": "installed_inactive"
+            "capabilities": [
+              "dataset.read",
+              "tree.extend"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "example": "mods-status",
+      "argv": [
+        "mods",
+        "status",
+        "user.math-rational-power",
+        "--mod-root",
+        "runtime-mods"
+      ],
+      "exit_code": 0,
+      "stream": "stdout",
+      "json": {
+        "contract": "bruce-mod-catalog-v2",
+        "entries": [
+          {
+            "id": "user.math-rational-power",
+            "version": "1.0.0",
+            "origin": "installed",
+            "kind": "data",
+            "build_state": null,
+            "lifecycle_state": "installed_inactive",
+            "package_digest": "e7adbb33c660d74d7ef090dd1d61c2252a99854a92512678090f0cd459f55c2e",
+            "capabilities": [
+              "dataset.read",
+              "tree.extend"
+            ]
           }
         ]
       }
@@ -136,15 +360,57 @@
       "exit_code": 0,
       "stream": "stdout",
       "json": {
-        "contract": "runtime-mod-registry-v1",
-        "generation": 2,
-        "journal_digest": "a4fd69b055a737eeb3a725ead883eef415053bb9207a06f91bcdc8012bf1730a",
-        "records": [
+        "contract": "bruce-mod-catalog-v2",
+        "entries": [
           {
-            "mod_id": "user.math-rational-power",
+            "id": "language",
+            "version": "language-mod-v1",
+            "origin": "builtin",
+            "kind": "builtin",
+            "build_state": "available",
+            "lifecycle_state": null,
+            "package_digest": null,
+            "capabilities": [
+              "core.task.submit",
+              "language.interpret"
+            ]
+          },
+          {
+            "id": "mcp",
+            "version": "mcp-mod-v1",
+            "origin": "builtin",
+            "kind": "builtin",
+            "build_state": "available",
+            "lifecycle_state": null,
+            "package_digest": null,
+            "capabilities": [
+              "presentation"
+            ]
+          },
+          {
+            "id": "nanocell",
+            "version": "nanocell-mod-v1",
+            "origin": "builtin",
+            "kind": "builtin",
+            "build_state": "available",
+            "lifecycle_state": null,
+            "package_digest": null,
+            "capabilities": [
+              "nanocell.execute"
+            ]
+          },
+          {
+            "id": "user.math-rational-power",
             "version": "1.0.0",
+            "origin": "installed",
+            "kind": "data",
+            "build_state": null,
+            "lifecycle_state": "active",
             "package_digest": "e7adbb33c660d74d7ef090dd1d61c2252a99854a92512678090f0cd459f55c2e",
-            "state": "active"
+            "capabilities": [
+              "dataset.read",
+              "tree.extend"
+            ]
           }
         ]
       }
@@ -218,6 +484,112 @@
       }
     },
     {
+      "example": "route-active-details",
+      "argv": [
+        "route",
+        "--text",
+        "3/4 hoch 2",
+        "--mod-root",
+        "runtime-mods",
+        "--output",
+        "route-v2.report",
+        "--mod-details"
+      ],
+      "exit_code": 0,
+      "stream": "stdout",
+      "json": {
+        "contract": "route-report-v2",
+        "text": "3/4 hoch 2",
+        "registry_digest": "e5e96aad3840bdd88d2b44a41bc3054d6600c2c0698d95539833944947caaf1b",
+        "status": "MATCHED",
+        "candidates": [
+          {
+            "address": [
+              1,
+              1,
+              5
+            ],
+            "template_id": "math.rational.power.v1",
+            "owner": {
+              "id": "user.math-rational-power",
+              "origin": "installed",
+              "kind": "data",
+              "version": "1.0.0",
+              "package_digest": "e7adbb33c660d74d7ef090dd1d61c2252a99854a92512678090f0cd459f55c2e"
+            }
+          }
+        ],
+        "selected_template": "math.rational.power.v1",
+        "selected_owner": {
+          "id": "user.math-rational-power",
+          "origin": "installed",
+          "kind": "data",
+          "version": "1.0.0",
+          "package_digest": "e7adbb33c660d74d7ef090dd1d61c2252a99854a92512678090f0cd459f55c2e"
+        },
+        "active_packages": [
+          {
+            "id": "user.math-rational-power",
+            "version": "1.0.0",
+            "kind": "data",
+            "package_digest": "e7adbb33c660d74d7ef090dd1d61c2252a99854a92512678090f0cd459f55c2e"
+          }
+        ]
+      }
+    },
+    {
+      "example": "route-replay-details",
+      "argv": [
+        "route",
+        "replay",
+        "route-v2.report",
+        "--mod-root",
+        "runtime-mods",
+        "--mod-details"
+      ],
+      "exit_code": 0,
+      "stream": "stdout",
+      "json": {
+        "contract": "route-report-v2",
+        "text": "3/4 hoch 2",
+        "registry_digest": "e5e96aad3840bdd88d2b44a41bc3054d6600c2c0698d95539833944947caaf1b",
+        "status": "MATCHED",
+        "candidates": [
+          {
+            "address": [
+              1,
+              1,
+              5
+            ],
+            "template_id": "math.rational.power.v1",
+            "owner": {
+              "id": "user.math-rational-power",
+              "origin": "installed",
+              "kind": "data",
+              "version": "1.0.0",
+              "package_digest": "e7adbb33c660d74d7ef090dd1d61c2252a99854a92512678090f0cd459f55c2e"
+            }
+          }
+        ],
+        "selected_template": "math.rational.power.v1",
+        "selected_owner": {
+          "id": "user.math-rational-power",
+          "origin": "installed",
+          "kind": "data",
+          "version": "1.0.0",
+          "package_digest": "e7adbb33c660d74d7ef090dd1d61c2252a99854a92512678090f0cd459f55c2e"
+        },
+        "active_packages": [
+          {
+            "id": "user.math-rational-power",
+            "version": "1.0.0",
+            "kind": "data",
+            "package_digest": "e7adbb33c660d74d7ef090dd1d61c2252a99854a92512678090f0cd459f55c2e"
+          }
+        ]
+      }
+    },
+    {
       "example": "mods-disable",
       "argv": [
         "mods",
@@ -229,15 +601,57 @@
       "exit_code": 0,
       "stream": "stdout",
       "json": {
-        "contract": "runtime-mod-registry-v1",
-        "generation": 3,
-        "journal_digest": "cb902cf601bdc976c06a3396a39763af6ca9a8cb00bc88480f87eb9727ae212e",
-        "records": [
+        "contract": "bruce-mod-catalog-v2",
+        "entries": [
           {
-            "mod_id": "user.math-rational-power",
+            "id": "language",
+            "version": "language-mod-v1",
+            "origin": "builtin",
+            "kind": "builtin",
+            "build_state": "available",
+            "lifecycle_state": null,
+            "package_digest": null,
+            "capabilities": [
+              "core.task.submit",
+              "language.interpret"
+            ]
+          },
+          {
+            "id": "mcp",
+            "version": "mcp-mod-v1",
+            "origin": "builtin",
+            "kind": "builtin",
+            "build_state": "available",
+            "lifecycle_state": null,
+            "package_digest": null,
+            "capabilities": [
+              "presentation"
+            ]
+          },
+          {
+            "id": "nanocell",
+            "version": "nanocell-mod-v1",
+            "origin": "builtin",
+            "kind": "builtin",
+            "build_state": "available",
+            "lifecycle_state": null,
+            "package_digest": null,
+            "capabilities": [
+              "nanocell.execute"
+            ]
+          },
+          {
+            "id": "user.math-rational-power",
             "version": "1.0.0",
+            "origin": "installed",
+            "kind": "data",
+            "build_state": null,
+            "lifecycle_state": "disabled",
             "package_digest": "e7adbb33c660d74d7ef090dd1d61c2252a99854a92512678090f0cd459f55c2e",
-            "state": "disabled"
+            "capabilities": [
+              "dataset.read",
+              "tree.extend"
+            ]
           }
         ]
       }
@@ -276,6 +690,723 @@
       "stream": "stderr",
       "json": {
         "error": "RouteRegistryDigestMismatch"
+      }
+    },
+    {
+      "example": "trust-example-install",
+      "argv": [
+        "mods",
+        "install",
+        "test-data.brucemod",
+        "--mod-root",
+        "trust-example-mods",
+        "--trust-store",
+        "test-only-trust.pub"
+      ],
+      "exit_code": 0,
+      "stream": "stdout",
+      "json": {
+        "contract": "bruce-mod-catalog-v2",
+        "entries": [
+          {
+            "id": "language",
+            "version": "language-mod-v1",
+            "origin": "builtin",
+            "kind": "builtin",
+            "build_state": "available",
+            "lifecycle_state": null,
+            "package_digest": null,
+            "capabilities": [
+              "core.task.submit",
+              "language.interpret"
+            ]
+          },
+          {
+            "id": "mcp",
+            "version": "mcp-mod-v1",
+            "origin": "builtin",
+            "kind": "builtin",
+            "build_state": "available",
+            "lifecycle_state": null,
+            "package_digest": null,
+            "capabilities": [
+              "presentation"
+            ]
+          },
+          {
+            "id": "nanocell",
+            "version": "nanocell-mod-v1",
+            "origin": "builtin",
+            "kind": "builtin",
+            "build_state": "available",
+            "lifecycle_state": null,
+            "package_digest": null,
+            "capabilities": [
+              "nanocell.execute"
+            ]
+          },
+          {
+            "id": "user.math-rational-power",
+            "version": "1.0.0",
+            "origin": "installed",
+            "kind": "data",
+            "build_state": null,
+            "lifecycle_state": "installed_inactive",
+            "package_digest": "e7adbb33c660d74d7ef090dd1d61c2252a99854a92512678090f0cd459f55c2e",
+            "capabilities": [
+              "dataset.read",
+              "tree.extend"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "example": "trust-example-activate-mod",
+      "argv": [
+        "mods",
+        "activate",
+        "user.math-rational-power",
+        "1.0.0",
+        "--mod-root",
+        "trust-example-mods"
+      ],
+      "exit_code": 0,
+      "stream": "stdout",
+      "json": {
+        "contract": "bruce-mod-catalog-v2",
+        "entries": [
+          {
+            "id": "language",
+            "version": "language-mod-v1",
+            "origin": "builtin",
+            "kind": "builtin",
+            "build_state": "available",
+            "lifecycle_state": null,
+            "package_digest": null,
+            "capabilities": [
+              "core.task.submit",
+              "language.interpret"
+            ]
+          },
+          {
+            "id": "mcp",
+            "version": "mcp-mod-v1",
+            "origin": "builtin",
+            "kind": "builtin",
+            "build_state": "available",
+            "lifecycle_state": null,
+            "package_digest": null,
+            "capabilities": [
+              "presentation"
+            ]
+          },
+          {
+            "id": "nanocell",
+            "version": "nanocell-mod-v1",
+            "origin": "builtin",
+            "kind": "builtin",
+            "build_state": "available",
+            "lifecycle_state": null,
+            "package_digest": null,
+            "capabilities": [
+              "nanocell.execute"
+            ]
+          },
+          {
+            "id": "user.math-rational-power",
+            "version": "1.0.0",
+            "origin": "installed",
+            "kind": "data",
+            "build_state": null,
+            "lifecycle_state": "active",
+            "package_digest": "e7adbb33c660d74d7ef090dd1d61c2252a99854a92512678090f0cd459f55c2e",
+            "capabilities": [
+              "dataset.read",
+              "tree.extend"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "example": "trust-v1-status-rejected",
+      "argv": [
+        "mods",
+        "trust",
+        "status",
+        "--mod-root",
+        "trust-example-mods"
+      ],
+      "exit_code": 2,
+      "stream": "stderr",
+      "json": {
+        "error": "RuntimeTrustNotImported"
+      }
+    },
+    {
+      "example": "trust-import-v1",
+      "argv": [
+        "mods",
+        "trust",
+        "import-v1",
+        "--mod-root",
+        "trust-example-mods"
+      ],
+      "exit_code": 0,
+      "stream": "stdout",
+      "json": {
+        "contract": "runtime-mod-trust-v2",
+        "action": "import-v1",
+        "result": "ok"
+      }
+    },
+    {
+      "example": "trust-status",
+      "argv": [
+        "mods",
+        "trust",
+        "status",
+        "--mod-root",
+        "trust-example-mods"
+      ],
+      "exit_code": 0,
+      "stream": "stdout",
+      "json": {
+        "contract": "runtime-mod-trust-v2",
+        "action": "status",
+        "state": {
+          "active": {
+            "generation": "00000000000000000001",
+            "trust_sha256": "269d7acf11cf395bc630b363a3dbfee087ee9558fddb55555de756f73a8b7772"
+          },
+          "prepared": null,
+          "previous": null
+        }
+      }
+    },
+    {
+      "example": "trust-duplicate-import",
+      "argv": [
+        "mods",
+        "trust",
+        "import-v1",
+        "--mod-root",
+        "trust-example-mods"
+      ],
+      "exit_code": 2,
+      "stream": "stderr",
+      "json": {
+        "error": "RuntimeTrustAlreadyImported"
+      }
+    },
+    {
+      "example": "trust-missing-activate",
+      "argv": [
+        "mods",
+        "trust",
+        "activate",
+        "--mod-root",
+        "trust-example-mods"
+      ],
+      "exit_code": 2,
+      "stream": "stderr",
+      "json": {
+        "error": "RuntimeTrustTransitionMissing"
+      }
+    },
+    {
+      "example": "trust-missing-rollback",
+      "argv": [
+        "mods",
+        "trust",
+        "rollback",
+        "--mod-root",
+        "trust-example-mods"
+      ],
+      "exit_code": 2,
+      "stream": "stderr",
+      "json": {
+        "error": "RuntimeTrustTransitionMissing"
+      }
+    },
+    {
+      "example": "trust-prepare-retained-key",
+      "argv": [
+        "mods",
+        "trust",
+        "prepare",
+        "test-only-trust.pub",
+        "--mod-root",
+        "trust-example-mods"
+      ],
+      "exit_code": 0,
+      "stream": "stdout",
+      "json": {
+        "contract": "runtime-mod-trust-v2",
+        "action": "prepare",
+        "result": "ok"
+      }
+    },
+    {
+      "example": "trust-verify-retained-key",
+      "argv": [
+        "mods",
+        "trust",
+        "verify",
+        "--mod-root",
+        "trust-example-mods"
+      ],
+      "exit_code": 0,
+      "stream": "stdout",
+      "json": {
+        "contract": "runtime-mod-trust-v2",
+        "action": "verify",
+        "state": {
+          "active": {
+            "generation": "00000000000000000001",
+            "trust_sha256": "269d7acf11cf395bc630b363a3dbfee087ee9558fddb55555de756f73a8b7772"
+          },
+          "prepared": {
+            "generation": "00000000000000000002",
+            "trust_sha256": "269d7acf11cf395bc630b363a3dbfee087ee9558fddb55555de756f73a8b7772"
+          },
+          "previous": null
+        },
+        "active_incompatible": [],
+        "prepared_incompatible": []
+      }
+    },
+    {
+      "example": "trust-safe-activate",
+      "argv": [
+        "mods",
+        "trust",
+        "activate",
+        "--mod-root",
+        "trust-example-mods"
+      ],
+      "exit_code": 0,
+      "stream": "stdout",
+      "json": {
+        "contract": "runtime-mod-trust-v2",
+        "action": "activate",
+        "state": {
+          "active": {
+            "generation": "00000000000000000002",
+            "trust_sha256": "269d7acf11cf395bc630b363a3dbfee087ee9558fddb55555de756f73a8b7772"
+          },
+          "prepared": null,
+          "previous": {
+            "generation": "00000000000000000001",
+            "trust_sha256": "269d7acf11cf395bc630b363a3dbfee087ee9558fddb55555de756f73a8b7772"
+          }
+        },
+        "deactivated": []
+      }
+    },
+    {
+      "example": "trust-safe-rollback",
+      "argv": [
+        "mods",
+        "trust",
+        "rollback",
+        "--mod-root",
+        "trust-example-mods"
+      ],
+      "exit_code": 0,
+      "stream": "stdout",
+      "json": {
+        "contract": "runtime-mod-trust-v2",
+        "action": "rollback",
+        "state": {
+          "active": {
+            "generation": "00000000000000000001",
+            "trust_sha256": "269d7acf11cf395bc630b363a3dbfee087ee9558fddb55555de756f73a8b7772"
+          },
+          "prepared": null,
+          "previous": {
+            "generation": "00000000000000000002",
+            "trust_sha256": "269d7acf11cf395bc630b363a3dbfee087ee9558fddb55555de756f73a8b7772"
+          }
+        },
+        "deactivated": []
+      }
+    },
+    {
+      "example": "trust-prepare-replacement-key",
+      "argv": [
+        "mods",
+        "trust",
+        "prepare",
+        "test-only-next-trust.pub",
+        "--mod-root",
+        "trust-example-mods"
+      ],
+      "exit_code": 0,
+      "stream": "stdout",
+      "json": {
+        "contract": "runtime-mod-trust-v2",
+        "action": "prepare",
+        "result": "ok"
+      }
+    },
+    {
+      "example": "trust-verify-replacement-key",
+      "argv": [
+        "mods",
+        "trust",
+        "verify",
+        "--mod-root",
+        "trust-example-mods"
+      ],
+      "exit_code": 0,
+      "stream": "stdout",
+      "json": {
+        "contract": "runtime-mod-trust-v2",
+        "action": "verify",
+        "state": {
+          "active": {
+            "generation": "00000000000000000001",
+            "trust_sha256": "269d7acf11cf395bc630b363a3dbfee087ee9558fddb55555de756f73a8b7772"
+          },
+          "prepared": {
+            "generation": "00000000000000000003",
+            "trust_sha256": "e470ecf9d357bfc3e3576bda54a18ec3b7e4924140b417a8c5a15e28aa448610"
+          },
+          "previous": {
+            "generation": "00000000000000000002",
+            "trust_sha256": "269d7acf11cf395bc630b363a3dbfee087ee9558fddb55555de756f73a8b7772"
+          }
+        },
+        "active_incompatible": [],
+        "prepared_incompatible": [
+          {
+            "kind": "data",
+            "mod_id": "user.math-rational-power",
+            "version": "1.0.0",
+            "signing_key_id": "test-rfc8032"
+          }
+        ]
+      }
+    },
+    {
+      "example": "trust-external-store-cannot-override",
+      "argv": [
+        "mods",
+        "install",
+        "test-data.brucemod",
+        "--mod-root",
+        "trust-example-mods",
+        "--trust-store",
+        "test-only-next-trust.pub"
+      ],
+      "exit_code": 2,
+      "stream": "stderr",
+      "json": {
+        "error": "RuntimeModSigningKeyUntrusted"
+      }
+    },
+    {
+      "example": "trust-safe-replacement-blocked",
+      "argv": [
+        "mods",
+        "trust",
+        "activate",
+        "--mod-root",
+        "trust-example-mods"
+      ],
+      "exit_code": 2,
+      "stream": "stderr",
+      "json": {
+        "error": "RuntimeTrustActiveModsIncompatible",
+        "affected": [
+          {
+            "kind": "data",
+            "mod_id": "user.math-rational-power",
+            "version": "1.0.0",
+            "signing_key_id": "test-rfc8032"
+          }
+        ]
+      }
+    },
+    {
+      "example": "trust-emergency-activate",
+      "argv": [
+        "mods",
+        "trust",
+        "activate",
+        "--deactivate-untrusted",
+        "--mod-root",
+        "trust-example-mods"
+      ],
+      "exit_code": 0,
+      "stream": "stdout",
+      "json": {
+        "contract": "runtime-mod-trust-v2",
+        "action": "activate",
+        "state": {
+          "active": {
+            "generation": "00000000000000000003",
+            "trust_sha256": "e470ecf9d357bfc3e3576bda54a18ec3b7e4924140b417a8c5a15e28aa448610"
+          },
+          "prepared": null,
+          "previous": {
+            "generation": "00000000000000000001",
+            "trust_sha256": "269d7acf11cf395bc630b363a3dbfee087ee9558fddb55555de756f73a8b7772"
+          }
+        },
+        "deactivated": [
+          {
+            "kind": "data",
+            "mod_id": "user.math-rational-power",
+            "version": "1.0.0",
+            "signing_key_id": "test-rfc8032"
+          }
+        ]
+      }
+    },
+    {
+      "example": "trust-removed-key-activation-rejected",
+      "argv": [
+        "mods",
+        "activate",
+        "user.math-rational-power",
+        "1.0.0",
+        "--mod-root",
+        "trust-example-mods"
+      ],
+      "exit_code": 2,
+      "stream": "stderr",
+      "json": {
+        "error": "RuntimeModSigningKeyUntrusted"
+      }
+    },
+    {
+      "example": "trust-stale-external-store-rejected",
+      "argv": [
+        "mods",
+        "install",
+        "test-data.brucemod",
+        "--mod-root",
+        "trust-example-mods",
+        "--trust-store",
+        "test-only-trust.pub"
+      ],
+      "exit_code": 2,
+      "stream": "stderr",
+      "json": {
+        "error": "RuntimeModTrustStoreChanged"
+      }
+    },
+    {
+      "example": "trust-verify-historical-package",
+      "argv": [
+        "mods",
+        "trust",
+        "verify",
+        "--mod-root",
+        "trust-example-mods"
+      ],
+      "exit_code": 0,
+      "stream": "stdout",
+      "json": {
+        "contract": "runtime-mod-trust-v2",
+        "action": "verify",
+        "state": {
+          "active": {
+            "generation": "00000000000000000003",
+            "trust_sha256": "e470ecf9d357bfc3e3576bda54a18ec3b7e4924140b417a8c5a15e28aa448610"
+          },
+          "prepared": null,
+          "previous": {
+            "generation": "00000000000000000001",
+            "trust_sha256": "269d7acf11cf395bc630b363a3dbfee087ee9558fddb55555de756f73a8b7772"
+          }
+        },
+        "active_incompatible": [
+          {
+            "kind": "data",
+            "mod_id": "user.math-rational-power",
+            "version": "1.0.0",
+            "signing_key_id": "test-rfc8032"
+          }
+        ],
+        "prepared_incompatible": []
+      }
+    },
+    {
+      "example": "trust-emergency-rollback-flag",
+      "argv": [
+        "mods",
+        "trust",
+        "rollback",
+        "--deactivate-untrusted",
+        "--mod-root",
+        "trust-example-mods"
+      ],
+      "exit_code": 0,
+      "stream": "stdout",
+      "json": {
+        "contract": "runtime-mod-trust-v2",
+        "action": "rollback",
+        "state": {
+          "active": {
+            "generation": "00000000000000000001",
+            "trust_sha256": "269d7acf11cf395bc630b363a3dbfee087ee9558fddb55555de756f73a8b7772"
+          },
+          "prepared": null,
+          "previous": {
+            "generation": "00000000000000000003",
+            "trust_sha256": "e470ecf9d357bfc3e3576bda54a18ec3b7e4924140b417a8c5a15e28aa448610"
+          }
+        },
+        "deactivated": []
+      }
+    },
+    {
+      "example": "trust-rollback-keeps-mod-disabled",
+      "argv": [
+        "mods",
+        "status",
+        "user.math-rational-power",
+        "--mod-root",
+        "trust-example-mods"
+      ],
+      "exit_code": 0,
+      "stream": "stdout",
+      "json": {
+        "contract": "bruce-mod-catalog-v2",
+        "entries": [
+          {
+            "id": "user.math-rational-power",
+            "version": "1.0.0",
+            "origin": "installed",
+            "kind": "data",
+            "build_state": null,
+            "lifecycle_state": "disabled",
+            "package_digest": "e7adbb33c660d74d7ef090dd1d61c2252a99854a92512678090f0cd459f55c2e",
+            "capabilities": [
+              "dataset.read",
+              "tree.extend"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "example": "trust-missing-action",
+      "argv": [
+        "mods",
+        "trust"
+      ],
+      "exit_code": 2,
+      "stream": "stderr",
+      "json": {
+        "error": "MissingRuntimeTrustAction"
+      }
+    },
+    {
+      "example": "trust-unknown-action",
+      "argv": [
+        "mods",
+        "trust",
+        "unknown"
+      ],
+      "exit_code": 2,
+      "stream": "stderr",
+      "json": {
+        "error": "UnknownRuntimeTrustAction"
+      }
+    },
+    {
+      "example": "trust-missing-store",
+      "argv": [
+        "mods",
+        "trust",
+        "prepare"
+      ],
+      "exit_code": 2,
+      "stream": "stderr",
+      "json": {
+        "error": "MissingRuntimeTrustStore"
+      }
+    },
+    {
+      "example": "trust-missing-root",
+      "argv": [
+        "mods",
+        "trust",
+        "status"
+      ],
+      "exit_code": 2,
+      "stream": "stderr",
+      "json": {
+        "error": "MissingOption"
+      }
+    },
+    {
+      "example": "trust-missing-root-value",
+      "argv": [
+        "mods",
+        "trust",
+        "status",
+        "--mod-root"
+      ],
+      "exit_code": 2,
+      "stream": "stderr",
+      "json": {
+        "error": "MissingOptionValue"
+      }
+    },
+    {
+      "example": "trust-duplicate-option",
+      "argv": [
+        "mods",
+        "trust",
+        "status",
+        "--mod-root",
+        "trust-example-mods",
+        "--mod-root",
+        "trust-example-mods"
+      ],
+      "exit_code": 2,
+      "stream": "stderr",
+      "json": {
+        "error": "DuplicateOption"
+      }
+    },
+    {
+      "example": "trust-unexpected-flag",
+      "argv": [
+        "mods",
+        "trust",
+        "verify",
+        "--deactivate-untrusted",
+        "--mod-root",
+        "trust-example-mods"
+      ],
+      "exit_code": 2,
+      "stream": "stderr",
+      "json": {
+        "error": "UnknownOption"
+      }
+    },
+    {
+      "example": "trust-duplicate-flag",
+      "argv": [
+        "mods",
+        "trust",
+        "activate",
+        "--deactivate-untrusted",
+        "--deactivate-untrusted",
+        "--mod-root",
+        "trust-example-mods"
+      ],
+      "exit_code": 2,
+      "stream": "stderr",
+      "json": {
+        "error": "DuplicateOption"
       }
     },
     {
@@ -499,7 +1630,9 @@
           "grid-resume",
           "grid-research",
           "fraction-comparison",
-          "compatibility"
+          "compatibility",
+          "grid-stage-sweep",
+          "grid-stage-verify"
         ]
       }
     },
@@ -1040,6 +2173,36 @@
       "argv": [
         "gate-run",
         "affine.bruce"
+      ],
+      "exit_code": 0,
+      "stream": "stdout",
+      "json": {
+        "contract": "application-gates-v1",
+        "policy": "research-gate-policy-v1",
+        "kind": "research-int64",
+        "replay_checked": true,
+        "applicable": true,
+        "selection": {
+          "allowed": true,
+          "reason": "Allowed"
+        },
+        "experience_source": {
+          "allowed": false,
+          "reason": "ExperienceRequiresIndependentPortfolioSource"
+        },
+        "scope": "Research selection gate and existing experience source audit; no projection or destination-store admission",
+        "learn_promotion": false,
+        "publish": false,
+        "general_proof": false
+      }
+    },
+    {
+      "example": "gate-compatibility-family",
+      "argv": [
+        "gate-run",
+        "affine.bruce",
+        "--compatibility-family",
+        "gate"
       ],
       "exit_code": 0,
       "stream": "stdout",
@@ -3296,6 +4459,328 @@
       "stream": "stderr",
       "json": {
         "error": "UnknownNanoCellTechnique"
+      }
+    },
+    {
+      "example": "phase-dag-v2-execute",
+      "argv": [
+        "phase-dag-v2",
+        "execute",
+        "phase-dag-v2.spec",
+        "--output",
+        "phase-dag-v2.bundle"
+      ],
+      "exit_code": 0,
+      "stream": "stdout",
+      "json": {
+        "contract": "phase-dag-v2-cli-v1",
+        "action": "execute",
+        "dag_version": "phase-dag-v2",
+        "dag_id": "cli-example",
+        "node_count": 3,
+        "bundle_digest": "ba463bb4f41a7aba5e2b97f0f13f9664afdc69b492a549c6b5db4d3ac711c3d0",
+        "receipts": [
+          {
+            "node_id": "a",
+            "outcome": "READY",
+            "failure_code": ""
+          },
+          {
+            "node_id": "b",
+            "outcome": "READY",
+            "failure_code": ""
+          },
+          {
+            "node_id": "gate",
+            "outcome": "READY",
+            "failure_code": ""
+          }
+        ]
+      }
+    },
+    {
+      "example": "phase-dag-v2-inspect",
+      "argv": [
+        "phase-dag-v2",
+        "inspect",
+        "phase-dag-v2.bundle"
+      ],
+      "exit_code": 0,
+      "stream": "stdout",
+      "json": {
+        "contract": "phase-dag-v2-cli-v1",
+        "action": "inspect",
+        "dag_version": "phase-dag-v2",
+        "dag_id": "cli-example",
+        "node_count": 3,
+        "bundle_digest": "ba463bb4f41a7aba5e2b97f0f13f9664afdc69b492a549c6b5db4d3ac711c3d0",
+        "receipts": [
+          {
+            "node_id": "a",
+            "outcome": "READY",
+            "failure_code": ""
+          },
+          {
+            "node_id": "b",
+            "outcome": "READY",
+            "failure_code": ""
+          },
+          {
+            "node_id": "gate",
+            "outcome": "READY",
+            "failure_code": ""
+          }
+        ]
+      }
+    },
+    {
+      "example": "phase-dag-v2-replay",
+      "argv": [
+        "phase-dag-v2",
+        "replay",
+        "phase-dag-v2.bundle"
+      ],
+      "exit_code": 0,
+      "stream": "stdout",
+      "json": {
+        "contract": "phase-dag-v2-cli-v1",
+        "action": "replay",
+        "dag_version": "phase-dag-v2",
+        "dag_id": "cli-example",
+        "node_count": 3,
+        "bundle_digest": "ba463bb4f41a7aba5e2b97f0f13f9664afdc69b492a549c6b5db4d3ac711c3d0",
+        "receipts": [
+          {
+            "node_id": "a",
+            "outcome": "READY",
+            "failure_code": ""
+          },
+          {
+            "node_id": "b",
+            "outcome": "READY",
+            "failure_code": ""
+          },
+          {
+            "node_id": "gate",
+            "outcome": "READY",
+            "failure_code": ""
+          }
+        ]
+      }
+    },
+    {
+      "example": "phase-dag-v2-invalid-spec",
+      "argv": [
+        "phase-dag-v2",
+        "execute",
+        "phase-dag-v2-invalid.spec",
+        "--output",
+        "phase-dag-v2-invalid.bundle"
+      ],
+      "exit_code": 2,
+      "stream": "stderr",
+      "json": {
+        "error": "InvalidPhaseDagSpecHeader"
+      }
+    },
+    {
+      "example": "phase-dag-v3-execute",
+      "argv": [
+        "phase-dag-v3",
+        "execute",
+        "phase-dag-v3.spec",
+        "--output",
+        "phase-dag-v3.bundle"
+      ],
+      "exit_code": 0,
+      "stream": "stdout",
+      "json": {
+        "contract": "phase-dag-v3-cli-v1",
+        "action": "execute",
+        "dag_version": "phase-dag-v3",
+        "dag_id": "cli-example-v3",
+        "node_count": 3,
+        "bundle_digest": "097b9ca820938b44561274e41b850cfdf237cd44f13ad87347c0e0676dfff728",
+        "receipts": [
+          {
+            "node_id": "a",
+            "outcome": "READY",
+            "failure_code": ""
+          },
+          {
+            "node_id": "gate1",
+            "outcome": "READY",
+            "failure_code": ""
+          },
+          {
+            "node_id": "gate2",
+            "outcome": "READY",
+            "failure_code": ""
+          }
+        ]
+      }
+    },
+    {
+      "example": "phase-dag-v3-inspect",
+      "argv": [
+        "phase-dag-v3",
+        "inspect",
+        "phase-dag-v3.bundle"
+      ],
+      "exit_code": 0,
+      "stream": "stdout",
+      "json": {
+        "contract": "phase-dag-v3-cli-v1",
+        "action": "inspect",
+        "dag_version": "phase-dag-v3",
+        "dag_id": "cli-example-v3",
+        "node_count": 3,
+        "bundle_digest": "097b9ca820938b44561274e41b850cfdf237cd44f13ad87347c0e0676dfff728",
+        "receipts": [
+          {
+            "node_id": "a",
+            "outcome": "READY",
+            "failure_code": ""
+          },
+          {
+            "node_id": "gate1",
+            "outcome": "READY",
+            "failure_code": ""
+          },
+          {
+            "node_id": "gate2",
+            "outcome": "READY",
+            "failure_code": ""
+          }
+        ]
+      }
+    },
+    {
+      "example": "phase-dag-v3-replay",
+      "argv": [
+        "phase-dag-v3",
+        "replay",
+        "phase-dag-v3.bundle"
+      ],
+      "exit_code": 0,
+      "stream": "stdout",
+      "json": {
+        "contract": "phase-dag-v3-cli-v1",
+        "action": "replay",
+        "dag_version": "phase-dag-v3",
+        "dag_id": "cli-example-v3",
+        "node_count": 3,
+        "bundle_digest": "097b9ca820938b44561274e41b850cfdf237cd44f13ad87347c0e0676dfff728",
+        "receipts": [
+          {
+            "node_id": "a",
+            "outcome": "READY",
+            "failure_code": ""
+          },
+          {
+            "node_id": "gate1",
+            "outcome": "READY",
+            "failure_code": ""
+          },
+          {
+            "node_id": "gate2",
+            "outcome": "READY",
+            "failure_code": ""
+          }
+        ]
+      }
+    },
+    {
+      "example": "phase-dag-v3-invalid-spec",
+      "argv": [
+        "phase-dag-v3",
+        "execute",
+        "phase-dag-v3-invalid.spec",
+        "--output",
+        "phase-dag-v3-invalid.bundle"
+      ],
+      "exit_code": 2,
+      "stream": "stderr",
+      "json": {
+        "error": "InvalidPhaseDagSpecHeader"
+      }
+    },
+    {
+      "example": "phase-dag-v3-reject-v2",
+      "argv": [
+        "phase-dag-v3",
+        "inspect",
+        "phase-dag-v2.bundle"
+      ],
+      "exit_code": 2,
+      "stream": "stderr",
+      "json": {
+        "error": "InvalidPhaseDagBundleHeader"
+      }
+    },
+    {
+      "example": "phase-dag-v2-reject-v3",
+      "argv": [
+        "phase-dag-v2",
+        "inspect",
+        "phase-dag-v3.bundle"
+      ],
+      "exit_code": 2,
+      "stream": "stderr",
+      "json": {
+        "error": "InvalidPhaseDagBundleHeader"
+      }
+    },
+    {
+      "example": "phase-dag-v3-corrupt-inspect",
+      "argv": [
+        "phase-dag-v3",
+        "inspect",
+        "phase-dag-v3-corrupt.bundle"
+      ],
+      "exit_code": 2,
+      "stream": "stderr",
+      "json": {
+        "error": "PhaseDagBundleDigestMismatch"
+      }
+    },
+    {
+      "example": "phase-dag-v3-corrupt-replay",
+      "argv": [
+        "phase-dag-v3",
+        "replay",
+        "phase-dag-v3-corrupt.bundle"
+      ],
+      "exit_code": 2,
+      "stream": "stderr",
+      "json": {
+        "error": "PhaseDagBundleDigestMismatch"
+      }
+    },
+    {
+      "example": "phase-dag-v3-forged-receipt-inspect",
+      "argv": [
+        "phase-dag-v3",
+        "inspect",
+        "phase-dag-v3-forged-receipt.bundle"
+      ],
+      "exit_code": 2,
+      "stream": "stderr",
+      "json": {
+        "error": "PhaseDagReplayMismatch"
+      }
+    },
+    {
+      "example": "phase-dag-v3-forged-receipt-replay",
+      "argv": [
+        "phase-dag-v3",
+        "replay",
+        "phase-dag-v3-forged-receipt.bundle"
+      ],
+      "exit_code": 2,
+      "stream": "stderr",
+      "json": {
+        "error": "PhaseDagReplayMismatch"
       }
     },
     {

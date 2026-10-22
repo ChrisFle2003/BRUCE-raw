@@ -9,7 +9,9 @@ Ein Regelspeicher ist eine ausdrücklich angegebene lokale Datei. Sie enthält s
 ```text
 bruce rules-stage STORE NEW PROPOSAL
 bruce rules-activate STORE PROPOSAL
-bruce rules-status STORE
+bruce rules-status STORE [--compatibility-family management]
+                         [--max-management-checkpoints N]
+                         [--management-cancellation none|checkpoints]
 bruce compatibility --rule-store STORE --candidates CANDIDATES [bestehende Kompatibilitätsoptionen]
 ```
 
@@ -19,7 +21,7 @@ bruce compatibility --rule-store STORE --candidates CANDIDATES [bestehende Kompa
 
 Nach Zustimmung erhält der Prozess eine nicht wartende exklusive Schreibsperre. Er liest STORE erneut und prüft die Basis nochmals. Ein erfolgreicher Wechsel schreibt Journal und aktive Fassung gemeinsam durch atomaren Dateiersatz. Anschließend erscheint nach dem Dialog derselbe JSON-Bericht wie bei `rules-status`. Vorschlag und NEW werden nicht gelöscht. Keine Ein-/Ausgabeumleitung bei Aktivierung verwenden; die anderen Befehle liefern reines JSON.
 
-`rules-status` verlangt eine vorhandene, nichtleere Speicherdatei und prüft das vollständige Journal. Es ist keine bloße Headerabfrage. Fehler und manipulierte Historien werden zurückgewiesen. Alle drei Befehle verwenden ausschließlich die gezeigten Positionsargumente; keine zusätzlichen Optionen, Sitzungsbudgets oder automatische Zustimmung.
+`rules-status` verlangt eine vorhandene, nichtleere Speicherdatei und prüft das vollständige Journal. Es ist keine bloße Headerabfrage. Fehler und manipulierte Historien werden zurückgewiesen. Die optionale Familienbestätigung akzeptiert ausschließlich `management`, wird vor dem Storezugriff geprüft und verändert den Legacy-Bericht nicht. Die Transferoptionen bleiben unzulässig.
 
 ## Beispiel
 

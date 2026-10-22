@@ -48,7 +48,8 @@ claim about the current executable.
 3. [Current Blueprint](architecture/03-blueprint-consolidation.md)
 4. [Test strategy](implementation/01-test-strategy.md) and
    [contributor guide](../CONTRIBUTING.md)
-5. The specific CLI, contract, source, and test files affected by the work
+5. For mod work, the [Local Mod Lifecycle V2 contract](contracts/10-local-mod-lifecycle-v2.md)
+6. The specific CLI, contract, source, and test files affected by the work
 
 ### Architecture reviewers
 

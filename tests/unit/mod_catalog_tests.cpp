@@ -1,6 +1,4 @@
 #include "bruce/mod/catalog.hpp"
-#include "bruce/mods/language/mod.hpp"
-#include "bruce/mods/nanocell/mod.hpp"
 
 #include <array>
 #include <cstdlib>
@@ -29,29 +27,50 @@ void require(const bool condition, const std::string& message) {
 } // namespace
 
 int main() {
-    const auto& language_manifest = bruce::language_mod_manifest_v1();
-    const auto& nanocell_manifest = bruce::nanocell_mod_manifest_v1();
-    const auto& catalog = bruce::builtin_mod_catalog_v1();
-    const auto manifests = catalog.manifests();
+    const auto features = bruce::builtin_mod_features_v1();
+    require(features.size() == 3, "all stable built-in IDs are present in every build");
+    require(features[0].id == "language" && features[0].version == "language-mod-v1",
+            "Language identity is stable");
+    require(features[1].id == "mcp" && features[1].version == "mcp-mod-v1",
+            "MCP identity is stable");
+    require(features[2].id == "nanocell" && features[2].version == "nanocell-mod-v1",
+            "NanoCell identity is stable");
 
-    require(manifests.size() == 2, "the enabled built-in catalog contains Language-Mod and NanoCell-Mod");
-    require(manifests[0] == language_manifest, "catalog first entry exactly matches Language-Mod manifest");
-    require(manifests[1] == nanocell_manifest, "catalog second entry exactly matches NanoCell-Mod manifest");
-    require(catalog.find("language") != nullptr, "Language-Mod is discoverable by ID");
-    require(catalog.find("language")->api_version == bruce::mod_api_version_v1,
-            "Language-Mod uses the stable V1 API");
-    require(catalog.find("nanocell") != nullptr, "NanoCell-Mod is discoverable by ID");
-    require(catalog.find("nanocell")->api_version == bruce::mod_api_version_v1,
-            "NanoCell-Mod uses the stable V1 API");
+    const std::array expected_available{
+        BRUCE_BUILD_MOD_LANGUAGE != 0,
+        BRUCE_BUILD_MOD_MCP != 0,
+        BRUCE_BUILD_MOD_NANOCELL != 0,
+    };
+    const auto& catalog = bruce::builtin_mod_catalog_v1();
+    std::size_t available_count = 0;
+    for (std::size_t index = 0; index < features.size(); ++index) {
+        const bool available = features[index].build_state == bruce::BuiltinModBuildStateV1::available;
+        require(available == expected_available[index], "feature state matches its compile flag");
+        const auto* manifest = catalog.find(features[index].id);
+        require((manifest != nullptr) == available, "only available features have V1 manifests");
+        if (manifest != nullptr) {
+            ++available_count;
+            require(manifest->version == features[index].version, "feature and manifest versions agree");
+            require(manifest->capabilities == features[index].capabilities,
+                    "feature and manifest capabilities agree");
+        }
+    }
+    require(catalog.manifests().size() == available_count, "catalog has no hidden manifests");
     require(catalog.find("unknown") == nullptr, "unknown mod IDs are absent");
 
-    const std::array duplicate{language_manifest, language_manifest};
+    bruce::ModManifestV1 duplicate_manifest{
+        .id = "duplicate",
+        .version = "duplicate-v1",
+        .api_version = std::string(bruce::mod_api_version_v1),
+        .capabilities = {bruce::ModCapabilityV1::presentation},
+    };
+    const std::array duplicate{duplicate_manifest, duplicate_manifest};
     require(rejects([&] { static_cast<void>(bruce::ModCatalogV1(duplicate)); }),
             "duplicate manifests are rejected");
 
-    auto earlier = language_manifest;
+    auto earlier = duplicate_manifest;
     earlier.id = "alpha";
-    const std::array unsorted{language_manifest, earlier};
+    const std::array unsorted{duplicate_manifest, earlier};
     require(rejects([&] { static_cast<void>(bruce::ModCatalogV1(unsorted)); }),
             "catalog manifests must be bytewise sorted by ID");
 

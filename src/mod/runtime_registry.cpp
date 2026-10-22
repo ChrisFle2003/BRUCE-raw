@@ -1,7 +1,9 @@
 #include "bruce/mod/runtime_registry.hpp"
+#include "bruce/mod/runtime_trust_store_v2.hpp"
 #include "bruce/io/local_files.hpp"
 #include "bruce/evidence/bundle.hpp"
 #include "bruce/tree/normalizer.hpp"
+#include "runtime_mod_store_internal.hpp"
 #include <algorithm>
 #include <array>
 #include <cerrno>
@@ -29,15 +31,10 @@ struct Fd {
     Fd& operator=(const Fd&) = delete;
 };
 void check_file(int fd, bool directory) {
-    struct stat info{};
-    if (::fstat(fd, &info) != 0 || info.st_uid != ::geteuid() || (info.st_mode & 077) != 0 ||
-        (directory ? !S_ISDIR(info.st_mode) : !S_ISREG(info.st_mode) || info.st_nlink != 1))
-        throw Error("UnsafeRuntimeModFilePermissions");
+    runtime_mod_store_detail::check_private_node(fd, directory);
 }
 void check_directory(const std::string& path, bool create) {
-    if (create && ::mkdir(path.c_str(), 0700) != 0 && errno != EEXIST) throw Error("RuntimeModRootCreateFailed");
-    Fd directory(::open(path.c_str(), O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC));
-    check_file(directory.value, true);
+    runtime_mod_store_detail::check_private_directory(path, create);
 }
 bool exists(const std::string& path) {
     struct stat info{};
@@ -46,7 +43,7 @@ bool exists(const std::string& path) {
     return false;
 }
 std::string read_private(const std::string& path, std::size_t limit) {
-    Fd file(::open(path.c_str(), O_RDONLY | O_NOFOLLOW | O_CLOEXEC));
+    Fd file(::open(path.c_str(), O_RDONLY | O_NOFOLLOW | O_CLOEXEC | O_NONBLOCK | O_NOATIME));
     check_file(file.value, false);
     std::string result;
     std::array<char, 8192> buffer{};
@@ -60,19 +57,14 @@ std::string read_private(const std::string& path, std::size_t limit) {
     }
     return result;
 }
-struct Lock {
-    Fd file;
-    explicit Lock(const std::string& root) : file(::open((root + "/registry.lock").c_str(), O_CREAT | O_RDWR | O_NOFOLLOW | O_CLOEXEC, 0600)) {
-        check_file(file.value, false);
-        while (::flock(file.value, LOCK_EX) != 0) { if (errno != EINTR) throw Error("RuntimeModStoreLockFailed"); }
-    }
-};
+using Lock = runtime_mod_store_detail::RootLock;
 std::string trust_bytes(const RuntimeModTrustStoreV1& trust) {
     std::string bytes = "BRUCE_RUNTIME_MOD_TRUSTSTORE_V1\n";
     for (const auto& [id, key] : trust.public_keys()) bytes += id + ':' + key + '\n';
     return bytes;
 }
 void check_trust(const std::string& root, const RuntimeModTrustStoreV1& trust) {
+    runtime_trust_store_detail::recover_locked(root);
     if (read_private(root + "/truststore.pub", 65536) != trust_bytes(trust)) throw Error("RuntimeModTrustStoreChanged");
 }
 void field(std::string& bytes, std::string_view value) { bytes += std::to_string(value.size()) + ':'; bytes += value; }
@@ -152,7 +144,8 @@ void sync_directory(const std::string& root) {
     Fd directory(::open(root.c_str(), O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC));
     if (::fsync(directory.value) != 0) throw Error("RuntimeModCommitDurabilityUnknown");
 }
-RuntimeModSnapshotV1 load(const std::string& root) {
+RuntimeModSnapshotV1 load(const std::string& root, const bool recover = true) {
+    runtime_trust_store_detail::recover_locked(root, !recover);
     const auto journal_path = root + "/journal.v1";
     const auto journal = read_private(journal_path, max_journal_bytes);
     if (!journal.starts_with(journal_header)) throw Error("InvalidRuntimeModJournal");
@@ -163,6 +156,10 @@ RuntimeModSnapshotV1 load(const std::string& root) {
     bool known_snapshot = !snapshot_exists || disk == serialize(current);
     Reader reader{journal, journal_header.size()}; std::size_t good_end = reader.pos;
     while (reader.pos < journal.size()) {
+        if (std::string_view(journal).substr(reader.pos).starts_with(runtime_trust_store_detail::migration_barrier)) {
+            if (!exists(root + "/trust/journal.v1")) throw Error("RuntimeTrustCoordinatorMissing");
+            reader.pos += runtime_trust_store_detail::migration_barrier.size(); good_end = reader.pos; continue;
+        }
         try {
             const auto previous = reader.field_value();
             const auto snapshot = reader.field_value();
@@ -179,6 +176,7 @@ RuntimeModSnapshotV1 load(const std::string& root) {
             if (disk == snapshot) known_snapshot = true;
             good_end = reader.pos;
         } catch (const Incomplete&) {
+            if (!recover) throw Error("RuntimeModRecoveryRequired");
             Fd file(::open(journal_path.c_str(), O_WRONLY | O_NOFOLLOW | O_CLOEXEC)); check_file(file.value, false);
             if (::ftruncate(file.value, static_cast<off_t>(good_end)) != 0 || ::fsync(file.value) != 0) throw Error("RuntimeModJournalRecoveryFailed");
             break;
@@ -186,10 +184,14 @@ RuntimeModSnapshotV1 load(const std::string& root) {
     }
     if (!known_snapshot) throw Error("RuntimeModRegistryJournalMismatch");
     const auto canonical = serialize(current);
-    if (disk != canonical) LocalFiles::replace_atomically(root + "/registry.v1", canonical);
+    if (disk != canonical) {
+        if (!recover) throw Error("RuntimeModRecoveryRequired");
+        LocalFiles::replace_atomically(root + "/registry.v1", canonical);
+    }
     return current;
 }
 void append(const std::string& root, const RuntimeModSnapshotV1& state) {
+    runtime_mod_store_detail::test_failpoint("data.before_journal");
     std::string record; field(record, state.journal_digest); field(record, serialize(state));
     const auto hash = sha256(record); field(record, hash); record += '\n';
     Fd journal(::open((root + "/journal.v1").c_str(), O_WRONLY | O_APPEND | O_NOFOLLOW | O_CLOEXEC));
@@ -204,7 +206,9 @@ void append(const std::string& root, const RuntimeModSnapshotV1& state) {
         offset += static_cast<std::size_t>(written);
     }
     if (::fsync(journal.value) != 0) throw Error("RuntimeModCommitDurabilityUnknown");
+    runtime_mod_store_detail::test_failpoint("data.after_journal");
     LocalFiles::replace_atomically(root + "/registry.v1", serialize(state));
+    runtime_mod_store_detail::test_failpoint("data.after_snapshot");
 }
 RuntimeDataModPackageV1 read_package(const std::string& root, const RuntimeModRecordV1& record, const RuntimeModTrustStoreV1& trust) {
     const auto package = unpack_runtime_data_mod_package_v1(read_private(root + "/packages/" + record.package_digest + ".brucemod", max_runtime_mod_package_bytes_v1));
@@ -248,8 +252,43 @@ void advance(RuntimeModSnapshotV1& state) {
     if (state.generation == std::numeric_limits<std::uint64_t>::max()) throw Error("RuntimeModGenerationLimit");
     ++state.generation;
 }
+RuntimeModSnapshotV1 read_only_state(const std::string& root) {
+    check_directory(root, false);
+    runtime_trust_store_detail::recover_locked(root, true);
+    check_directory(root + "/packages", false);
+    (void)read_runtime_mod_truststore_v1(read_private(root + "/truststore.pub", 65536));
+    return load(root, false);
+}
 }
 RuntimeModRegistryV1::RuntimeModRegistryV1(std::string root, RuntimeModTrustStoreV1 trust) : root_(std::move(root)), trust_(std::move(trust)) {}
+namespace runtime_trust_store_detail {
+std::string data_snapshot_locked(const std::string& root, bool read_only) {
+    if (read_only) return serialize(read_only_state(root));
+    if (!exists(root + "/journal.v1") && !exists(root + "/registry.v1") && !exists(root + "/packages"))
+        return serialize(RuntimeModSnapshotV1{});
+    return serialize(load(root, !read_only));
+}
+std::vector<RuntimeActiveInstalledModV2> data_packages_locked(const std::string& root,
+    const std::vector<RuntimeTrustGenerationV2>& history) {
+    check_directory(root + "/packages", false);
+    std::vector<RuntimeActiveInstalledModV2> out;
+    for (const auto& record : load(root, false).records) {
+        bool valid = false;
+        for (const auto& generation : history) {
+            const auto trust = read_runtime_mod_truststore_v1(generation.trust_bytes);
+            try {
+                const auto package = read_package(root, record, trust);
+                const auto& id = package.manifest().signing_key_id;
+                out.push_back({RuntimeInstalledModKindV2::data, record.mod_id, record.version,
+                    id + ':' + trust.public_keys().at(id), record.state == RuntimeModStateV1::active});
+                valid = true; break;
+            } catch (const Error&) { /* Try the next immutable historical trust. */ }
+        }
+        if (!valid) throw Error("RuntimeTrustInstalledPackageIntegrity");
+    }
+    return out;
+}
+}
 RuntimeModRegistryV1 RuntimeModRegistryV1::open(const std::string& mod_root, const RuntimeModTrustStoreV1& trust) {
     if (mod_root.empty()) throw Error("RuntimeModRootRequired");
     const auto root = std::filesystem::absolute(mod_root).string();
@@ -270,13 +309,20 @@ RuntimeModRegistryV1 RuntimeModRegistryV1::open(const std::string& mod_root, con
 RuntimeModRegistryV1 RuntimeModRegistryV1::open_existing(const std::string& root) {
     if (root.empty()) throw Error("RuntimeModRootRequired");
     check_directory(root, false); Lock lock(root);
+    runtime_trust_store_detail::recover_locked(root);
     check_directory(root + "/packages", false);
     auto trust = read_runtime_mod_truststore_v1(read_private(root + "/truststore.pub", 65536));
     (void)load(root);
     return RuntimeModRegistryV1(std::filesystem::absolute(root).string(), std::move(trust));
 }
+RuntimeModSnapshotV1 RuntimeModRegistryV1::read_only_snapshot(const std::string& root) {
+    return read_only_state(root);
+}
 void RuntimeModRegistryV1::install(const RuntimeDataModPackageV1& package) {
-    check_directory(root_, false); Lock lock(root_); prepare(root_, trust_);
+    check_directory(root_, false); Lock lock(root_); install_locked(package);
+}
+void RuntimeModRegistryV1::install_locked(const RuntimeDataModPackageV1& package) {
+    prepare(root_, trust_);
     auto state = load(root_);
     verify_runtime_data_mod_package_v1(package, trust_);
     for (const auto& record : state.records) if (record.mod_id == package.manifest().mod_id && record.version == package.manifest().version) throw Error("RuntimeModAlreadyInstalled");
@@ -289,12 +335,56 @@ void RuntimeModRegistryV1::install(const RuntimeDataModPackageV1& package) {
     if (exists(path)) {
         if (read_private(path, max_runtime_mod_package_bytes_v1) != package.bytes()) throw Error("RuntimeModInstalledPackageMismatch");
     } else LocalFiles::publish_new_atomically(path, package.bytes());
+    runtime_mod_store_detail::test_failpoint("data.after_package");
     state.records.push_back({package.manifest().mod_id, package.manifest().version, package.package_digest(), RuntimeModStateV1::installed_inactive});
     std::sort(state.records.begin(), state.records.end(), [](const auto& a, const auto& b) { return std::pair{a.mod_id,a.version} < std::pair{b.mod_id,b.version}; });
     advance(state); append(root_, state);
 }
+void RuntimeModRegistryV1::update_locked(const RuntimeDataModPackageV1& package) {
+    prepare(root_, trust_);
+    auto state = load(root_);
+    verify_runtime_data_mod_package_v1(package, trust_);
+    auto found = std::find_if(state.records.begin(), state.records.end(), [&](const auto& record) {
+        return record.mod_id == package.manifest().mod_id && record.version == package.manifest().version;
+    });
+    if (found != state.records.end() && found->package_digest != package.package_digest())
+        throw Error("InstalledModVersionConflict");
+    if (found != state.records.end() && found->state == RuntimeModStateV1::active) {
+        (void)assemble(root_, state, trust_);
+        return;
+    }
+    auto candidate = state;
+    for (auto& record : candidate.records)
+        if (record.mod_id == package.manifest().mod_id && record.state == RuntimeModStateV1::active)
+            record.state = RuntimeModStateV1::disabled;
+    if (found == state.records.end()) {
+        if (candidate.records.size() >= max_records) throw Error("RuntimeModRecordLimit");
+        (void)assemble(root_, candidate, trust_, &package);
+        const auto path = root_ + "/packages/" + package.package_digest() + ".brucemod";
+        if (exists(path)) {
+            if (read_private(path, max_runtime_mod_package_bytes_v1) != package.bytes())
+                throw Error("RuntimeModInstalledPackageMismatch");
+        } else LocalFiles::publish_new_atomically(path, package.bytes());
+        runtime_mod_store_detail::test_failpoint("data.after_package");
+        candidate.records.push_back({package.manifest().mod_id, package.manifest().version,
+            package.package_digest(), RuntimeModStateV1::active});
+        std::sort(candidate.records.begin(), candidate.records.end(), [](const auto& left, const auto& right) {
+            return std::pair{left.mod_id, left.version} < std::pair{right.mod_id, right.version};
+        });
+    } else {
+        auto target = std::find_if(candidate.records.begin(), candidate.records.end(), [&](const auto& record) {
+            return record.mod_id == package.manifest().mod_id && record.version == package.manifest().version;
+        });
+        target->state = RuntimeModStateV1::active;
+        (void)assemble(root_, candidate, trust_);
+    }
+    advance(candidate); append(root_, candidate);
+}
 void RuntimeModRegistryV1::activate(std::string_view id, std::string_view version) {
-    check_directory(root_, false); Lock lock(root_); prepare(root_, trust_);
+    check_directory(root_, false); Lock lock(root_); activate_locked(id, version);
+}
+void RuntimeModRegistryV1::activate_locked(std::string_view id, std::string_view version) {
+    prepare(root_, trust_);
     auto state = load(root_);
     auto target = std::find_if(state.records.begin(), state.records.end(), [&](const auto& r) { return r.mod_id == id && r.version == version; });
     if (target == state.records.end()) throw Error("RuntimeModNotInstalled");
@@ -306,7 +396,10 @@ void RuntimeModRegistryV1::activate(std::string_view id, std::string_view versio
     advance(state); append(root_, state);
 }
 void RuntimeModRegistryV1::disable(std::string_view id) {
-    check_directory(root_, false); Lock lock(root_); prepare(root_, trust_);
+    check_directory(root_, false); Lock lock(root_); disable_locked(id);
+}
+void RuntimeModRegistryV1::disable_locked(std::string_view id) {
+    prepare(root_, trust_);
     auto state = load(root_); bool found = false;
     for (auto& record : state.records) if (record.mod_id == id && record.state == RuntimeModStateV1::active) { record.state = RuntimeModStateV1::disabled; found = true; }
     if (!found) throw Error("RuntimeModNotActive");
@@ -314,16 +407,19 @@ void RuntimeModRegistryV1::disable(std::string_view id) {
     advance(state); append(root_, state);
 }
 RuntimeModSnapshotV1 RuntimeModRegistryV1::snapshot() const {
-    check_directory(root_, false); Lock lock(root_); prepare(root_, trust_);
-    return load(root_);
+    check_directory(root_, false); Lock lock(root_); return snapshot_locked();
 }
-TreeRegistryV1 RuntimeModRegistryV1::active_tree() const {
-    return active_view().tree;
+RuntimeModSnapshotV1 RuntimeModRegistryV1::snapshot_locked() const {
+    prepare(root_, trust_); return load(root_);
 }
-RuntimeModActiveViewV1 RuntimeModRegistryV1::active_view() const {
-    check_directory(root_, false); Lock lock(root_); prepare(root_, trust_);
+RuntimeModRouteV1 RuntimeModRegistryV1::route(const std::string_view text) const {
+    if (text.size() > 4096) throw Error("RouteInputTooLarge");
+    check_directory(root_, false); Lock lock(root_);
+    if (runtime_trust_store_detail::coordinator_required_locked(root_))
+        throw Error("RuntimeTrustCoordinatorRequired");
+    prepare(root_, trust_);
     auto state = load(root_);
     auto tree = assemble(root_, state, trust_);
-    return {std::move(state), std::move(tree)};
+    return {std::move(state), tree.digest(), tree.route(normalize_route_text_v1(text))};
 }
 }

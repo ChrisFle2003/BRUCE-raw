@@ -4,6 +4,28 @@
 #include "bruce/application/experience_transfer.hpp"
 #include "rule_store.hpp"
 #include "runtime_mod_cli.hpp"
+#include "logic_mod_plugin_v1_cli.hpp"
+#include "logic_mod_artifact_chain_v1_cli.hpp"
+#include "logic_mod_artifact_dag_v2_cli.hpp"
+#include "logic_mod_artifact_dag_v3_cli.hpp"
+#include "logic_mod_artifact_dag_v4_cli.hpp"
+#include "logic_mod_artifact_dag_v5_cli.hpp"
+#include "logic_mod_artifact_dag_v6_cli.hpp"
+#include "runtime_orchestrator_v1_cli.hpp"
+#include "controller_observability_v1_cli.hpp"
+#include "logic_mod_result_inspector_v1_cli.hpp"
+#include "signed_affine_dag_v1_cli.hpp"
+#include "signed_affine_relation_v1_cli.hpp"
+#include "toy_relation_v1_cli.hpp"
+#include "dag_scheduler_v1_cli.hpp"
+#include "dag_scheduler_v2_cli.hpp"
+#include "dag_scheduler_v3_cli.hpp"
+#include "dag_scheduler_v4_cli.hpp"
+#include "dag_scheduler_v5_cli.hpp"
+#include "artifact_store_v1_cli.hpp"
+#include "artifact_store_v2_cli.hpp"
+#include "artifact_store_v3_cli.hpp"
+#include "artifact_store_v4_cli.hpp"
 #include "rule_review.hpp"
 #include "bruce/application/research.hpp"
 #include "bruce/application/experience_task.hpp"
@@ -20,6 +42,8 @@
 #include "bruce/application/research_gates.hpp"
 #include "bruce/application/fraction_compare.hpp"
 #include "bruce/application/compatibility.hpp"
+#include "bruce/application/common_runtime_compatibility_v1.hpp"
+#include "bruce/application/common_runtime_host_v1.hpp"
 #include "bruce/application/exact_research.hpp"
 #include "bruce/coordinate/address.hpp"
 #include "bruce/evidence/bundle.hpp"
@@ -40,9 +64,11 @@
 #endif
 #if BRUCE_BUILD_MOD_NANOCELL
 #include "nanocell_cli.hpp"
+#include "phase_dag_v2_cli.hpp"
+#include "phase_dag_v3_cli.hpp"
 #endif
-#if BRUCE_BUILD_MOD_COCKPIT
-#include "bruce/mods/cockpit/mod.hpp"
+#if BRUCE_BUILD_MOD_MCP
+#include "bruce/mods/mcp/mod.hpp"
 #endif
 #include "bruce/token/task_spec.hpp"
 #include "bruce/application/tokenized_task_run.hpp"
@@ -59,19 +85,39 @@ namespace {
 volatile std::sig_atomic_t interrupted=0;
 void on_interrupt(int) { interrupted=1; }
 using Options=std::map<std::string,std::string>;
-Options options(int argc,char** argv,int start,const std::set<std::string>& allowed) {
+Options options(int argc,char** argv,int start,const std::set<std::string>& allowed,
+                const std::set<std::string>& flags={}) {
     Options result;
-    for(int i=start;i<argc;i+=2) {
+    for(int i=start;i<argc;++i) {
         const std::string key=argv[i];
         if(!allowed.contains(key)) throw bruce::Error("UnknownOption: "+key);
+        if(flags.contains(key)) {
+            if(!result.emplace(key,"true").second) throw bruce::Error("DuplicateOption: "+key);
+            continue;
+        }
         if(i+1>=argc) throw bruce::Error("MissingOptionValue: "+key);
         if(!result.emplace(key,argv[i+1]).second) throw bruce::Error("DuplicateOption: "+key);
+        ++i;
     }
     return result;
 }
 std::string get(const Options& values,const std::string& key,const std::string& fallback="") {
     const auto it=values.find(key);
     return it==values.end() ? fallback : it->second;
+}
+std::string grid_rule(const Options& values) {
+    const auto rule=get(values,"--rule","leaf-local-power");
+    if(rule=="leaf-local-power") return bruce::GridSpec::leaf_local_power_rule;
+    if(rule=="scaled-exponential-v1") return bruce::GridSpec::scaled_exponential_rule;
+    return {}; // Unknown CLI spellings reach the shared InvalidGridRule validation.
+}
+std::optional<std::uint64_t> grid_stage(const Options& values) {
+    const auto it=values.find("--stage");
+    if(it==values.end()) return {};
+    std::uint64_t stage;
+    try {stage=bruce::integer<std::uint64_t>(it->second);} catch(const bruce::Error&) {throw bruce::Error("InvalidGridStage");}
+    if(stage>57) throw bruce::Error("InvalidGridStage");
+    return stage;
 }
 std::string required(const Options& values,const std::string& key) {
     const auto value=get(values,key);
@@ -88,6 +134,18 @@ bruce::ReplayCheckpoint transfer_checkpoint(const Options& args,bruce::TransferC
     }
     if(args.contains("--max-transfer-checkpoints") || args.contains("--transfer-cancellation"))return control.callback();
     return {};
+}
+void validate_transfer_compatibility(const Options& args) {
+    if(!args.contains("--compatibility-family")) return;
+    const auto selected=bruce::control_family_compatibility_v1(required(args,"--compatibility-family"));
+    bruce::require_control_family_compatibility_v1(selected);
+    if(selected.family!="transfer") throw bruce::Error("CommonRuntimeCompatibilityV1FamilyMismatch");
+}
+void validate_session_compatibility(const Options& args) {
+    if(!args.contains("--compatibility-family")) return;
+    const auto selected=bruce::control_family_compatibility_v1(required(args,"--compatibility-family"));
+    bruce::require_control_family_compatibility_v1(selected);
+    if(selected.family!="session") throw bruce::Error("CommonRuntimeCompatibilityV1FamilyMismatch");
 }
 std::string controlled_transfer_report(const std::string& result,const bruce::TransferControl& control,bool enabled) {
     return enabled ? "{\"contract\":\"controlled-transfer-v1\",\"result\":"+result+",\"usage\":"+control.report()+"}" : result;
@@ -423,29 +481,91 @@ bruce --version
 bruce contracts
 bruce task-contracts
 bruce gate-contracts
+bruce signed-affine-dag-v1 demo merge
+bruce signed-affine-dag-v1 demo cancellation
+bruce signed-affine-relation-v1 demo merge
+bruce toy-relation-v1 demo collision
+bruce toy-relation-v1 demo noninvertible
+bruce dag-scheduler-v1 demo mixed
+bruce dag-scheduler-v1 demo budget
+bruce dag-scheduler-v1 demo cancelled
+bruce dag-scheduler-v2 demo flow
+bruce dag-scheduler-v3 execute SPEC
+bruce dag-scheduler-v3 inspect SPEC
+bruce dag-scheduler-v4 execute SPEC --output BUNDLE
+bruce dag-scheduler-v4 inspect BUNDLE
+bruce dag-scheduler-v4 replay BUNDLE
+bruce dag-scheduler-v5 execute SPEC --output BUNDLE [--retry N] [--max-wall-ms N]
+    [--max-input-bytes N] [--max-output-bytes N] [--max-operations N]
+    [--max-memory-bytes N] [--workers N] [--handoff-v1]
+bruce dag-scheduler-v5 inspect BUNDLE [--handoff-v1]
+bruce dag-scheduler-v5 publish BUNDLE --store STORE
+bruce dag-scheduler-v5 payload SPEC --output BUNDLE --store STORE [--retry N]
+bruce artifact-store-v1 import FILE --store STORE
+bruce artifact-store-v1 inspect DIGEST --store STORE
+bruce artifact-store-v1 verify DIGEST --store STORE
+bruce logic-mod-artifact-dag-v5 run SPEC_JSON --store LOCAL_STORE --record DAG_RECORD [--remote-restore HTTPS_BASE]
+    [--max-parallel-nodes N] [--max-total-wall-ms MS] [--max-total-payload-bytes BYTES]
+    [--max-started-workers N] [--cancel-after-ms MS]
+bruce logic-mod-artifact-dag-v5 replay SPEC_JSON --store LOCAL_STORE --record DAG_RECORD
+bruce logic-mod-artifact-dag-v6 run SPEC_JSON --store LOCAL_STORE --record DAG_RECORD --report REPORT_ROOT
+    [--remote-restore HTTPS_BASE] [--max-parallel-nodes N] [--max-total-wall-ms MS]
+    [--max-total-payload-bytes BYTES] [--max-started-workers N] [--cancel-after-ms MS]
+bruce logic-mod-artifact-dag-v6 replay SPEC_JSON --store LOCAL_STORE --record DAG_RECORD
+bruce controller-observability-v1 v5 BUNDLE
+bruce controller-observability-v1 v6 RECORD
+bruce runtime-orchestrator-v1 serve --max-queued-runs N --max-active-runs N --max-reserved-parallel-nodes N
+    --max-reserved-started-workers N --max-reserved-payload-bytes N
 bruce mods verify PACKAGE --trust-store PATH
+bruce mods inspect PACKAGE
 bruce mods install PACKAGE --mod-root PATH --trust-store PATH
-bruce mods list --mod-root PATH
+bruce mods update PACKAGE --mod-root PATH --trust-store PATH
+bruce mods list [--mod-root PATH]
+bruce mods status MOD_ID [VERSION] [--mod-root PATH]
+bruce mods run MOD_ID --template TEMPLATE --input TEXT --mod-root PATH
 bruce mods activate MOD_ID VERSION --mod-root PATH
 bruce mods disable MOD_ID --mod-root PATH
-bruce route --text TEXT --mod-root PATH [--output REPORT]
-bruce route replay REPORT --mod-root PATH
+bruce mods trust status --mod-root ROOT
+bruce mods trust import-v1 --mod-root ROOT
+bruce mods trust prepare NEXT_TRUST.pub --mod-root ROOT
+bruce mods trust verify --mod-root ROOT
+bruce mods trust activate --mod-root ROOT [--deactivate-untrusted]
+bruce mods trust rollback --mod-root ROOT [--deactivate-untrusted]
+bruce route --text TEXT --mod-root PATH [--output REPORT] [--mod-details]
+bruce route replay REPORT --mod-root PATH [--mod-details]
 bruce compare --left-numerator A0,A1,... --left-denominator B0,B1,...
               --right-numerator C0,C1,... --right-denominator D0,D1,...
               [--domain-policy quadratic|modular|modular-witness]
               [--max-bits 4096] [--max-operations 1000000] [--output RUN.bruce]
+              [--compatibility-family session]
               Exact rational-function comparison over Q; coefficients in ascending order.
 bruce coordinate --x N --y N
 bruce coordinate --z N
 bruce grid --path 2,6/4,3 [--mode exact|modular|metric]
+           [--rule leaf-local-power|scaled-exponential-v1]
+           [--stage 0..57 (scaled-exponential-v1 only)]
            [--modulus N] [--max-bits 1..64] [--zero-zero one|stop] [--output RUN.bruce]
+           [--compatibility-family session]
 bruce grid-resume --from-run PARTIAL --additional-queries 1..1024 [--output FILE]
+           [--compatibility-family session]
+bruce grid-stage-verify --from-sweep SWEEP.bruce [--output VERIFY.bruce]
+                 Verifies fixed 100*(2^stage-1) on finite domain 0..57 from a full Exact/Metric Sweep V1.
+bruce grid-stage-sweep --path X,Y --from-stage A --to-stage B
+                 [--mode exact|metric|modular] [--max-bits 1..64] [--modulus M]
+                 [--cache-bytes 0..1048576] [--debug] [--output RUN]
+                 Inclusive stages 0..57, fixed scaled-exponential-v1; shared verification controls apply.
 bruce grid-batch --paths "2,6;4,3;2,6" [--cache-bytes 0..1048576] [--max-query-steps 0..1024]
+                 [--rule leaf-local-power|scaled-exponential-v1]
+                 [--stage 0..57 (scaled-exponential-v1 only)]
                  [the same grid modes, limits, and export options]
+                 [--compatibility-family session]
 bruce research --train FILE [--holdout FILE] [--min -8] [--max 8]
                [--max-candidates 100000] [--max-operations 1000000]
                [--max-trace 100002] [--max-results 128] [--output RUN.bruce]
-bruce language interpret --text TEXT --train TRAIN.csv --holdout HOLDOUT.csv
+               [--compatibility-family session]
+)";
+#if BRUCE_BUILD_MOD_LANGUAGE
+    std::cout << R"(bruce language interpret --text TEXT --train TRAIN.csv --holdout HOLDOUT.csv
                [--grammar v1|v2|v3]
                [V2: --train-alias ALIAS --holdout-alias ALIAS]
                [--max-bits N] [--max-denominator N] [--max-candidates N]
@@ -454,6 +574,7 @@ bruce language select DRAFT --alternative ID --output SELECTED_DRAFT
 bruce language execute DRAFT --output LANGUAGE_RUN
 bruce language replay LANGUAGE_RUN
 )";
+#endif
 #if BRUCE_BUILD_MOD_DIALOGUE
     std::cout << R"(bruce dialogue interpret --text TEXT --output DIALOGUE_DRAFT
 bruce dialogue select DIALOGUE_DRAFT --alternative ID --output SELECTED_DRAFT
@@ -481,10 +602,16 @@ bruce evidence replay CHAIN
                    --technique masked-match-v1|rotate-match-v1|context-conflict-v1
                    [--max-operations 0..16] [--max-trace-entries 2..18] [--output RUN]
 bruce nanocell replay RUN
+bruce phase-dag-v2 execute SPEC --output BUNDLE
+bruce phase-dag-v2 inspect BUNDLE
+bruce phase-dag-v2 replay BUNDLE
+bruce phase-dag-v3 execute SPEC --output BUNDLE
+bruce phase-dag-v3 inspect BUNDLE
+bruce phase-dag-v3 replay BUNDLE
 )";
 #endif
-#if BRUCE_BUILD_MOD_COCKPIT
-    std::cout << "bruce cockpit [--port N]\n";
+#if BRUCE_BUILD_MOD_MCP
+    std::cout << "bruce mcp [--port 1..65535]\n";
 #endif
 #if BRUCE_BUILD_APPLICATION_DISPATCH
     std::cout << R"(bruce dispatch inspect BUNDLE
@@ -493,20 +620,22 @@ bruce dispatch replay BUNDLE
 #endif
     std::cout << R"(bruce research --grid-train GRID.bruce [--grid-holdout GRID.bruce] [--grid-axis x|y] [--max-total-operations N]
                [existing exact strategies, budgets, and export options]
-bruce experience add --from-run RUN.bruce [--store OLD.experience] --output NEW.experience
+bruce experience add --from-run RUN.bruce [--store OLD.experience] --output NEW.experience [--compatibility-family transfer]
                   [--max-transfer-checkpoints N] [--transfer-cancellation none|checkpoints]
-bruce experience revoke --store OLD.experience --id ID --reason TEXT --output NEW.experience
+bruce experience revoke --store OLD.experience --id ID --reason TEXT --output NEW.experience [--compatibility-family transfer]
                      [--max-transfer-checkpoints N] [--transfer-cancellation none|checkpoints]
-bruce experience replace --store STORE --id ID --reason TEXT --from-run RUN --output STORE
+bruce experience replace --store STORE --id ID --reason TEXT --from-run RUN --output STORE [--compatibility-family transfer]
                       [--max-transfer-checkpoints N] [--transfer-cancellation none|checkpoints]
-bruce experience plan-add --from-run RUN [--store STORE] [--max-source-bytes N] [--max-store-bytes N] --output PLAN
-bruce experience apply-add PLAN --from-run RUN [--store STORE] --output NEW
+bruce experience plan-add --from-run RUN [--store STORE] [--max-source-bytes N] [--max-store-bytes N] --output PLAN [--compatibility-family transfer]
+bruce experience apply-add PLAN --from-run RUN [--store STORE] --output NEW [--compatibility-family transfer]
                [--max-transfer-checkpoints N] [--transfer-cancellation none|checkpoints]
-bruce experience inspect SNAPSHOT [--max-management-checkpoints N]
+bruce experience inspect SNAPSHOT [--compatibility-family management]
+                                  [--max-management-checkpoints N]
                                   [--management-cancellation none|checkpoints]
 bruce rules-stage STORE NEW PROPOSAL
 bruce rules-activate STORE PROPOSAL
-bruce rules-status STORE [--max-management-checkpoints N]
+bruce rules-status STORE [--compatibility-family management]
+                         [--max-management-checkpoints N]
                          [--management-cancellation none|checkpoints]
 bruce rules-propose OLD NEW PROPOSAL
 bruce rules-approve PROPOSAL CURRENT OUTPUT
@@ -517,7 +646,7 @@ bruce inspect-run RUN.bruce
 bruce phase-dag replay BUNDLE
 )";
 #endif
-    std::cout << R"(bruce gate-run RUN.bruce [--max-session-checkpoints N] [--max-replay-bytes N] [--cancellation none|checkpoints]
+    std::cout << R"(bruce gate-run RUN.bruce [--compatibility-family gate] [--max-session-checkpoints N] [--max-replay-bytes N] [--cancellation none|checkpoints]
 bruce assess-run RUN.bruce
 bruce replay RUN.bruce
 bruce calculate --op add|sub|mul|div|divmod|pow|modpow --left NUMBER --right NUMBER
@@ -560,10 +689,10 @@ bruce research --strategy portfolio-rational --train FILE [--holdout FILE]
 bruce research --strategy portfolio --train FILE [--max-power 4] [--max-degree 3]
                [--domain bigint|rational] [--planner portfolio]
                [shared research budgets and export options]
-bruce compatibility-plan --from-run RUN --rules RULES --at X --output PLAN
+bruce compatibility-plan --from-run RUN --rules RULES --at X --output PLAN [--compatibility-family transfer]
                   [--rule-store STORE instead of --rules; --max-source-bytes N; selection budgets]
                   [--max-transfer-checkpoints N] [--transfer-cancellation none|checkpoints]
-bruce compatibility-apply PLAN --from-run RUN --rules RULES [--output RUN]
+bruce compatibility-apply PLAN --from-run RUN --rules RULES [--output RUN] [--compatibility-family transfer]
                   [--max-transfer-checkpoints N] [--transfer-cancellation none|checkpoints]
                   [--rule-store STORE instead of --rules]
 bruce compatibility --rule-store STORE --candidates CANDIDATE_FILE
@@ -571,8 +700,9 @@ bruce compatibility --rule-store STORE --candidates CANDIDATE_FILE
 bruce compatibility --rules RULE_FILE --candidates CANDIDATE_FILE
                     [--max-candidates 4096] [--max-checks 1048576]
                     [--max-trace 65536] [--output RUN.bruce]
+                    [--compatibility-family session]
 bruce compatibility --rules RULE_FILE --from-run RESEARCH.bruce --at X
-                    [the same budgets and export options]
+                    [the same budgets and export options] [--compatibility-family session]
 
 Pair files: header x,y; input on the left, expected output on the right.
 Research family: a*x+b; bigint/int64 with integer parameters in [min,max].
@@ -603,18 +733,49 @@ Output: JSON, integers without floating-point rounding. Errors: JSON on stderr, 
 }
 }
 
+std::optional<int> dispatch_specialized_command(const std::string& command,int argc,char** argv) {
+        if(command=="signed-affine-dag-v1") return bruce::signed_affine_dag_v1_cli(argc,argv);
+        if(command=="signed-affine-relation-v1") return bruce::signed_affine_relation_v1_cli(argc,argv);
+        if(command=="toy-relation-v1") return bruce::toy_relation_v1_cli(argc,argv);
+        if(command=="dag-scheduler-v1") return bruce::dag_scheduler_v1_cli(argc,argv);
+        if(command=="dag-scheduler-v2") return bruce::dag_scheduler_v2_cli(argc,argv);
+        if(command=="dag-scheduler-v3") return bruce::dag_scheduler_v3_cli(argc,argv);
+        if(command=="dag-scheduler-v4") return bruce::dag_scheduler_v4_cli(argc,argv);
+        if(command=="dag-scheduler-v5") return bruce::dag_scheduler_v5_cli(argc,argv);
+        if(command=="artifact-store-v1") return bruce::artifact_store_v1_cli(argc,argv);
+        if(command=="artifact-store-v2") return bruce::artifact_store_v2_cli(argc,argv);
+        if(command=="artifact-store-v3") return bruce::artifact_store_v3_cli(argc,argv);
+        if(command=="artifact-store-v4") return bruce::artifact_store_v4_cli(argc,argv);
+        if(command=="mods" || command=="route") return bruce::runtime_mod_cli(argc,argv);
+        if(command=="logic-mod-artifact-dag-v4") return bruce::logic_mod_artifact_dag_v4_cli(argc,argv);
+        if(command=="logic-mod-artifact-dag-v5") return bruce::logic_mod_artifact_dag_v5_cli(argc,argv);
+        if(command=="logic-mod-artifact-dag-v6") return bruce::logic_mod_artifact_dag_v6_cli(argc,argv);
+        if(command=="runtime-orchestrator-v1") return bruce::runtime_orchestrator_v1_cli(argc,argv);
+        if(command=="controller-observability-v1") return bruce::controller_observability_v1_cli(argc,argv);
+        if(command=="logic-mod-artifact-dag-v3") return bruce::logic_mod_artifact_dag_v3_cli(argc,argv);
+        if(command=="logic-mod-artifact-dag-v2") return bruce::logic_mod_artifact_dag_v2_cli(argc,argv);
+        if(command=="logic-mod-chain-v1") return bruce::logic_mod_artifact_chain_v1_cli(argc,argv);
+        if(command=="logic-mod-plugin-v1") return bruce::logic_mod_plugin_v1_cli(argc,argv);
+        if(command=="logic-mod-result-inspect") return bruce::logic_mod_result_inspector_v1_cli(argc,argv);
+#if BRUCE_BUILD_MOD_NANOCELL
+        if(command=="nanocell") return bruce::nanocell_cli(argc,argv);
+        if(command=="phase-dag-v2") return bruce::phase_dag_v2_cli(argc,argv);
+        if(command=="phase-dag-v3") return bruce::phase_dag_v3_cli(argc,argv);
+#endif
+#if BRUCE_BUILD_MOD_MCP
+        if(command=="mcp") return bruce::mcp_cli(argc,argv);
+#endif
+        return {};
+}
+
 int main(int argc,char** argv) {
     using namespace bruce;
     try {
+        if(argc==3 && std::string_view(argv[1])=="worker-v1" &&
+           std::string_view(argv[2])=="child") return dag_scheduler_v5_cli_detail::child();
         if(argc<2 || std::string(argv[1])=="--help" || std::string(argv[1])=="help") { help(); return 0; }
         const std::string command=argv[1];
-        if(command=="mods" || command=="route") return bruce::runtime_mod_cli(argc,argv);
-#if BRUCE_BUILD_MOD_NANOCELL
-        if(command=="nanocell") return bruce::nanocell_cli(argc,argv);
-#endif
-#if BRUCE_BUILD_MOD_COCKPIT
-        if(command=="cockpit") return bruce::cockpit_cli(argc,argv);
-#endif
+        if(const auto result=dispatch_specialized_command(command,argc,argv)) return *result;
 #if BRUCE_BUILD_APPLICATION_DISPATCH
         if(command=="dispatch") {
             if(argc!=4) throw Error("Usage: bruce dispatch inspect|replay BUNDLE");
@@ -654,15 +815,25 @@ int main(int argc,char** argv) {
             return 0;
         }
         if(command=="compare") {
-            const auto args=options(argc,argv,2,{"--execution-cancellation","--serialization-cancellation","--verification","--verification-cancellation","--max-replay-bytes","--max-serialized-bytes","--max-session-checkpoints","--left-numerator","--left-denominator","--right-numerator","--right-denominator","--domain-policy","--max-bits","--max-operations","--output"});
-            FractionComparisonTask task;
-            task.domain_policy=get(args,"--domain-policy","quadratic");
-            task.left_numerator=required(args,"--left-numerator");task.left_denominator=required(args,"--left-denominator");
-            task.right_numerator=required(args,"--right-numerator");task.right_denominator=required(args,"--right-denominator");
-            task.max_bits=integer<unsigned>(get(args,"--max-bits","4096"));
-            task.max_operations=integer<std::uint64_t>(get(args,"--max-operations","1000000"));
-            std::signal(SIGINT,on_interrupt);std::signal(SIGTERM,on_interrupt);
-            execute_cli(args,std::move(task),{[]{return interrupted!=0;}});
+            const auto args=options(argc,argv,2,{"--execution-cancellation","--serialization-cancellation","--verification","--verification-cancellation","--max-replay-bytes","--max-serialized-bytes","--max-session-checkpoints","--compatibility-family","--left-numerator","--left-denominator","--right-numerator","--right-denominator","--domain-policy","--max-bits","--max-operations","--output"});
+            const auto run=[&] {
+                FractionComparisonTask task;
+                task.domain_policy=get(args,"--domain-policy","quadratic");
+                task.left_numerator=required(args,"--left-numerator");task.left_denominator=required(args,"--left-denominator");
+                task.right_numerator=required(args,"--right-numerator");task.right_denominator=required(args,"--right-denominator");
+                task.max_bits=integer<unsigned>(get(args,"--max-bits","4096"));
+                task.max_operations=integer<std::uint64_t>(get(args,"--max-operations","1000000"));
+                std::signal(SIGINT,on_interrupt);std::signal(SIGTERM,on_interrupt);
+                execute_cli(args,std::move(task),{[]{return interrupted!=0;}});
+            };
+            if(args.contains("--compatibility-family")) {
+                const CommonRuntimeHostV1Request request{
+                    "compare", bruce::control_family_compatibility_v1(
+                        required(args,"--compatibility-family"))};
+                bruce::delegate_common_runtime_host_v1(request,run);
+            } else {
+                run();
+            }
         } else if(command=="coordinate") {
             const auto args=options(argc,argv,2,{"--x","--y","--z"});
             Coordinate coordinate;
@@ -678,39 +849,92 @@ int main(int argc,char** argv) {
             if(coordinate.x<8 && coordinate.y<8) std::cout << ",\"local_z\":" << unsigned(local_pair(coordinate.x,coordinate.y));
             std::cout << "}\n";
         } else if(command=="grid") {
-            const auto args=options(argc,argv,2,{"--execution-cancellation","--serialization-cancellation","--verification","--verification-cancellation","--max-replay-bytes","--max-serialized-bytes","--max-session-checkpoints","--path","--mode","--modulus","--max-bits","--zero-zero","--output"});
-            GridTask task;task.path=required(args,"--path");task.mode=get(args,"--mode","exact");
-            task.zero_zero=get(args,"--zero-zero","one");task.max_bits=integer<unsigned>(get(args,"--max-bits","64"));
-            if(task.mode=="modular") task.modulus=integer<std::uint64_t>(required(args,"--modulus"));
-            else if(args.contains("--modulus")) throw Error("ModulusRequiresModularMode");
+            const auto args=options(argc,argv,2,{"--execution-cancellation","--serialization-cancellation","--verification","--verification-cancellation","--max-replay-bytes","--max-serialized-bytes","--max-session-checkpoints","--compatibility-family","--path","--rule","--stage","--mode","--modulus","--max-bits","--zero-zero","--output"});
+            const auto run=[&] {
+                GridTask task;task.path=required(args,"--path");task.mode=get(args,"--mode","exact");
+                task.rule=grid_rule(args);
+                task.stage=grid_stage(args);
+                task.zero_zero=get(args,"--zero-zero","one");task.max_bits=integer<unsigned>(get(args,"--max-bits","64"));
+                if(task.mode=="modular") task.modulus=integer<std::uint64_t>(required(args,"--modulus"));
+                else if(args.contains("--modulus")) throw Error("ModulusRequiresModularMode");
+                execute_cli(args,std::move(task));
+            };
+            if(args.contains("--compatibility-family")) {
+                const CommonRuntimeHostV1Request request{
+                    "grid", bruce::control_family_compatibility_v1(
+                        required(args,"--compatibility-family"))};
+                bruce::delegate_common_runtime_host_v1(request,run);
+            } else {
+                run();
+            }
+        } else if(command=="grid-stage-verify") {
+            const auto args=options(argc,argv,2,{"--from-sweep","--output"});
+            execute_cli(args,GridStageVerifyTask{read_bounded(required(args,"--from-sweep"))});
+        } else if(command=="grid-stage-sweep") {
+            const auto args=options(argc,argv,2,{"--serialization-cancellation","--verification","--verification-cancellation","--max-replay-bytes","--max-serialized-bytes","--max-session-checkpoints","--path","--from-stage","--to-stage","--mode","--modulus","--max-bits","--cache-bytes","--debug","--output"},{"--debug"});
+            GridStageSweepTask task;
+            task.path=required(args,"--path");
+            const auto from=required(args,"--from-stage"),to=required(args,"--to-stage");
+            try {
+                task.from_stage=integer<std::uint64_t>(from);
+                task.to_stage=integer<std::uint64_t>(to);
+            } catch(const Error&) {throw Error("InvalidStageRange");}
+            task.mode=get(args,"--mode","exact");
+            task.max_bits=integer<unsigned>(get(args,"--max-bits","64"));
+            task.cache_bytes=integer<std::size_t>(get(args,"--cache-bytes","65536"));
+            task.debug=args.contains("--debug");
+            if(task.mode=="modular")task.modulus=integer<std::uint64_t>(required(args,"--modulus"));
+            else if(args.contains("--modulus"))throw Error("ModulusRequiresModularMode");
             execute_cli(args,std::move(task));
         } else if(command=="grid-batch") {
-            const auto args=options(argc,argv,2,{"--execution-cancellation","--serialization-cancellation","--verification","--verification-cancellation","--max-replay-bytes","--max-serialized-bytes","--max-session-checkpoints","--paths","--mode","--modulus","--max-bits","--zero-zero","--cache-bytes","--max-query-steps","--output"});
-            GridBatchTask task;
-            if(args.contains("--max-query-steps")) task.query_steps=integer<std::size_t>(required(args,"--max-query-steps"));
-            task.spec.mode=get(args,"--mode","exact");task.spec.zero_zero=get(args,"--zero-zero","one");
-            task.spec.max_bits=integer<unsigned>(get(args,"--max-bits","64"));
-            task.cache_bytes=integer<std::size_t>(get(args,"--cache-bytes","65536"));
-            if(task.spec.mode=="modular") task.spec.modulus=integer<std::uint64_t>(required(args,"--modulus"));
-            else if(args.contains("--modulus")) throw Error("ModulusRequiresModularMode");
-            const auto paths=required(args,"--paths");
-            if(paths.size()>max_grid_batch_input_bytes) throw Error("GridBatchInputByteLimit");
-            std::string_view remaining=paths;
-            while(true) {
-                const auto separator=remaining.find(';');
-                task.paths.emplace_back(remaining.substr(0,separator));
-                if(task.paths.size()>max_grid_batch_queries) throw Error("GridQueryLimit");
-                if(separator==std::string_view::npos) break;
-                remaining.remove_prefix(separator+1);
+            const auto args=options(argc,argv,2,{"--execution-cancellation","--serialization-cancellation","--verification","--verification-cancellation","--max-replay-bytes","--max-serialized-bytes","--max-session-checkpoints","--compatibility-family","--paths","--rule","--stage","--mode","--modulus","--max-bits","--zero-zero","--cache-bytes","--max-query-steps","--output"});
+            const auto run=[&] {
+                GridBatchTask task;
+                task.spec.rule=grid_rule(args);
+                task.spec.stage=grid_stage(args);
+                if(args.contains("--max-query-steps")) task.query_steps=integer<std::size_t>(required(args,"--max-query-steps"));
+                task.spec.mode=get(args,"--mode","exact");task.spec.zero_zero=get(args,"--zero-zero","one");
+                task.spec.max_bits=integer<unsigned>(get(args,"--max-bits","64"));
+                task.cache_bytes=integer<std::size_t>(get(args,"--cache-bytes","65536"));
+                if(task.spec.mode=="modular") task.spec.modulus=integer<std::uint64_t>(required(args,"--modulus"));
+                else if(args.contains("--modulus")) throw Error("ModulusRequiresModularMode");
+                const auto paths=required(args,"--paths");
+                if(paths.size()>max_grid_batch_input_bytes) throw Error("GridBatchInputByteLimit");
+                std::string_view remaining=paths;
+                while(true) {
+                    const auto separator=remaining.find(';');
+                    task.paths.emplace_back(remaining.substr(0,separator));
+                    if(task.paths.size()>max_grid_batch_queries) throw Error("GridQueryLimit");
+                    if(separator==std::string_view::npos) break;
+                    remaining.remove_prefix(separator+1);
+                }
+                std::signal(SIGINT,on_interrupt);std::signal(SIGTERM,on_interrupt);
+                execute_cli(args,std::move(task),{[]{return interrupted!=0;}});
+            };
+            if(args.contains("--compatibility-family")) {
+                const CommonRuntimeHostV1Request request{
+                    "grid-batch", bruce::control_family_compatibility_v1(
+                        required(args,"--compatibility-family"))};
+                bruce::delegate_common_runtime_host_v1(request,run);
+            } else {
+                run();
             }
-            std::signal(SIGINT,on_interrupt);std::signal(SIGTERM,on_interrupt);
-            execute_cli(args,std::move(task),{[]{return interrupted!=0;}});
         } else if(command=="grid-resume") {
-            const auto args=options(argc,argv,2,{"--execution-cancellation","--serialization-cancellation","--verification","--verification-cancellation","--max-replay-bytes","--max-serialized-bytes","--max-session-checkpoints","--from-run","--additional-queries","--output"});
-            const auto parent=read_bounded(required(args,"--from-run"));
-            const auto additional=integer<std::size_t>(required(args,"--additional-queries"));
-            std::signal(SIGINT,on_interrupt);std::signal(SIGTERM,on_interrupt);
-            execute_cli(args,GridResumeTask{parent,additional},{[]{return interrupted!=0;}});
+            const auto args=options(argc,argv,2,{"--execution-cancellation","--serialization-cancellation","--verification","--verification-cancellation","--max-replay-bytes","--max-serialized-bytes","--max-session-checkpoints","--compatibility-family","--from-run","--additional-queries","--output"});
+            const auto run=[&] {
+                const auto parent=read_bounded(required(args,"--from-run"));
+                const auto additional=integer<std::size_t>(required(args,"--additional-queries"));
+                std::signal(SIGINT,on_interrupt);std::signal(SIGTERM,on_interrupt);
+                execute_cli(args,GridResumeTask{parent,additional},{[]{return interrupted!=0;}});
+            };
+            if(args.contains("--compatibility-family")) {
+                const CommonRuntimeHostV1Request request{
+                    "grid-resume", bruce::control_family_compatibility_v1(
+                        required(args,"--compatibility-family"))};
+                bruce::delegate_common_runtime_host_v1(request,run);
+            } else {
+                run();
+            }
         } else if(command=="task-contracts") {
             if(argc!=2) throw Error("Usage: bruce task-contracts");
             std::cout<<render_application_contract()<<'\n';
@@ -977,7 +1201,8 @@ int main(int argc,char** argv) {
                 std::cout<<render_exact_evidence_chain(run)<<'\n';
             } else throw Error("UnknownEvidenceAction: "+action);
         } else if(command=="research") {
-            const auto args=options(argc,argv,2,{"--execution-cancellation","--serialization-cancellation","--verification","--verification-cancellation","--max-replay-bytes","--max-serialized-bytes","--max-session-checkpoints","--train","--holdout","--min","--max","--max-candidates","--max-operations","--max-trace","--max-results","--output","--domain","--max-bits","--max-denominator","--max-trace-bytes","--strategy","--max-power","--planner","--max-degree","--experience","--max-nodes","--equivalence","--domain-cache","--expression-planner","--operators","--grid-train","--grid-holdout","--grid-axis","--max-total-operations"});
+            const auto args=options(argc,argv,2,{"--execution-cancellation","--serialization-cancellation","--verification","--verification-cancellation","--max-replay-bytes","--max-serialized-bytes","--max-session-checkpoints","--compatibility-family","--train","--holdout","--min","--max","--max-candidates","--max-operations","--max-trace","--max-results","--output","--domain","--max-bits","--max-denominator","--max-trace-bytes","--strategy","--max-power","--planner","--max-degree","--experience","--max-nodes","--equivalence","--domain-cache","--expression-planner","--operators","--grid-train","--grid-holdout","--grid-axis","--max-total-operations"});
+            validate_session_compatibility(args);
             const bool grid_source=args.contains("--grid-train");
             if(args.contains("--max-total-operations") && !grid_source) throw Error("TotalBudgetRequiresGridTraining");
             if(args.contains("--grid-axis") && !grid_source) throw Error("GridAxisRequiresGridTraining");
@@ -1050,8 +1275,9 @@ int main(int argc,char** argv) {
         } else if(command=="compatibility-plan" || command=="compatibility-apply") {
             if(command=="compatibility-apply" && argc<3)throw Error("Usage: compatibility-apply PLAN --from-run RUN --rules RULES [--output RUN]");
             const auto args=options(argc,argv,command=="compatibility-plan" ? 2:3,command=="compatibility-plan"
-                ? std::set<std::string>{"--from-run","--rules","--rule-store","--at","--max-source-bytes","--max-candidates","--max-checks","--max-trace","--output","--max-transfer-checkpoints","--transfer-cancellation"}
-                : std::set<std::string>{"--from-run","--rules","--rule-store","--output","--max-transfer-checkpoints","--transfer-cancellation"});
+                ? std::set<std::string>{"--from-run","--rules","--rule-store","--at","--max-source-bytes","--max-candidates","--max-checks","--max-trace","--output","--max-transfer-checkpoints","--transfer-cancellation","--compatibility-family"}
+                : std::set<std::string>{"--from-run","--rules","--rule-store","--output","--max-transfer-checkpoints","--transfer-cancellation","--compatibility-family"});
+            validate_transfer_compatibility(args);
             TransferControl control;const auto checkpoint=transfer_checkpoint(args,control);
             if(checkpoint)checkpoint();
             if(args.contains("--rules") && args.contains("--rule-store"))throw Error("UseRulesOrRuleStore");
@@ -1077,7 +1303,8 @@ int main(int argc,char** argv) {
                 std::cout<<controlled_transfer_report(report,control,bool(checkpoint))<<'\n';
             }
         } else if(command=="compatibility") {
-            const auto args=options(argc,argv,2,{"--execution-cancellation","--serialization-cancellation","--verification","--verification-cancellation","--max-replay-bytes","--max-serialized-bytes","--max-session-checkpoints","--rules","--rule-store","--candidates","--from-run","--at","--max-candidates","--max-checks","--max-trace","--output"});
+            const auto args=options(argc,argv,2,{"--execution-cancellation","--serialization-cancellation","--verification","--verification-cancellation","--max-replay-bytes","--max-serialized-bytes","--max-session-checkpoints","--compatibility-family","--rules","--rule-store","--candidates","--from-run","--at","--max-candidates","--max-checks","--max-trace","--output"});
+            validate_session_compatibility(args);
             if(args.contains("--candidates")==args.contains("--from-run")) throw Error("UseCandidatesOrResearchRun");
             CompatibilityTask task;
             if(args.contains("--rules") && args.contains("--rule-store"))throw Error("UseRulesOrRuleStore");
@@ -1101,8 +1328,9 @@ int main(int argc,char** argv) {
             if(action=="plan-add" || action=="apply-add") {
                 if(action=="apply-add" && argc<4)throw Error("Usage: experience apply-add PLAN --from-run RUN [--store STORE] --output NEW");
                 const auto args=options(argc,argv,action=="plan-add" ? 3:4,action=="plan-add"
-                    ? std::set<std::string>{"--from-run","--store","--max-source-bytes","--max-store-bytes","--output","--max-transfer-checkpoints","--transfer-cancellation"}
-                    : std::set<std::string>{"--from-run","--store","--output","--max-transfer-checkpoints","--transfer-cancellation"});
+                    ? std::set<std::string>{"--from-run","--store","--max-source-bytes","--max-store-bytes","--output","--max-transfer-checkpoints","--transfer-cancellation","--compatibility-family"}
+                    : std::set<std::string>{"--from-run","--store","--output","--max-transfer-checkpoints","--transfer-cancellation","--compatibility-family"});
+                validate_transfer_compatibility(args);
                 if(action=="plan-add") {
                     TransferControl control;const auto checkpoint=transfer_checkpoint(args,control);
                     const auto source_limit=integer<std::uint64_t>(get(args,"--max-source-bytes","1048576"));
@@ -1136,7 +1364,8 @@ int main(int argc,char** argv) {
                 const auto result=execute_experience(ExperienceInspectTask{snapshot},checkpoint);
                 std::cout << management.render(result.report) << '\n';
             } else if(action=="add") {
-                const auto args=options(argc,argv,3,{"--store","--from-run","--output","--max-transfer-checkpoints","--transfer-cancellation"});
+                const auto args=options(argc,argv,3,{"--store","--from-run","--output","--max-transfer-checkpoints","--transfer-cancellation","--compatibility-family"});
+                validate_transfer_compatibility(args);
                 TransferControl control;const auto checkpoint=transfer_checkpoint(args,control);
                 if(checkpoint) {
                     const auto previous=args.contains("--store") ? LocalFiles::read(required(args,"--store"),experience_byte_limit,checkpoint) : "";
@@ -1151,30 +1380,47 @@ int main(int argc,char** argv) {
                     std::cout<<result.report<<'\n';
                 }
             } else if(action=="revoke" || action=="replace") {
-                const auto args=options(argc,argv,3,action=="replace" ? std::set<std::string>{"--store","--id","--reason","--from-run","--output","--max-transfer-checkpoints","--transfer-cancellation"} :
-                    std::set<std::string>{"--store","--id","--reason","--output","--max-transfer-checkpoints","--transfer-cancellation"});
+                const auto args=options(argc,argv,3,action=="replace" ? std::set<std::string>{"--store","--id","--reason","--from-run","--output","--max-transfer-checkpoints","--transfer-cancellation","--compatibility-family"} :
+                    std::set<std::string>{"--store","--id","--reason","--output","--max-transfer-checkpoints","--transfer-cancellation","--compatibility-family"});
+                validate_transfer_compatibility(args);
                 TransferControl control;const auto checkpoint=transfer_checkpoint(args,control);
                 if(checkpoint) {
                     const auto previous=args.contains("--store") ? LocalFiles::read(required(args,"--store"),experience_byte_limit,checkpoint) : "";
-                    const ExperienceTask task=action=="replace"
-                        ? ExperienceTask{ExperienceReplaceTask{previous,required(args,"--id"),required(args,"--reason"),LocalFiles::read(required(args,"--from-run"),experience_byte_limit,checkpoint)}}
-                        : ExperienceTask{ExperienceRevokeTask{previous,required(args,"--id"),required(args,"--reason")}};
+                    const ExperienceTask task=[&]() -> ExperienceTask {
+                        const auto target=required(args,"--id");
+                        const auto reason=required(args,"--reason");
+                        if(action=="replace") {
+                            const auto source=LocalFiles::read(required(args,"--from-run"),experience_byte_limit,checkpoint);
+                            return ExperienceReplaceTask{previous,target,reason,source};
+                        }
+                        return ExperienceRevokeTask{previous,target,reason};
+                    }();
                     const auto result=execute_experience(task,checkpoint);
                     LocalFiles::publish_new(required(args,"--output"),result.snapshot,checkpoint);
                     std::cout<<controlled_transfer_report(result.report,control,true)<<'\n';
                 } else {
                     const auto previous=args.contains("--store") ? read_bounded(required(args,"--store"),experience_byte_limit) : "";
-                    const ExperienceTask task=action=="replace"
-                        ? ExperienceTask{ExperienceReplaceTask{previous,required(args,"--id"),required(args,"--reason"),read_bounded(required(args,"--from-run"),experience_byte_limit)}}
-                        : ExperienceTask{ExperienceRevokeTask{previous,required(args,"--id"),required(args,"--reason")}};
+                    const ExperienceTask task=[&]() -> ExperienceTask {
+                        const auto target=required(args,"--id");
+                        const auto reason=required(args,"--reason");
+                        if(action=="replace") {
+                            const auto source=read_bounded(required(args,"--from-run"),experience_byte_limit);
+                            return ExperienceReplaceTask{previous,target,reason,source};
+                        }
+                        return ExperienceRevokeTask{previous,target,reason};
+                    }();
                     const auto result=execute_experience(task);
                     export_exclusive(required(args,"--output"),result.snapshot);
                     std::cout << result.report << '\n';
                 }
             } else throw Error("UnknownExperienceAction");
         } else if(command=="gate-run") {
-            if(argc<3) throw Error("Usage: bruce gate-run RUN.bruce [--max-session-checkpoints N] [--max-replay-bytes N] [--cancellation none|checkpoints]");
-            const auto args=options(argc,argv,3,{"--max-session-checkpoints","--max-replay-bytes","--cancellation"});
+            if(argc<3) throw Error("Usage: bruce gate-run RUN.bruce [--compatibility-family gate] [--max-session-checkpoints N] [--max-replay-bytes N] [--cancellation none|checkpoints]");
+            const auto args=options(argc,argv,3,{"--compatibility-family","--max-session-checkpoints","--max-replay-bytes","--cancellation"});
+            const auto compatibility_family=get(args,"--compatibility-family","gate");
+            const auto compatibility=control_family_compatibility_v1(compatibility_family);
+            require_control_family_compatibility_v1(compatibility);
+            if(compatibility.family!="gate") throw Error("CommonRuntimeCompatibilityV1FamilyMismatch");
             SessionUsage usage;
             ReplayCheckpoint checkpoint;
             if(args.contains("--max-session-checkpoints")) {

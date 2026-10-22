@@ -2,7 +2,7 @@
 
 ## Produktziel
 
-BRUCE ist eine integrierte mathematische Forschungs- und Loesungsmaschine. Ein sichtbares Research-Cockpit verbindet mehrere interne Strategien; es sind keine unabhaengigen Einzelapps.
+BRUCE ist eine integrierte mathematische Forschungs- und Loesungsmaschine. Ein sichtbares Research-MCP verbindet mehrere interne Strategien; es sind keine unabhaengigen Einzelapps.
 
 ```text
 Benutzeraufgabe

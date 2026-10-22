@@ -5,7 +5,7 @@ if [ "$#" -eq 0 ]; then echo "Usage: with-host-deps.sh command [args...]" >&2; e
 project_root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 deps_root="$project_root/build-host-deps/root"
 case "$deps_root" in
-  *:*) echo "Unsupported dependency path: $deps_root contains ':'; use a native SSH checkout or a temporary copy outside GVFS" >&2; exit 2 ;;
+  *:*|*[[:space:]]*) echo "Unsupported dependency path: $deps_root contains ':' or whitespace; use a native safe-path checkout or a temporary copy without either" >&2; exit 2 ;;
 esac
 triplet=$(g++ -print-multiarch)
 test -x "$deps_root/usr/bin/pkgconf" || { echo "Missing local packages in $deps_root" >&2; exit 2; }

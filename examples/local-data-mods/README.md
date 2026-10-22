@@ -30,8 +30,10 @@ das Paket mit Ed25519. Das Ergebnis ist eine `.brucemod`-Datei plus ein
 
 ## Sicherheitsmodell
 
-- Der private Seed liegt ausschließlich in der ignorierten Projektdatei `.env`.
-- `.env` muss dem aktuellen Benutzer gehören und Berechtigung `0600` haben.
+- Der private Seed liegt in einer ausdrücklich mit `--signing-env` benannten,
+  nicht versionierten Datei.
+- Die Signing-Datei muss dem aktuellen Benutzer gehören und Berechtigung
+  `0600` haben.
 - Ein Truststore enthält nur öffentliche Schlüssel und wird beim Prüfen sowie
   Installieren explizit angegeben.
 - Neue Pakete werden zunächst `installed_inactive` gespeichert.
@@ -43,8 +45,9 @@ das Paket mit Ed25519. Das Ergebnis ist eine `.brucemod`-Datei plus ein
 
 ```text
 JSON-Eingaben
-  → bruce-mod-builder
+  → bruce-mod-builder data
   → signiertes .brucemod + öffentlicher Truststore
+  → mods inspect
   → mods verify
   → mods install (inaktiv)
   → mods activate
@@ -59,13 +62,20 @@ Replay schlägt fehl, wenn sich Tree oder aktive Paketversion geändert haben.
 
 ```sh
 bruce mods verify PACKAGE --trust-store TRUST.pub
+bruce mods inspect PACKAGE
 bruce mods install PACKAGE --mod-root MOD_ROOT --trust-store TRUST.pub
+bruce mods update PACKAGE --mod-root MOD_ROOT --trust-store TRUST.pub
 bruce mods list --mod-root MOD_ROOT
+bruce mods status MOD_ID [VERSION] --mod-root MOD_ROOT
 bruce mods activate MOD_ID VERSION --mod-root MOD_ROOT
 bruce mods disable MOD_ID --mod-root MOD_ROOT
-bruce route --text TEXT --mod-root MOD_ROOT [--output REPORT.json]
-bruce route replay REPORT.json --mod-root MOD_ROOT
+bruce route --text TEXT --mod-root MOD_ROOT [--output REPORT.json] [--mod-details]
+bruce route replay REPORT.json --mod-root MOD_ROOT [--mod-details]
 ```
+
+`update` installiert und aktiviert eine neue Version atomar. Ältere Versionen
+bleiben deaktiviert erhalten und können ausdrücklich wieder aktiviert werden.
+Es gibt keinen Downloaddienst und keinen eigenen BRUCE-Systembenutzer.
 
 Die ausführliche erste Übung steht in [TUTORIAL.md](TUTORIAL.md). Ein
 vollständiges, kontrolliertes Beispiel findest du unter

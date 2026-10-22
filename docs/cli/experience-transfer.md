@@ -9,7 +9,9 @@ Die Übergabe beschreibt eine einzige Zielaktion: einen geprüften Forschungsbef
 ```text
 bruce experience plan-add --from-run RUN [--store PREVIOUS]
     [--max-source-bytes N] [--max-store-bytes N] --output PLAN
+    [--compatibility-family transfer]
 bruce experience apply-add PLAN --from-run RUN [--store PREVIOUS] --output NEW
+    [--compatibility-family transfer]
 ```
 
 `plan-add` führt den vorhandenen Importweg als Probelauf vollständig im Speicher aus: einschließlich Quellenreplay, Eignung, Duplikaten, bestehendem Snapshot und Ergebnisgrenzen. Nur bei Erfolg schreibt es einen neuen Plan. Der errechnete Erfahrungssnapshot wird dabei nicht exportiert. Kein vorhandener Speicher wird verändert.
@@ -26,8 +28,27 @@ bruce experience apply-add PLAN --from-run RUN [--store PREVIOUS] --output NEW
 | `--max-store-bytes N` | Nur bei `plan-add`; 0..1048576, Standard 1048576 |
 | `--output` | Pflicht; neuer Plan bei `plan-add`, neuer Erfahrungssnapshot bei `apply-add` |
 | `PLAN` | Bei `apply-add` genau vor den Optionen; maximal 4096 Bytes |
+| `--compatibility-family transfer` | Optional auf beiden Routen; einziger gültiger Wert `transfer`; read-only Bestätigung vor dem jeweiligen Datei-/Plan-/Storezugriff |
 
 Alle Optionen benötigen einen Wert. Pfade mit Leerzeichen zitieren. Eingabe-, Plan- und Ausgabepfade sind keine Identitätsmerkmale der Übergabe: andere Pfade mit exakt gleichen Bytes sind zulässig. Die Zielbasis wird durch ihren Inhalt gebunden. Der Ausgabepfad wird bei der Ausführung gewählt und muss neu sein; Elternverzeichnisse müssen existieren.
+
+## Common-Runtime-Familienbestätigung
+
+**IMPLEMENTIERT UND BELEGT:** `plan-add` und `apply-add` akzeptieren optional
+exakt `--compatibility-family transfer`. Nach dem bestehenden Optionsparsing
+wird der read-only Transfer-Descriptor validiert, bevor Quelle, Basis, Plan,
+Regelspeicher oder Ausgabe gelesen beziehungsweise angelegt werden. Falsche
+bekannte Familien (`session`, `gate`, `management`), unbekannte Werte,
+Duplikate und fehlende Werte werden kontrolliert abgewiesen; ein vorhandener
+Ausgabepfad bleibt dabei unverändert.
+
+Die Bestätigung ändert keine Eingabeprüfung, Plan-/Snapshotbytes,
+`controlled-transfer-v1`, Checkpointzählung, Cancellation, Fehlerhülle,
+exklusive Veröffentlichung oder Ausgabe. Erfolgreiche Aufrufe bleiben
+bytegleich zum Legacy-Aufruf ohne Option und enthalten keinen Descriptor oder
+neuen Wrapper. Die gleiche Transferbestätigung ist außerdem auf den drei
+weiteren mutierenden Experience-Routen `add`, `revoke` und `replace` sowie den
+beiden `compatibility-*`-Routen verfügbar.
 
 Eine Quellgrenze 0 blockiert jedes nichtleere Bundle. Eine Storegrenze 0 erlaubt die leere Basis. Die bisherigen fachlichen Grenzen des Erfahrungsimports gelten zusätzlich, einschließlich dessen Quellen-/Audit- und Snapshotgrenzen. Die neuen Optionen begrenzen Bytes, keine einheitlichen mathematischen Operationen, Prozess-RAM oder Laufzeit. Die allgemeinen Sitzungsoptionen werden nicht angeboten. Für die Ausführung gibt es seit Core 0.94 die separate [Transfersteuerung](transfer-control.md). Der Probelauf und die spätere Ausführung rechnen jeweils erneut und können entsprechend Aufwand verursachen.
 

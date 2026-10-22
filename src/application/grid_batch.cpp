@@ -9,6 +9,8 @@ namespace detail { std::string render_grid_batch_records(const GridBatchRun&,con
 namespace {
 constexpr std::string_view header="BRUCE_GRID_BATCH_BUNDLE_V1\n";
 constexpr std::string_view partial_header="BRUCE_GRID_BATCH_BUNDLE_V2\n";
+constexpr std::string_view explicit_header="BRUCE_GRID_BATCH_BUNDLE_V3\n";
+constexpr std::string_view explicit_partial_header="BRUCE_GRID_BATCH_BUNDLE_V4\n";
 bool bounded(const GridBatchTask& task) {return task.query_steps.has_value() || task.cancel_after_queries.has_value();}
 std::string optional_count(std::optional<std::size_t> n) {return n ? std::to_string(*n) : "none";}
 constexpr std::string_view cache_policy="fifo-64-canonical-evidence-bytes-v1";
@@ -27,13 +29,14 @@ std::string stats_json(const GridCacheStats& s) {
 }
 std::string payload(const GridBatchRun& run,const ReplayCheckpoint& records={}) {
     const auto& t=run.task;const auto& s=t.spec;
-    std::string out="spec "+std::string(GridSpec::version)+"\nengine "+std::string(GridSpec::engine)+
-        "\naddress_rule "+std::string(GridSpec::address_rule)+"\nvalue_rule "+std::string(GridSpec::value_rule)+
+    std::string out="spec "+std::string(s.stage ? GridSpec::explicit_stage_version : GridSpec::version)+"\nengine "+std::string(GridSpec::engine)+
+        "\naddress_rule "+std::string(GridSpec::address_rule)+"\nvalue_rule "+s.rule+
         "\npolicy "+std::string(GridSpec::policy)+"\ndomain "+std::string(GridSpec::domain)+
         "\ncache_policy "+std::string(cache_policy)+
         (bounded(t) ? "\nexecution_policy query-boundaries-v1\nquery_steps "+optional_count(t.query_steps)+
             "\ncancel_after "+optional_count(t.cancel_after_queries) : "")+"\nmode "+s.mode+"\nmax_bits "+std::to_string(s.max_bits)+
         "\nmodulus "+(s.modulus ? std::to_string(*s.modulus) : "none")+"\nzero_zero "+s.zero_zero+
+        (s.stage ? "\nstage_source explicit\nstage "+std::to_string(*s.stage) : "")+
         "\ncache_bytes "+std::to_string(t.cache_bytes)+"\nquery_count "+std::to_string(t.paths.size())+"\n";
     for(const auto& path:t.paths) {if(records) records();out+="path "+path+"\n";}
     out+="TRACE\n";
@@ -131,25 +134,31 @@ std::string detail::render_grid_batch_records(const GridBatchRun& run,const Repl
 std::string render_grid_batch(const GridBatchRun& run) {return detail::render_grid_batch_records(run,{});}
 std::string pack_grid_batch(const GridBatchRun& run,const ReplayCheckpoint& checkpoint,const ReplayCheckpoint& records) {
     const auto body=payload(run,records);
-    const auto bundle=std::string(bounded(run.task) ? partial_header : header)+sha256(body,checkpoint)+"\n"+body;
+    const auto selected=run.task.spec.stage ? (bounded(run.task) ? explicit_partial_header : explicit_header) :
+        (bounded(run.task) ? partial_header : header);
+    const auto bundle=std::string(selected)+sha256(body,checkpoint)+"\n"+body;
     if(bundle.size()>max_file_bytes) throw Error("BundleByteLimit");
     return bundle;
 }
 GridBatchRun replay_grid_batch(std::string_view bundle,const ReplayCheckpoint& checkpoint) {
     if(bundle.size()>max_file_bytes) throw Error("BundleByteLimit");
-    const bool partial=bundle.starts_with(partial_header);
-    if(!partial && !bundle.starts_with(header)) throw Error("UnknownBundleVersion");
-    bundle.remove_prefix(partial ? partial_header.size() : header.size());
+    const bool explicit_stage=bundle.starts_with(explicit_header) || bundle.starts_with(explicit_partial_header);
+    const bool partial=bundle.starts_with(partial_header) || bundle.starts_with(explicit_partial_header);
+    if(!explicit_stage && !partial && !bundle.starts_with(header)) throw Error("UnknownBundleVersion");
+    const auto selected=explicit_stage ? (partial ? explicit_partial_header : explicit_header) : (partial ? partial_header : header);
+    bundle.remove_prefix(selected.size());
     if(bundle.size()<65 || bundle[64]!='\n') throw Error("InvalidDigestHeader");
     const auto body=bundle.substr(65);
     if(sha256(body)!=bundle.substr(0,64)) throw Error("InvalidEvidence: digest mismatch");
     if(checkpoint) checkpoint();
     std::istringstream input{std::string(body)};
-    if(field(input,"spec")!=GridSpec::version || field(input,"engine")!=GridSpec::engine ||
-       field(input,"address_rule")!=GridSpec::address_rule || field(input,"value_rule")!=GridSpec::value_rule ||
-       field(input,"policy")!=GridSpec::policy || field(input,"domain")!=GridSpec::domain ||
-       field(input,"cache_policy")!=cache_policy) throw Error("UnknownGridSpecOrPolicy");
+    if(field(input,"spec")!=(explicit_stage ? GridSpec::explicit_stage_version : GridSpec::version) || field(input,"engine")!=GridSpec::engine ||
+       field(input,"address_rule")!=GridSpec::address_rule) throw Error("UnknownGridSpecOrPolicy");
     GridBatchTask task;
+    task.spec.rule=field(input,"value_rule");
+    (void)grid_spec(grid_task(task.spec,""));
+    if(field(input,"policy")!=GridSpec::policy || field(input,"domain")!=GridSpec::domain ||
+       field(input,"cache_policy")!=cache_policy) throw Error("UnknownGridSpecOrPolicy");
     if(partial) {
         if(field(input,"execution_policy")!="query-boundaries-v1") throw Error("UnknownGridExecutionPolicy");
         const auto steps=field(input,"query_steps"),cancel=field(input,"cancel_after");
@@ -160,7 +169,18 @@ GridBatchRun replay_grid_batch(std::string_view bundle,const ReplayCheckpoint& c
     task.spec.mode=field(input,"mode");task.spec.max_bits=integer<unsigned>(field(input,"max_bits"));
     const auto modulus=field(input,"modulus");
     if(modulus!="none") task.spec.modulus=integer<std::uint64_t>(modulus);
-    task.spec.zero_zero=field(input,"zero_zero");task.cache_bytes=integer<std::size_t>(field(input,"cache_bytes"));
+    task.spec.zero_zero=field(input,"zero_zero");
+    if(explicit_stage) {
+        std::string line;
+        if(!std::getline(input,line) || line!="stage_source explicit") throw Error("InvalidBundleField: stage_source");
+        if(!std::getline(input,line) || !line.starts_with("stage ")) throw Error("InvalidBundleField: stage");
+        const auto text=std::string_view(line).substr(6);
+        std::uint64_t stage;
+        try {stage=integer<std::uint64_t>(text);} catch(const Error&) {throw Error("InvalidBundleField: stage");}
+        if(text!=std::to_string(stage)) throw Error("InvalidBundleField: stage");
+        task.spec.stage=stage;
+    }
+    task.cache_bytes=integer<std::size_t>(field(input,"cache_bytes"));
     const auto count=integer<std::size_t>(field(input,"query_count"));
     if(count<1 || count>max_grid_batch_queries) throw Error("GridQueryLimit");
     for(std::size_t i=0;i<count;++i) {if(checkpoint) checkpoint();task.paths.push_back(field(input,"path"));}

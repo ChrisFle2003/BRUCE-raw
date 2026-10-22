@@ -19,7 +19,7 @@ build = Path(args.build).resolve()
 
 configured = run(args.cmake, '-S', str(source), '-B', str(build), '-G', 'Ninja',
                  '-DBUILD_TESTING=OFF', '-DBRUCE_BUILD_MOD_LANGUAGE=OFF',
-                 '-DBRUCE_BUILD_MOD_NANOCELL=OFF')
+                 '-DBRUCE_BUILD_MOD_NANOCELL=OFF', '-DBRUCE_BUILD_MOD_MCP=OFF')
 assert configured.returncode == 0, configured.stderr
 
 built = run(args.cmake, '--build', str(build), '--target', 'bruce')
@@ -44,4 +44,10 @@ assert 'UnknownCommand: nanocell' in json.loads(nanocell.stderr)['error']
 
 help_output = run(str(binary), '--help')
 assert help_output.returncode == 0, help_output.stderr
+assert 'bruce language interpret' not in help_output.stdout
 assert 'bruce nanocell ' not in help_output.stdout
+
+mcp = run(str(binary), 'mcp')
+assert mcp.returncode == 2, mcp.stderr
+assert json.loads(mcp.stderr)['error'] == 'UnknownCommand: mcp'
+assert 'bruce mcp' not in help_output.stdout

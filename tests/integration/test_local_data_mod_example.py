@@ -71,9 +71,11 @@ class LocalExampleTests(unittest.TestCase):
         self.assertEqual(verified["package_digest"], digest)
         self.call(BRUCE, "mods", "install", self.package, "--mod-root", self.mods,
                   "--trust-store", self.trust)
-        records = self.call(BRUCE, "mods", "list", "--mod-root", self.mods)["records"]
+        records = [entry for entry in
+                   self.call(BRUCE, "mods", "list", "--mod-root", self.mods)["entries"]
+                   if entry["origin"] == "installed"]
         self.assertEqual(len(records), 1)
-        self.assertEqual(records[0]["state"], "installed_inactive")
+        self.assertEqual(records[0]["lifecycle_state"], "installed_inactive")
         self.assertEqual(self.route("3/4 hoch 2")["status"], "UNKNOWN")
         self.call(BRUCE, "mods", "activate", MOD, "1.0.0", "--mod-root", self.mods)
         report = self.work / "power.route.json"

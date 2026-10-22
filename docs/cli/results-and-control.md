@@ -9,7 +9,8 @@
 | `CANDIDATE` | Passende Lernhypothese; zusätzliche Holdout-Bestätigung fehlt |
 | `VERIFIED_ON_SAMPLES` | Konkrete Lern- und Holdout-Paare bestanden; kein allgemeiner Formelbeweis |
 | `AMBIGUOUS` | Mehrere fachlich gleichrangige Ergebnisse; stabile Sortierung ist keine Entscheidung |
-| `REFUTED` | Lernhypothesen durch Holdout widerlegt |
+| `REFUTED` | Lernhypothesen durch Holdout widerlegt; bei Grid Stage Verify defensiv ein erster Regelunterschied, aus gültigen aktuellen Sweep-V1-Quellen nicht erreichbar |
+| `VERIFIED_ON_DOMAIN` | Grid Stage Verify hat alle 58 Exact-Werte oder Metric-Bitlängen auf `0..57` geprüft; kein allgemeiner Formelbeweis |
 | `NO_CANDIDATE` | Kein passender Kandidat im abgeschlossenen deklarierten Suchraum |
 | `INCOMPLETE` | Nicht vollständig verarbeitet, etwa wegen Budget oder Signal; Teilhypothesen sind keine abschließende Auswahl |
 | `SELECTED` | Kompatibilität wählt einen eindeutigen zulässigen Kandidaten |
@@ -34,6 +35,105 @@ Bei Forschung können einzelne `hypotheses[].status` vom Gesamtstatus abweichen.
 `nanocell run` und `nanocell replay` liefern direkt `nanocell-cli-v1`, ohne allgemeine `execution`-Hülle. `MATCHED` heißt: Der ausgewählte Kernzustand trifft nach der festen Technik deren Maske/Wert. `NO_MATCH` heißt: vollständige Ausführung ohne Treffer. `CONTEXT_REJECTED` heißt: Kontextdigest passt nicht zur Technik; dann ist `final_state` null und es wird keine Operation ausgeführt. `INCOMPLETE` heißt: Operations- oder Tracebudget beendet die Ausführung vor der vollständigen Technik. Alle vier sind fachliche Antworten mit Exit 0, keine Aussagen über allgemeine mathematische Beweise.
 
 Der Befund zeigt `final_state` als dezimale Bytezahl oder null, `technique_id`, `technique_digest`, `core_digest`, `context_id`, `context_digest`, `active_index`, `operations_used`, `max_operations`, `trace_entries_used`, `max_trace_entries` und `trace` mit `START`, `OPERATION`, `TERMINAL` samt Zustand und Operationszähler. Die Antwort enthält die Kontextbytes nicht, das Bundle jedoch schon. `replay` prüft die gespeicherte Anfrage und den Befund durch erneute Ausführung und liefert bei gültiger Datei dieselbe Antwort; beschädigte oder nichtkanonische Dateien liefern Exit 2. Das ist ein isolierter NanoCell-Vertrag, keine Integration in die acht allgemeinen Auftragstypen oder deren Gates.
+
+## Phase-DAG V2 Ergebnis und Teilbefunde
+
+**IMPLEMENTIERT UND BELEGT:** alle drei `phase-dag-v2`-Aufrufe liefern genau
+den Metadatenvertrag `phase-dag-v2-cli-v1` auf stdout, mit abschließendem LF:
+
+```json
+{"contract":"phase-dag-v2-cli-v1","action":"execute","dag_version":"phase-dag-v2","dag_id":"demo","node_count":2,"bundle_digest":"<SHA-256 der vollständigen Bundlebytes>","receipts":[{"node_id":"a","outcome":"READY","failure_code":""},{"node_id":"b","outcome":"READY","failure_code":""}]}
+```
+
+`action` ist `execute`, `inspect` oder `replay`; die übrigen Felder sind für
+identische Bundlebytes identisch. `node_count` zählt alle Spec-Knoten,
+`bundle_digest` die SHA-256 der gesamten gespeicherten Datei, einschließlich
+Header und internem Payload-Digest. `receipts` ist lexikographisch nach
+`node_id` sortiert; jedes Element enthält ausschließlich `node_id`, `outcome`
+und `failure_code`. Rohbytes von Kontext, Request, Ausgabe und Evidenz sowie
+vollständige NanoCell-Befunde werden nicht im Report veröffentlicht.
+
+| `outcome` | Aussage |
+| --- | --- |
+| `READY` | Adapter lieferte einen gültigen PhaseOutput; dessen Status kann `COMPLETE`, `INCOMPLETE` oder `REJECTED` sein |
+| `FAILED` | Adapterfehler oder überschrittene Receiptgröße; `failure_code` erklärt den Fehler, etwa `DagReceiptBudgetExceeded` |
+| `BLOCKED` | Mindestens ein Vorgänger hat kein READY-Receipt; kein Adapterstart, leerer `failure_code` |
+| `CANCELLED` | Knoten wegen erschöpftem Startbudget nicht gestartet; in dieser CLI `failure_code: "DagBudgetExhausted"` |
+
+Ein NanoCell-`CONTEXT_REJECTED` wird als gültiger `REJECTED`-PhaseOutput mit
+`READY`-Receipt gespeichert und blockiert allein keinen Nachfolger. Auch ein
+NanoCell-`INCOMPLETE`-Output kann `READY` sein. Receiptbereitschaft bedeutet
+keine fachliche Bestätigung und keinen allgemeinen mathematischen Beweis.
+
+Gültige Teilbefunde mit `FAILED`, `BLOCKED` und `CANCELLED` liefern **Exit 0**,
+wenn Bundleerzeugung und exklusive Veröffentlichung erfolgreich waren.
+`inspect` und `replay` bestätigen solche Belege erneut und liefern ebenfalls
+Exit 0; sie heben den Teilbefund nicht auf. Nach Erschöpfung von
+`max-started-nodes` werden alle noch offenen Knoten `CANCELLED`, auch wenn
+ein offener Knoten sonst wegen seines Vorgängers blockiert wäre. Ein knappes
+DAG-Tracebudget kürzt nur die Traceaufzeichnung; es beendet nicht die Ausführung.
+
+Ungültige Argumente, Specs, Kontexte, beschädigte oder nichtkanonische Bundles,
+Replay-Abweichungen und Dateifehler liefern Exit 2, leeres stdout und
+`{"error":"…"}` auf stderr. Es gibt keine allgemeine `execution`-Sitzungshülle,
+Gateoption oder automatische Fortsetzung. Bei `execute` erscheint der
+Erfolgsreport erst nach erfolgreicher Veröffentlichung; ein bereits vorhandenes
+Ziel wird nicht überschrieben. Validierungs-, Ausführungs- und Packfehler vor
+Veröffentlichung sowie Zielkollisionen erzeugen kein neues Bundle.
+`ExportCommitDurabilityUnknown` nach erfolgreicher atomarer Veröffentlichung
+meldet dagegen Exit 2 ohne Erfolgsreport, obwohl das Bundle bereits sichtbar
+sein kann. Die CLI entfernt es nicht als Rollback; vor Wiederholung Ziel und
+Inhalt prüfen. [Veröffentlichungsvertrag](local-files.md#phase-dag-v2-veröffentlichung).
+Beide Lesebefehle schreiben keine Datei und
+prüfen tatsächliches Replay, nicht nur einen passenden Digest. Digests und
+Replay bestätigen Konsistenz, nicht Identität des Autors oder einen allgemeinen
+Beweis. [Aufruf](commands.md#phase-dag-v2--begrenzte-nanocell-dag-ausführung)
+· [Spec und Bundle](formats.md#phase-dag-v2-spec-und-bundle).
+
+## Phase-DAG V3 Ergebnis und Payloadgrenzen
+
+**IMPLEMENTIERT UND BELEGT:** alle drei V3-Befehle geben genau den
+Metadatenvertrag `phase-dag-v3-cli-v1` mit abschließendem LF aus:
+
+```json
+{"contract":"phase-dag-v3-cli-v1","action":"execute","dag_version":"phase-dag-v3","dag_id":"demo-v3","node_count":3,"bundle_digest":"<SHA-256 der vollständigen Bundlebytes>","receipts":[{"node_id":"a","outcome":"READY","failure_code":""},{"node_id":"gate1","outcome":"READY","failure_code":""},{"node_id":"gate2","outcome":"READY","failure_code":""}]}
+```
+
+`action` ist `execute`, `inspect` oder `replay`; alle übrigen Felder sind bei
+identischen Bundlebytes identisch. `bundle_digest` bindet die ganze Datei mit
+Header und internem Bundleinhaltsdigest. Die Receipts sind nach `node_id`
+sortiert und enthalten ausschließlich `node_id`, `outcome`, `failure_code`.
+Reports geben keine Payload-Rohbytes aus, auch keine Request-, Kontext-,
+Output- oder Evidence-Rohbytes und keinen vollständigen NanoCell-Befund.
+
+Die [Receipt-Outcomes](#phase-dag-v2-ergebnis-und-teilbefunde) haben dieselbe
+Bedeutung: `READY` bedeutet gültiger Output, dessen fachlicher Status
+`COMPLETE`, `INCOMPLETE` oder `REJECTED` sein kann. Ein nicht vollständiger
+NanoCell-Output bleibt READY und lässt das Gate kontrolliert `REJECTED`
+erzeugen, ebenfalls READY. Ein Vorgänger ohne READY-Receipt führt zu
+`BLOCKED` ohne Adapterstart; erschöpftes Startbudget erzeugt `CANCELLED`. Übergröße,
+Digestfehler oder andere Adapterfehler erzeugen `FAILED`; eine Überschreitung
+des kodierten Receiptbudgets meldet `DagReceiptBudgetExceeded` und blockiert
+abhängige Knoten. Payloads sind je auf 65536 Bytes begrenzt und zählen samt
+Inputpayloadkopien zum Receiptbudget. READY allein bestätigt keinen
+COMPLETE-Gateoutput; dieser ist im Bundle und Adaptervertrag belegt.
+
+Gültige Teilbefunde liefern **Exit 0**, wenn Bundleerzeugung und exklusive
+Veröffentlichung gelingen. Argument-/Specfehler, nichtkanonische oder
+beschädigte Bundles, Replay-Abweichungen und Dateifehler liefern Exit 2 mit
+leerem stdout und `{"error":"…"}` auf stderr. Beide Lesebefehle bestätigen
+wirkliches Replay und ändern keine Datei. V2 bleibt kompatibel; sein Bundle
+wird von V3 mit `InvalidPhaseDagBundleHeader` abgelehnt. Ein passender Digest
+allein reicht nicht: neu gehashte, abweichende Receipts scheitern mit
+`PhaseDagReplayMismatch`. Replay bestätigt Konsistenz, keine Autorenidentität
+oder allgemeine mathematische Aussage. Es gibt keine Sitzungshülle,
+Signaloption oder automatische Fortsetzung.
+
+`execute` berichtet erst nach Veröffentlichung. Ein vorhandenes Ziel bleibt
+unverändert; `ExportCommitDurabilityUnknown` kann Exit 2 nach bereits sichtbarer
+Veröffentlichung bedeuten. [Befehle und Dateigrenzen](commands.md#phase-dag-v3--portable-payload-kanten)
+· [Spec und portables Bundle](formats.md#phase-dag-v3-spec-und-bundle)
+· [Gemessene Antworten](examples.json).
 
 ## JSON-Felder nach Ergebnisfamilie
 
@@ -77,8 +177,30 @@ Nur `research`, `grid`, `grid-batch`, `grid-resume`, `compare` und `compatibilit
 | `--max-replay-bytes` | nicht begrenzt durch diese Option | UInt64; Bundlegröße unmittelbar vor Replay; 0 blockiert jeden nichtleeren Bundle-Replay |
 | `--max-serialized-bytes` | nicht begrenzt durch diese Option | UInt64; Bundlegröße nach Aufbau und vor Replay; 0 blockiert jedes nichtleere Bundle |
 | `--max-session-checkpoints` | kein gemeinsames Konto | UInt64; gemeinsames Konto der vorhandenen Prüfpunkte über die Phasen; 0 scheitert beim ersten gezählten Punkt |
+| `--compatibility-family session` | nicht gesetzt | Optionale read-only Bestätigung der Session-Kontrollfamilie; nur auf den sechs generischen `execute_cli`-Routen, ohne Replaypflicht und ohne zusätzliche Ausgabe |
 
 Alle drei Budgetoptionen und alle Abbruchwerte außer `none` verlangen `--verification replay`. Ohne explizite Budgets bleiben die internen Format-/Strategiegrenzen bestehen. Bytewerte bezeichnen Bytes, nicht Kilobytes und nicht frei wählbare Suffixe wie `1M`.
+
+### Session-Familienbestätigung
+
+`--compatibility-family session` ist auf `compare`, `grid`, `grid-batch`,
+`grid-resume`, `research` und die generische `compatibility`-Route begrenzt.
+Bei `research` gilt sie für CSV-, Exact- und Grid-Varianten; bei
+`compatibility` für die Kandidaten- sowie die `--from-run --at`-Quelle. Nur der
+exakte Wert `session` ist gültig. `gate`, `transfer`, `management` und
+unbekannte Werte werden kontrolliert abgewiesen.
+
+Die Prüfung erfolgt unmittelbar nach dem bestehenden Optionsparsen und vor
+dem ersten Datei-, Bundle- oder Storezugriff der jeweiligen Route. Dadurch
+erscheint eine ungültige Familienauswahl vor einem gleichzeitig fehlenden
+Quellpfad. Die Bestätigung ist read-only: Sie aktiviert weder
+`--verification replay` noch ein Budget und erzeugt weder Descriptor noch
+zusätzliches JSON-Feld oder einen neuen Wrapper. Mit und ohne Bestätigung
+bleiben stdout, stderr, Exit-Code, Session-/Replay-/Checkpointsemantik,
+Fehlerhülle, Run-/Bundlebytes und die finale Exportgrenze gleich, sofern der
+übrige Aufruf identisch ist. Die sechs Routen behalten ihre bestehenden
+fachlichen Prüfungen und Optionen; `compatibility-plan` und
+`compatibility-apply` gehören weiterhin zum separaten Transfervertrag.
 
 ### Ablauf mit Replay
 
@@ -145,7 +267,7 @@ Das gemeinsame Sitzungsbudget nutzt darüber hinaus interne Kopierprüfpunkte au
 | `DuplicateOrOverlappingSampleInput`, `DuplicateTrainingInput`, `HoldoutOverlapOrDuplicate` | Doppelte Inputs entfernen; Holdout disjunkt wählen |
 | `CannotReadFile`, `InputByteLimit` | Pfad, Berechtigung und passende Importgröße prüfen |
 | `ExportExistsOrUnavailable` | Neuen Zielnamen verwenden oder Ziel-Dateisystem/Berechtigungen prüfen |
-| `ExportCommitDurabilityUnknown` | Ziel wurde bereits exklusiv verlinkt, aber die Synchronisation des Zielverzeichnisses scheiterte; Exit 2 bedeutet hier nicht, dass der Export fehlt. Existenz und Inhalt vor einem erneuten Versuch prüfen, nicht blind unter anderem Namen wiederholen |
+| `ExportCommitDurabilityUnknown` | Ziel wurde bereits exklusiv veröffentlicht (bei `phase-dag-v2 execute` atomar ohne Überschreiben), aber die Synchronisation des Zielverzeichnisses scheiterte; Exit 2 bedeutet hier nicht, dass der Export fehlt. Existenz und Inhalt vor einem erneuten Versuch prüfen, nicht blind unter anderem Namen wiederholen |
 | `IntegerBitLimit`, `IntegerOverflow` | Zahlenbereich beachten; je Pfad Fehler oder Teilbefund |
 | `InvalidExperienceConfiguration` | Snapshot und `experience-order` zusammen verwenden |
 | `ExperienceRequiresCompletedHoldoutRun` | Vollständig geprüfte unabhängige Quelle mit Holdout bereitstellen |

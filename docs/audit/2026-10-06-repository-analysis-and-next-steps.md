@@ -1,5 +1,14 @@
 # Repository-Analyse und nächste Schritte
 
+**Historische Einordnung, Korrektur vom 12. Oktober 2026:** Die folgenden
+Beobachtungen beschreiben den Stand vom 6. Oktober; die damaligen
+Versionsangaben zum Cockpit-Plan bleiben als historische Zitate erhalten.
+Die tatsächlich vendorte HTTP-Abhängigkeit ist `cpp-httplib` v0.58.0 mit
+[belegter Herkunft](../../DEPENDENCIES.md). Der breite Job/Import-Cockpit-Plan
+bleibt **DOKUMENTIERT / KONZEPT**; umgesetzt ist der gesonderte
+[lesende V2-Inspector](../superpowers/specs/2026-10-12-phase-dag-v2-cockpit-inspector-design.md).
+
+
 **Stichtag:** 06.10.2026
 
 **Analysierter Repository-Root:** `Bruce_raw` bei `fa158de` auf `master`

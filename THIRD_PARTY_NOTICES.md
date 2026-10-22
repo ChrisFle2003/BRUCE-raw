@@ -22,9 +22,14 @@ for a complete provenance review of future build environments.
 
 | Component | Version / source | License | SHA-256 |
 | --- | --- | --- | --- |
-| `third_party/cpp-httplib/httplib.h` | `yhirose/cpp-httplib`, tag `v0.59.0`, release commit `cf3693c` | MIT | `dc1e4de3e0ef3a18f3a5818fab563eb3fa45d5d3bb1db527a8d389077ed5ee6c` |
+| `third_party/cpp-httplib/httplib.h` | `yhirose/cpp-httplib`, tag `v0.58.0`, release commit `4f3f9ef19be83ae97a5d9a059432dc00e445b7ab` | MIT | `aa14e7e7bd2703694e0a6b6855af3b8c406102ab1fc56ac905fe33619b31faa5` |
 | `third_party/cpp-httplib/LICENSE` | same tag | MIT | `4b45cbe16d7b71b89ae6127e26e0d90a029198ca5e958ad8e3d0b8bbed364d8b` |
 
 The files are taken unchanged from the official tag. The Cockpit build may use
 them locally, but must not request a network source during configuration or
 compilation.
+
+Official provenance: [upstream tag](https://github.com/yhirose/cpp-httplib/tree/v0.58.0),
+[header source](https://raw.githubusercontent.com/yhirose/cpp-httplib/v0.58.0/httplib.h),
+and [MIT license source](https://raw.githubusercontent.com/yhirose/cpp-httplib/v0.58.0/LICENSE).
+The SHA-256 values above were calculated locally from the retained bytes.

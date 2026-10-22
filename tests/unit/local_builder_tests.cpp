@@ -25,7 +25,8 @@ struct Fixture {
     Fixture() {
         char temp[] = "/tmp/bruce-builder-test-XXXXXX";
         const auto name = ::mkdtemp(temp); require(name != nullptr, "Temp fixture failed"); root = name;
-        paths = {root, root + "/manifest.json", root + "/tree.json", root + "/golden.json", root + "/output.brucemod", root + "/trust.pub"};
+        paths = {root, root + "/manifest.json", root + "/tree.json", root + "/golden.json",
+                 root + "/output.brucemod", root + "/trust.pub", ""};
         write(root + "/.env", "BRUCE_MOD_ED25519_SEED_HEX=" + test_seed + "\n");
         write(paths.manifest_source, metadata); write(paths.tree_source, tree); write(paths.golden_source, golden);
     }
@@ -43,11 +44,17 @@ void empty_outputs(const Fixture& f) {
     require(!std::filesystem::exists(f.paths.package_output) && !std::filesystem::exists(f.paths.truststore_output), "Failed build created outputs");
 }
 void contracts() {
-    Fixture one, two;
+    Fixture one, two, explicit_key;
+    std::filesystem::rename(explicit_key.root + "/.env", explicit_key.root + "/signing.env");
+    explicit_key.paths.signing_env = explicit_key.root + "/signing.env";
     const auto result = bruce::build_local_data_mod_v1(one.paths);
     (void)bruce::build_local_data_mod_v1(two.paths);
+    (void)bruce::build_local_data_mod_v1(explicit_key.paths);
     const auto bytes = bruce::LocalFiles::read(one.paths.package_output);
     require(bytes == bruce::LocalFiles::read(two.paths.package_output), "Nondeterministic package");
+    require(bytes == bruce::LocalFiles::read(explicit_key.paths.package_output) &&
+            bruce::LocalFiles::read(one.paths.truststore_output) == bruce::LocalFiles::read(explicit_key.paths.truststore_output),
+            "Explicit signing file changed output bytes");
     const auto fixture = bruce::LocalFiles::read(std::string(BRUCE_RUNTIME_FIXTURE_DIR) + "/math-rational-power-v1.brucemod");
     require(bytes == fixture, "Builder bytes disagree with independent signed vector");
     const auto trust_bytes = bruce::LocalFiles::read(one.paths.truststore_output);
@@ -68,6 +75,7 @@ void contracts() {
     { Fixture bad; ::chmod((bad.root + "/.env").c_str(), 0644); rejected([&] { (void)bruce::build_local_data_mod_v1(bad.paths); }); empty_outputs(bad); }
     { Fixture bad; std::filesystem::rename(bad.root + "/.env", bad.root + "/key"); std::filesystem::create_symlink("key", bad.root + "/.env"); rejected([&] { (void)bruce::build_local_data_mod_v1(bad.paths); }); empty_outputs(bad); }
     { Fixture bad; std::filesystem::create_hard_link(bad.root + "/.env", bad.root + "/key"); rejected([&] { (void)bruce::build_local_data_mod_v1(bad.paths); }); empty_outputs(bad); }
+    { Fixture bad; bad.paths.signing_env = bad.root + "/key.env"; std::filesystem::create_symlink(".env", bad.paths.signing_env); rejected([&] { (void)bruce::build_local_data_mod_v1(bad.paths); }); empty_outputs(bad); }
     for (const auto source : {0, 1, 2}) {
         Fixture bad;
         write(source == 0 ? bad.paths.manifest_source : source == 1 ? bad.paths.tree_source : bad.paths.golden_source, "private-sentinel");

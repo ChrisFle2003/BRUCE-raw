@@ -4,7 +4,7 @@
 
 ## Befehle und Optionen
 
-Die folgenden sieben Befehle unterstützen zusätzlich zu ihren jeweiligen Pflichtoptionen denselben Controller:
+Die folgenden sieben Befehle unterstützen zusätzlich zu ihren jeweiligen Pflichtoptionen denselben Transfercontroller und die optionale read-only Familienbestätigung:
 
 - `experience add`
 - `experience revoke`
@@ -14,6 +14,15 @@ Die folgenden sieben Befehle unterstützen zusätzlich zu ihren jeweiligen Pflic
 - `compatibility-plan`
 - `compatibility-apply`
 
+Auf allen sieben Routen ist zusätzlich exakt `--compatibility-family transfer`
+zulässig. Die Bestätigung prüft den bestehenden Transfer-Descriptor vor dem
+jeweiligen Datei-, Plan- oder Storezugriff. Sie ist unabhängig vom Controller,
+aktiviert keine Checkpointzählung und erzeugt keinen Descriptor oder neuen
+Ergebniswrapper. `session`, `gate`, `management` und unbekannte Werte werden
+vor dem I/O kontrolliert abgewiesen; Legacy-Ausgaben, Fehlerhüllen,
+Plan-/Bundle-/Snapshotbytes und exklusive Veröffentlichungsgrenzen bleiben
+unverändert.
+
 | Option | Standard | Bedeutung |
 | --- | --- | --- |
 | `--max-transfer-checkpoints N` | kein Limit | Dezimale UInt64-Zahl einschließlich 0; zusätzliche Prüfpunktgrenze |
@@ -22,13 +31,13 @@ Die folgenden sieben Befehle unterstützen zusätzlich zu ihren jeweiligen Pflic
 Planung und Ausführung haben getrennte Konten. Das Konto wird nicht im Plan gespeichert. Die im Plan festgehaltenen Byte-/Auswahlgrenzen bleiben unverändert. Die Regelverwaltung verwendet diesen CLI-Controller nicht.
 
 ```bash
-./build/bruce experience plan-add --from-run source.bruce --output import.plan --max-transfer-checkpoints 1000000 --transfer-cancellation checkpoints
-./build/bruce experience apply-add import.plan --from-run source.bruce --output neu.experience --max-transfer-checkpoints 1000000 --transfer-cancellation checkpoints
-./build/bruce experience add --from-run source.bruce --output direkt-neu.experience --max-transfer-checkpoints 1000000 --transfer-cancellation checkpoints
-./build/bruce experience revoke --store direkt-neu.experience --id RECORD_ID --reason withdraw --output widerrufen.experience --max-transfer-checkpoints 1000000 --transfer-cancellation checkpoints
-./build/bruce experience replace --store direkt-neu.experience --id RECORD_ID --reason corrected-holdout --from-run source2.bruce --output ersetzt.experience --max-transfer-checkpoints 1000000 --transfer-cancellation checkpoints
-./build/bruce compatibility-plan --from-run source.bruce --rules rules.txt --at 3 --output selection.plan --max-transfer-checkpoints 1000000 --transfer-cancellation checkpoints
-./build/bruce compatibility-apply selection.plan --from-run source.bruce --rules rules.txt --output selection.bruce --max-transfer-checkpoints 1000000 --transfer-cancellation checkpoints
+./build/bruce experience plan-add --from-run source.bruce --output import.plan --compatibility-family transfer --max-transfer-checkpoints 1000000 --transfer-cancellation checkpoints
+./build/bruce experience apply-add import.plan --from-run source.bruce --output neu.experience --compatibility-family transfer --max-transfer-checkpoints 1000000 --transfer-cancellation checkpoints
+./build/bruce experience add --from-run source.bruce --output direkt-neu.experience --compatibility-family transfer --max-transfer-checkpoints 1000000 --transfer-cancellation checkpoints
+./build/bruce experience revoke --store direkt-neu.experience --id RECORD_ID --reason withdraw --output widerrufen.experience --compatibility-family transfer --max-transfer-checkpoints 1000000 --transfer-cancellation checkpoints
+./build/bruce experience replace --store direkt-neu.experience --id RECORD_ID --reason corrected-holdout --from-run source2.bruce --output ersetzt.experience --compatibility-family transfer --max-transfer-checkpoints 1000000 --transfer-cancellation checkpoints
+./build/bruce compatibility-plan --from-run source.bruce --rules rules.txt --at 3 --output selection.plan --compatibility-family transfer --max-transfer-checkpoints 1000000 --transfer-cancellation checkpoints
+./build/bruce compatibility-apply selection.plan --from-run source.bruce --rules rules.txt --output selection.bruce --compatibility-family transfer --max-transfer-checkpoints 1000000 --transfer-cancellation checkpoints
 ```
 
 Diese Beispiele setzen vorhandene passende Quellen voraus; Zielpfade müssen neu sein. Für Z-Übergaben kann `--rule-store STORE` die direkte `--rules`-Datei ersetzen. Für Erfahrung kann `--store PREVIOUS` eine bestehende Basis angeben. Details stehen in den jeweiligen Befehlsverträgen.

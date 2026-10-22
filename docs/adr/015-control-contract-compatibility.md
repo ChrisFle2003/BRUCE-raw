@@ -8,7 +8,8 @@ Runtime ein.
 
 ## Kontext
 
-BRUCE besitzt getrennte Sitzungs-, Gate- und Transfersteuerungen. Sie zählen
+BRUCE besitzt getrennte Sitzungs-, Gate-, Transfer- und read-only
+Management-Steuerungen. Sie zählen
 verschiedene Einheiten, besitzen unterschiedliche Kontrollstellen und liefern
 bei einem Fehler nicht dieselbe JSON-Hülle. Die Unterschiede sind im
 [Steuerungs- und Veröffentlichungsvertrag](../contracts/06-control-and-publication.md)
@@ -20,13 +21,15 @@ Automationen verändern.
 `--max-transfer-checkpoints` beziehungsweise `--transfer-cancellation` einen
 opt-in Transferweg. Ohne diese Optionen bleiben sie direkte native
 Verwaltungsaufrufe mit bisherigem Bericht und unveränderten Snapshotbytes.
-`experience inspect` hat weiterhin keinen Transfer- oder Sitzungscontroller.
+`experience inspect` hat keinen Transfer- oder Sitzungscontroller; mit den
+optionalen Management-Parametern nutzt es den eigenen read-only
+Management-Checkpoint-Controller.
 Die vorhandene opt-in-Erweiterung rechtfertigt nicht, weitere Verwaltungswege
 nachträglich als Session- oder Transferweg zu behandeln.
 
 ## Entscheidung
 
-Die drei vorhandenen Controllerfamilien werden als voneinander getrennte,
+Die vier vorhandenen Controllerfamilien werden als voneinander getrennte,
 öffentliche Verträge erhalten:
 
 | Familie | Vertrag | Fehlerhülle |
@@ -34,6 +37,7 @@ Die drei vorhandenen Controllerfamilien werden als voneinander getrennte,
 | Sitzung | `session-checkpoints-v1` | `application-execution-failure-v1`, `-v2` oder `-v3` entsprechend aktivem Sitzungs-/Serialisierungsbudget |
 | Gate | Gateinspektion mit eigenem Sitzungsprüfpunktkonto | einfaches `{"error":"…"}` |
 | Transfer | `transfer-checkpoints-v1` | einfaches `{"error":"…"}` |
+| Management | `management-checkpoints-v1` bei read-only Inspektion | einfaches `{"error":"…"}` |
 
 Die Vertragsmatrix in `06-control-and-publication.md` bestimmt für jede
 Familie Budgeteinheit, Kontrollstellen, Signal-/Budgetreihenfolge,
@@ -66,13 +70,13 @@ Kompatibilitätsentscheidung treffen. Der bestehende opt-in Transferweg für
 verändern noch automatisch auf weitere Verwaltungswege übertragen werden.
 
 Der Vorteil ist eine überprüfbare Migrationsgrundlage. Der Preis ist, dass
-die drei Fehlerformen vorerst sichtbar unterschiedlich bleiben. Das ist
+die vier Fehlerpfade vorerst sichtbar unterschiedlich bleiben. Das ist
 bewusst: Lesbare Kompatibilität ist sicherer als eine stillschweigende
 Normalisierung.
 
 ## Nachweise
 
-- CTest `control_contract_matrix` für die drei öffentlichen
+- CTest `control_contract_matrix` für die öffentlichen
   Nullbudget-/Ausgabegrenzen und den nativen Teilbefund.
 - CTest `session_work_budget_workflows` und `execution_session_states` für
   Sitzungsbudget und die deterministische Budget-vor-Signal-Priorität an

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "bruce/application/management_inspection_control.hpp"
+#include "bruce/application/common_runtime_compatibility_v1.hpp"
 #include "bruce/core/json.hpp"
 
 #include <csignal>
@@ -33,6 +34,7 @@ inline ManagementInspectionCliControl parse_management_inspection_options(
     ManagementInspectionCliControl result;
     bool has_maximum = false;
     bool has_cancellation = false;
+    bool has_compatibility_family = false;
     for (int index = first_option; index < argc; index += 2) {
         if (index + 1 >= argc) throw Error(std::string(legacy_usage));
         const std::string key = argv[index];
@@ -41,6 +43,7 @@ inline ManagementInspectionCliControl parse_management_inspection_options(
             if (has_maximum) throw Error("DuplicateOption: " + key);
             result.control.maximum = integer<std::uint64_t>(value);
             has_maximum = true;
+            result.enabled = true;
         } else if (key == "--management-cancellation") {
             if (has_cancellation) throw Error("DuplicateOption: " + key);
             if (value != "none" && value != "checkpoints") {
@@ -54,10 +57,18 @@ inline ManagementInspectionCliControl parse_management_inspection_options(
                 };
             }
             has_cancellation = true;
+            result.enabled = true;
+        } else if (key == "--compatibility-family") {
+            if (has_compatibility_family) throw Error("DuplicateOption: " + key);
+            const auto selected = control_family_compatibility_v1(value);
+            require_control_family_compatibility_v1(selected);
+            if (selected != control_family_compatibility_v1("management")) {
+                throw Error("CommonRuntimeCompatibilityV1FamilyMismatch");
+            }
+            has_compatibility_family = true;
         } else {
             throw Error(std::string(legacy_usage));
         }
-        result.enabled = true;
     }
     return result;
 }

@@ -6,7 +6,9 @@ namespace bruce {
 struct GridTask {
     std::string path,mode="exact",zero_zero="one";
     unsigned max_bits=64;
-    std::optional<std::uint64_t> modulus;
+    std::optional<std::uint64_t> modulus=std::nullopt;
+    std::string rule="LEAF_LOCAL_POWER_V1";
+    std::optional<std::uint64_t> stage=std::nullopt;
 };
 struct GridRun {
     GridTask task;

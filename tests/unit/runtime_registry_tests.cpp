@@ -28,6 +28,13 @@ extern "C" int fsync(int fd) {
 }
 
 namespace {
+template<class T>
+concept ExposesDetachedActiveTree = requires(const T& value) { value.active_tree(); };
+template<class T>
+concept ExposesDetachedActiveView = requires(const T& value) { value.active_view(); };
+static_assert(!ExposesDetachedActiveTree<bruce::RuntimeModRegistryV1>);
+static_assert(!ExposesDetachedActiveView<bruce::RuntimeModRegistryV1>);
+
 void require(bool value, const char* message) { if (!value) throw bruce::Error(message); }
 template<class F> void rejected(F action) {
     try { action(); } catch (const bruce::Error&) { return; }
@@ -74,14 +81,14 @@ void lifecycle() {
     registry.install(mod);
     require(registry.records().size() == 1 && registry.records()[0].state == bruce::RuntimeModStateV1::installed_inactive, "install must be inactive");
     require(bruce::LocalFiles::read(root + "/packages/" + mod.package_digest() + ".brucemod") == mod.bytes(), "package is not content-addressed");
-    require(registry.active_tree().route(bruce::normalize_route_text_v1("3/4 hoch 2")).status == bruce::RouteStatusV1::unknown, "inactive mod routes");
+    require(registry.route("3/4 hoch 2").route.status == bruce::RouteStatusV1::unknown, "inactive mod routes");
     struct stat info{}; require(::stat(root.c_str(), &info) == 0 && (info.st_mode & 0777) == 0700, "root permissions unsafe");
     registry.activate("user.power", "1.0.0");
-    require(registry.active_tree().route(bruce::normalize_route_text_v1("3/4 hoch 2")).status == bruce::RouteStatusV1::matched, "active mod missing");
+    require(registry.route("3/4 hoch 2").route.status == bruce::RouteStatusV1::matched, "active mod missing");
     auto other_handle = bruce::RuntimeModRegistryV1::open_existing(root);
     other_handle.disable("user.power");
     require(registry.records()[0].state == bruce::RuntimeModStateV1::disabled && registry.generation() == 3, "stale handle failed to reload");
-    require(registry.active_tree().route(bruce::normalize_route_text_v1("3/4 hoch 2")).status == bruce::RouteStatusV1::unknown, "disabled mod routes");
+    require(registry.route("3/4 hoch 2").route.status == bruce::RouteStatusV1::unknown, "disabled mod routes");
     require(bruce::RuntimeModRegistryV1::open(temp.path + "/other", trust).records().empty(), "roots share state");
     rejected([&] { registry.install(mod); });
     rejected([&] { registry.activate("missing", "1.0.0"); });
@@ -100,7 +107,9 @@ void conflicts() {
     const auto before = registry.journal_digest();
     rejected([&] { registry.activate("user.sibling", "1.0.0"); });
     require(registry.generation() == 3 && registry.journal_digest() == before, "failed conflict changed generation");
-    require(registry.active_tree().find({1,1,5})->owner_id == "user.power", "foreign owner overwritten");
+    const auto routed = registry.route("3/4 hoch 2").route;
+    require(routed.status == bruce::RouteStatusV1::matched && routed.candidates.size() == 1 &&
+            routed.candidates[0].owner_id == "user.power", "foreign owner overwritten");
 }
 void integrity_and_recovery() {
     TemporaryRoot temp; const auto trust = bruce::read_runtime_mod_truststore_v1(trust_bytes());
@@ -118,7 +127,7 @@ void integrity_and_recovery() {
     require(bruce::LocalFiles::read(temp.path + "/journal.v1") == journal, "incomplete append not truncated");
     auto mutation = mod.bytes(); mutation.at(mutation.find("hoch")) = 'X';
     bruce::LocalFiles::replace_atomically(temp.path + "/packages/" + mod.package_digest() + ".brucemod", mutation);
-    rejected([&] { (void)recovered.active_tree(); });
+    rejected([&] { (void)recovered.route("3/4 hoch 2"); });
     rejected([&] { recovered.activate("user.power", "1.0.0"); });
 }
 void upgrade_and_collision() {
@@ -126,10 +135,10 @@ void upgrade_and_collision() {
     auto registry = bruce::RuntimeModRegistryV1::open(temp.path, trust);
     registry.install(package()); registry.activate("user.power", "1.0.0");
     registry.install(package("user.power", 5, "potenz", "MATCHED", "2.0.0"));
-    require(registry.active_tree().route(bruce::normalize_route_text_v1("3/4 hoch 2")).status == bruce::RouteStatusV1::matched, "staged upgrade changed routing");
+    require(registry.route("3/4 hoch 2").route.status == bruce::RouteStatusV1::matched, "staged upgrade changed routing");
     registry.activate("user.power", "2.0.0");
-    require(registry.active_tree().route(bruce::normalize_route_text_v1("3/4 hoch 2")).status == bruce::RouteStatusV1::unknown, "old version retained after upgrade");
-    require(registry.active_tree().route(bruce::normalize_route_text_v1("3/4 potenz 2")).status == bruce::RouteStatusV1::matched, "new version not activated");
+    require(registry.route("3/4 hoch 2").route.status == bruce::RouteStatusV1::unknown, "old version retained after upgrade");
+    require(registry.route("3/4 potenz 2").route.status == bruce::RouteStatusV1::matched, "new version not activated");
     const auto records = registry.records();
     require(records.size() == 2 && records[0].state == bruce::RuntimeModStateV1::disabled && records[1].state == bruce::RuntimeModStateV1::active, "upgrade lifecycle inconsistent");
     // A distinct address does not justify breaking an active mod's signed golden case.
@@ -209,8 +218,8 @@ void interrupted_initial_publication() {
         require(recovered.generation() == 0 && recovered.records().empty(), "publication created a premature state commit");
         recovered.install(mod);
         recovered.activate("user.power", "1.0.0");
-        require(bruce::RuntimeModRegistryV1::open_existing(root).active_tree().route(
-            bruce::normalize_route_text_v1("3/4 hoch 2")).status == bruce::RouteStatusV1::matched,
+        require(bruce::RuntimeModRegistryV1::open_existing(root).route("3/4 hoch 2").route.status ==
+                    bruce::RouteStatusV1::matched,
             "initial publication interruption made the registry unusable");
     }
 }
@@ -229,7 +238,10 @@ void concurrency_and_permissions() {
     }
     ::close(start[0]); require(::write(start[1], "go", 2) == 2, "race start failed"); ::close(start[1]);
     for (const auto pid : children) { int status; require(::waitpid(pid, &status, 0) == pid && WIFEXITED(status) && WEXITSTATUS(status) == 0, "concurrent activation lost"); }
-    require(registry.generation() == 4 && registry.active_tree().find({1,1,5}) && registry.active_tree().find({1,1,6}), "concurrency lost state");
+    require(registry.generation() == 4 &&
+            registry.route("3/4 hoch 2").route.status == bruce::RouteStatusV1::matched &&
+            registry.route("3/4 quadratisch 2").route.status == bruce::RouteStatusV1::matched,
+            "concurrency lost state");
     require(::chmod(temp.path.c_str(), 0755) == 0, "chmod failed");
     rejected([&] { (void)bruce::RuntimeModRegistryV1::open_existing(temp.path); });
     require(::chmod(temp.path.c_str(), 0700) == 0, "chmod failed");

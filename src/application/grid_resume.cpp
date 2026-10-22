@@ -11,6 +11,7 @@ GridBatchRun continue_validated_grid_batch(GridBatchRun,std::size_t,const std::f
 }
 namespace {
 constexpr std::string_view header="BRUCE_GRID_RESUME_BUNDLE_V1\n";
+constexpr std::string_view explicit_header="BRUCE_GRID_RESUME_BUNDLE_V2\n";
 constexpr std::string_view policy="verified-prefix-cache-rebuild-v1";
 std::string field(std::istream& in,std::string_view name) {
     std::string line,key,value,extra;std::getline(in,line);std::istringstream row(line);
@@ -20,7 +21,9 @@ std::string field(std::istream& in,std::string_view name) {
 std::string render_records(const GridResumeRun&,const ReplayCheckpoint&);
 std::string payload(const GridResumeRun& r,const ReplayCheckpoint& records={}) {
     if(records) records();
-    std::string out="policy "+std::string(policy)+"\nadditional_queries "+std::to_string(r.additional_queries)+
+    std::string out="policy "+std::string(policy)+
+        (r.batch.task.spec.stage ? "\nstage_source explicit\nstage "+std::to_string(*r.batch.task.spec.stage) : "")+
+        "\nadditional_queries "+std::to_string(r.additional_queries)+
         "\ncancel_after "+(r.batch.task.cancel_after_queries ? std::to_string(*r.batch.task.cancel_after_queries) : "none")+
         "\nparent_bytes "+std::to_string(r.parent.size())+"\n";
     // The record checkpoint above admits the first block. Reserve once so that
@@ -45,7 +48,7 @@ GridResumeRun execute(std::string parent,std::size_t additional,const std::funct
     if(parent.size()>max_file_bytes) throw Error("BundleByteLimit");
     GridResumeRun out;out.additional_queries=additional;out.generation=1;
     GridBatchRun prefix;
-    if(parent.starts_with(header)) {
+    if(parent.starts_with(header) || parent.starts_with(explicit_header)) {
         auto previous=replay_impl(parent,depth+1,checkpoint);
         out.generation=previous.generation+1;
         out.audit_evaluations=previous.audit_evaluations+previous.new_evaluations;
@@ -62,14 +65,26 @@ GridResumeRun execute(std::string parent,std::size_t additional,const std::funct
 GridResumeRun replay_impl(std::string_view bundle,std::size_t depth,const ReplayCheckpoint& checkpoint) {
     if(depth>=8) throw Error("GridResumeGenerationLimit");
     if(bundle.size()>max_file_bytes) throw Error("BundleByteLimit");
-    if(!bundle.starts_with(header)) throw Error("UnknownBundleVersion");
-    bundle.remove_prefix(header.size());
+    const bool explicit_stage=bundle.starts_with(explicit_header);
+    if(!explicit_stage && !bundle.starts_with(header)) throw Error("UnknownBundleVersion");
+    bundle.remove_prefix(explicit_stage ? explicit_header.size() : header.size());
     if(bundle.size()<65 || bundle[64]!='\n') throw Error("InvalidDigestHeader");
     const auto body=bundle.substr(65);
     if(sha256(body)!=bundle.substr(0,64)) throw Error("InvalidEvidence: digest mismatch");
     if(checkpoint) checkpoint();
     std::istringstream in{std::string(body)};
     if(field(in,"policy")!=policy) throw Error("UnknownGridResumePolicy");
+    std::optional<std::uint64_t> stage;
+    if(explicit_stage) {
+        std::string line;
+        if(!std::getline(in,line) || line!="stage_source explicit") throw Error("InvalidBundleField: stage_source");
+        if(!std::getline(in,line) || !line.starts_with("stage ")) throw Error("InvalidBundleField: stage");
+        const auto text=std::string_view(line).substr(6);
+        std::uint64_t parsed;
+        try {parsed=integer<std::uint64_t>(text);} catch(const Error&) {throw Error("InvalidBundleField: stage");}
+        if(text!=std::to_string(parsed) || parsed>57) throw Error("InvalidBundleField: stage");
+        stage=parsed;
+    }
     const auto additional=integer<std::size_t>(field(in,"additional_queries"));
     const auto cancel=field(in,"cancel_after");
     const auto bytes=integer<std::size_t>(field(in,"parent_bytes"));
@@ -79,6 +94,7 @@ GridResumeRun replay_impl(std::string_view bundle,std::size_t depth,const Replay
     std::optional<std::size_t> boundary;
     if(cancel!="none") boundary=integer<std::size_t>(cancel);
     auto run=execute(std::move(parent),additional,[boundary](std::size_t n){return boundary && n>=*boundary;},depth,checkpoint,checkpoint);
+    if(run.batch.task.spec.stage!=stage) throw Error("ReplayMismatch: grid continuation stage differs from parent");
     if(checkpoint) checkpoint();
     if(payload(run)!=body) throw Error("ReplayMismatch: grid continuation differs");
     return run;
@@ -96,12 +112,13 @@ std::string render_records(const GridResumeRun& r,const ReplayCheckpoint& record
 }
 std::string render_grid_resume(const GridResumeRun& r) {return render_records(r,{});}
 std::string pack_grid_resume(const GridResumeRun& r,const ReplayCheckpoint& checkpoint,const ReplayCheckpoint& records) {
-    const auto body=payload(r,records);const auto out=std::string(header)+sha256(body,checkpoint)+"\n"+body;
+    const auto body=payload(r,records);
+    const auto out=std::string(r.batch.task.spec.stage ? explicit_header : header)+sha256(body,checkpoint)+"\n"+body;
     if(out.size()>max_file_bytes) throw Error("BundleByteLimit");
     return out;
 }
 GridResumeRun replay_grid_resume(std::string_view bundle,const ReplayCheckpoint& checkpoint) {return replay_impl(bundle,0,checkpoint);}
 GridBatchRun replay_grid_source(std::string_view bundle,const ReplayCheckpoint& checkpoint) {
-    return bundle.starts_with(header) ? replay_grid_resume(bundle,checkpoint).batch : replay_grid_batch(bundle,checkpoint);
+    return (bundle.starts_with(header) || bundle.starts_with(explicit_header)) ? replay_grid_resume(bundle,checkpoint).batch : replay_grid_batch(bundle,checkpoint);
 }
 }

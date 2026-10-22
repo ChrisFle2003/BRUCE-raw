@@ -42,11 +42,20 @@ Die folgenden Optionen gelten **nicht** pauschal für alle Befehle. Sie sind nur
 | Familie | Optionen | Zweck |
 | --- | --- | --- |
 | Sitzungsprüfung | `--verification none|replay`, `--max-session-checkpoints N`, `--verification-cancellation WERT`, `--max-replay-bytes N`, `--max-serialized-bytes N` | Prüft optional den erzeugten Lauf vollständig erneut und begrenzt Replay-, Serialisierungs- oder Prüfpunktausgaben. `--max-session-checkpoints` ist nur mit `--verification replay` sinnvoll/zulässig. |
+| Session-Familienbestätigung | `--compatibility-family session` | Optionale read-only Auswahlbestätigung auf `compare`, `grid`, `grid-batch`, `grid-resume`, `research` und der generischen `compatibility`-Route. Nur `session` ist gültig; Replay wird dadurch nicht aktiviert. |
 | Ausführungsabbruch | `--execution-cancellation none|experience-checkpoints|grid-source-checkpoints|grid-and-experience-checkpoints|compatibility-source-checkpoints|resume-import-checkpoints` | Aktiviert Signalauswertung an dem zum Lauf passenden Importpfad. |
 | Serialisierungsabbruch | `--serialization-cancellation none|digest-checkpoints|grid-record-checkpoints` | Beobachtet Prüfsummen- bzw. Grid-Datensatzgrenzen; `grid-record-checkpoints` ist auf Grid-Batch, Grid-Resume und Grid-Forschung beschränkt. |
 | Transfersteuerung | `--max-transfer-checkpoints N`, `--transfer-cancellation none|checkpoints` | Gilt nur für Experience- und Compatibility-Plan/Apply-Übergaben, nicht für allgemeine Sitzungen. |
 
 `SIGINT`/`SIGTERM` kann an eingebauten Such- oder Prüfgrenzen wirken. Es ist kein allgemeines Zeit-, Speicher- oder Signallatenzlimit.
+
+Die optionale Session-Familienbestätigung wird unmittelbar nach dem
+Optionsparsen und vor Datei-, Bundle- oder Storezugriff geprüft. Bei
+`research` umfasst sie CSV-, Exact- und Grid-Varianten; bei `compatibility`
+beide Quellenformen. Sie erzeugt keinen Descriptor oder Ergebniswrapper und
+ändert keine Legacybytes, Fehlerhülle, Session-/Replaysemantik oder
+Exportgrenze. `--verification replay` bleibt unabhängig und optional.
+
 
 ## Befehlsreferenz
 
@@ -65,25 +74,25 @@ Die folgenden Optionen gelten **nicht** pauschal für alle Befehle. Sie sind nur
 | --- | --- | --- | --- |
 | `coordinate` | `bruce coordinate --x X --y Y` oder `bruce coordinate --z Z` | Reversible Cantor-Adresse zwischen `(x,y)` und `z` berechnen. | Genau eine Form. Alle Werte UInt64; lokale Koordinaten `<8` liefern zusätzlich `local_z`. |
 | `calculate` | `bruce calculate --op OP --left A --right B [--domain bigint|rational] [--max-bits N] [--modulus M]` | Eine einzelne exakte Rechenoperation ausführen. | `--op`, `--left`, `--right` Pflicht. OP: `add`, `sub`, `mul`, `div`, `divmod`, `pow`, `modpow`. Standarddomäne `bigint`, Standard `--max-bits 4096`; `--modulus` nur für `modpow`. |
-| `compare` | `bruce compare --left-numerator LISTE --left-denominator LISTE --right-numerator LISTE --right-denominator LISTE [--domain-policy ...] [--max-bits N] [--max-operations N] [Sitzungsoptionen] [--output DATEI]` | Zwei Polynombrüche über Q samt Definitionsbereich vergleichen. | Vier Koeffizientenlisten Pflicht, aufsteigende Potenzreihenfolge. `--domain-policy`: `quadratic` (Standard), `modular`, `modular-witness`; Defaults: 4096 Bits, 1000000 Operationen. |
+| `compare` | `bruce compare --left-numerator LISTE --left-denominator LISTE --right-numerator LISTE --right-denominator LISTE [--domain-policy ...] [--max-bits N] [--max-operations N] [Sitzungsoptionen] [--compatibility-family session] [--output DATEI]` | Zwei Polynombrüche über Q samt Definitionsbereich vergleichen. | Vier Koeffizientenlisten Pflicht, aufsteigende Potenzreihenfolge. `--compatibility-family` akzeptiert nur `session` und wird vor Route-I/O geprüft; `--domain-policy`: `quadratic` (Standard), `modular`, `modular-witness`; Defaults: 4096 Bits, 1000000 Operationen. |
 
 ### Grid
 
 | Pfad | Syntax | Wann verwenden | Wichtige Optionen |
 | --- | --- | --- | --- |
-| `grid` | `bruce grid --path '2,6/4,3' [--mode exact|modular|metric] [--modulus M] [--max-bits N] [--zero-zero one|stop] [Sitzungsoptionen] [--output DATEI]` | Letztes lokales Koordinatenpaar eines Pfads als `x^y` auswerten. | `--path` Pflicht, 1..64 Paare in `0..7`. Standardmodus `exact`, Standard 64 Bits, `0^0=1`. `--modulus` ist nur bei `modular` Pflicht. |
-| `grid-batch` | `bruce grid-batch --paths 'P1;P2;...' [--cache-bytes N] [--max-query-steps N] [Grid- und Sitzungsoptionen] [--output DATEI]` | Mehrere Grid-Pfade mit lokalem FIFO-Cache auswerten; eignet sich für fortsetzbare Teilergebnisse. | `--paths` Pflicht; höchstens 1024 Pfade. Standardcache 65536 Bytes, `0` deaktiviert ihn. `--max-query-steps 0` erzeugt einen unvollständigen Lauf. |
-| `grid-resume` | `bruce grid-resume --from-run PARTIAL --additional-queries N [Sitzungsoptionen] [--output DATEI]` | Ein unvollständiges Grid-Batch-/Resume-Bundle fortsetzen. | Beide Optionen Pflicht; N ist 1..1024. Quelle muss unvollständig und replaybar sein; Konfiguration wird übernommen. |
+| `grid` | `bruce grid --path '2,6/4,3' [--mode exact|modular|metric] [--modulus M] [--max-bits N] [--zero-zero one|stop] [Sitzungsoptionen] [--compatibility-family session] [--output DATEI]` | Letztes lokales Koordinatenpaar eines Pfads als `x^y` auswerten. | `--path` Pflicht, 1..64 Paare in `0..7`. Standardmodus `exact`, Standard 64 Bits, `0^0=1`. `--modulus` ist nur bei `modular` Pflicht; Familienbestätigung vor Bundle-/Dateizugriff. |
+| `grid-batch` | `bruce grid-batch --paths 'P1;P2;...' [--cache-bytes N] [--max-query-steps N] [Grid- und Sitzungsoptionen] [--compatibility-family session] [--output DATEI]` | Mehrere Grid-Pfade mit lokalem FIFO-Cache auswerten; eignet sich für fortsetzbare Teilergebnisse. | `--paths` Pflicht; höchstens 1024 Pfade. Standardcache 65536 Bytes, `0` deaktiviert ihn. `--max-query-steps 0` erzeugt einen unvollständigen Lauf. Familienbestätigung vor Quellen-/Exportzugriff. |
+| `grid-resume` | `bruce grid-resume --from-run PARTIAL --additional-queries N [Sitzungsoptionen] [--compatibility-family session] [--output DATEI]` | Ein unvollständiges Grid-Batch-/Resume-Bundle fortsetzen. | Beide Optionen Pflicht; N ist 1..1024. Quelle muss unvollständig und replaybar sein; die Familienbestätigung wird vor dem Parent-Bundle-Lesen geprüft; Konfiguration wird übernommen. |
 
 ### Forschung
 
 ```text
-bruce research --train TRAIN.csv [--holdout HOLD.csv] [Forschungsoptionen] [Sitzungsoptionen] [--output RUN.bruce]
-bruce research --grid-train GRID.bruce [--grid-holdout GRID.bruce] [--grid-axis x|y]
+bruce research --train TRAIN.csv [--holdout HOLD.csv] [Forschungsoptionen] [Sitzungsoptionen] [--compatibility-family session] [--output RUN.bruce]
+bruce research --grid-train GRID.bruce [--grid-holdout GRID.bruce] [--grid-axis x|y] [--compatibility-family session]
                [--max-total-operations N] [Forschungsoptionen] [Sitzungsoptionen] [--output RUN.bruce]
 ```
 
-`--train` und `--grid-train` schließen sich aus. Ein Holdout ist optional, muss aber zu seiner Quellenform passen. Relevante gemeinsame Forschungsoptionen: `--strategy`, `--domain`, `--planner`, `--min`, `--max`, `--max-candidates`, `--max-operations`, `--max-trace`, `--max-results`, `--max-bits`, `--max-denominator`, `--max-trace-bytes`, `--experience` und `--output`.
+`--train` und `--grid-train` schließen sich aus. Ein Holdout ist optional, muss aber zu seiner Quellenform passen. Relevante gemeinsame Forschungsoptionen: `--strategy`, `--domain`, `--planner`, `--min`, `--max`, `--max-candidates`, `--max-operations`, `--max-trace`, `--max-results`, `--max-bits`, `--max-denominator`, `--max-trace-bytes`, `--experience` und `--output`. Die optionale `--compatibility-family session`-Bestätigung gilt für beide Quellenformen sowie CSV-, Exact- und Grid-Research und wird vor dem jeweiligen Quellenlesen geprüft.
 
 | Strategie | Zweck und spezielle Optionen |
 | --- | --- |
@@ -115,16 +124,16 @@ Forschungsbudgets haben die Code-Standardwerte `--max-candidates 100000`, `--max
 | `rules-propose` | `bruce rules-propose OLD NEW PROPOSAL` | Regeländerung als prüfbaren Vorschlag erzeugen. | Positionale Dateien. |
 | `rules-approve` | `bruce rules-approve PROPOSAL CURRENT OUTPUT` | Einen Vorschlag nach zwingender Terminalbestätigung als Regeldatei exportieren. | Interaktiver Dialog; Ablehnung ist Exit 2. |
 | `rules-activate` | `bruce rules-activate STORE PROPOSAL` | Einen bestätigten Vorschlag nach Terminalbestätigung atomar aktivieren. | Aktualisiert den benannten Regelspeicher als Ausnahme von der exklusiven Exportregel. |
-| `rules-status` | `bruce rules-status STORE` | Aktive Regeln und Journal eines Speichers anzeigen. | Nur Positionsargument. |
-| `experience add` | `bruce experience add --from-run RUN [--store STORE] --output NEW [Transfersteuerung]` | Gültigen Forschungsbefund in einen Experience-Snapshot übernehmen. | `--from-run`, `--output` Pflicht. |
-| `experience revoke` | `bruce experience revoke --store STORE --id ID --reason TEXT --output NEW [Transfersteuerung]` | Experience-Eintrag nachvollziehbar widerrufen. | Alle vier Hauptoptionen Pflicht. |
-| `experience replace` | `bruce experience replace --store STORE --id ID --reason TEXT --from-run RUN --output NEW [Transfersteuerung]` | Eintrag mit neuer Quelle ersetzen. | Alle Hauptoptionen Pflicht; Ausgabedatei darf nicht existieren. |
-| `experience plan-add` | `bruce experience plan-add --from-run RUN [--store STORE] [--max-source-bytes N] [--max-store-bytes N] --output PLAN [Transfersteuerung]` | Einen expliziten Übergabeplan erzeugen. | Keinen Snapshot ändern. |
-| `experience apply-add` | `bruce experience apply-add PLAN --from-run RUN [--store STORE] --output NEW [Transfersteuerung]` | Einen vorher erzeugten Plan anwenden. | `PLAN` ist Positionsargument. |
-| `experience inspect` | `bruce experience inspect SNAPSHOT` | Snapshot prüfen und anzeigen. | Kein allgemeines `replay`. |
-| `compatibility` | `bruce compatibility (--rules FILE|--rule-store STORE) (--candidates CSV|--from-run RUN --at X) [Budgets] [Sitzungsoptionen] [--output RUN]` | Kandidaten nach lokalen Regeln auswählen. | Jeweils genau eine Regel- und eine Quellenform. |
-| `compatibility-plan` | `bruce compatibility-plan --from-run RUN (--rules FILE|--rule-store STORE) --at X --output PLAN [Budgets] [Transfersteuerung]` | Prüfbaren Übergabeplan von Forschung zur Z-Auswahl erzeugen. | Quelle, Regeln/Store, Stelle und Ausgabe erforderlich. |
-| `compatibility-apply` | `bruce compatibility-apply PLAN --from-run RUN (--rules FILE|--rule-store STORE) [--output RUN] [Transfersteuerung]` | Einen Kompatibilitätsplan anwenden. | `PLAN` ist Positionsargument. |
+| `rules-status` | `bruce rules-status STORE [--compatibility-family management] [--max-management-checkpoints N] [--management-cancellation none\|checkpoints]` | Aktive Regeln und Journal eines Speichers anzeigen; optional die bestehende Management-Familie bestätigen oder den read-only Prüfpunktcontroller aktivieren. | Nur `management` als Familienwert; keine Transferoptionen. |
+| `experience add` | `bruce experience add --from-run RUN [--store STORE] --output NEW [--compatibility-family transfer] [Transfersteuerung]` | Gültigen Forschungsbefund in einen Experience-Snapshot übernehmen. | `--from-run`, `--output` Pflicht; Familienwert nur `transfer`, Prüfung vor Datei-/Storezugriff. |
+| `experience revoke` | `bruce experience revoke --store STORE --id ID --reason TEXT --output NEW [--compatibility-family transfer] [Transfersteuerung]` | Experience-Eintrag nachvollziehbar widerrufen. | Alle vier Hauptoptionen Pflicht; Familienwert nur `transfer`, Prüfung vor Storezugriff. |
+| `experience replace` | `bruce experience replace --store STORE --id ID --reason TEXT --from-run RUN --output NEW [--compatibility-family transfer] [Transfersteuerung]` | Eintrag mit neuer Quelle ersetzen. | Alle Hauptoptionen Pflicht; Ausgabedatei darf nicht existieren; Familienwert nur `transfer`. |
+| `experience plan-add` | `bruce experience plan-add --from-run RUN [--store STORE] [--max-source-bytes N] [--max-store-bytes N] --output PLAN [--compatibility-family transfer] [Transfersteuerung]` | Einen expliziten Übergabeplan erzeugen. | Keinen Snapshot ändern; Familienbestätigung vor Quellen-/Basislesen. |
+| `experience apply-add` | `bruce experience apply-add PLAN --from-run RUN [--store STORE] --output NEW [--compatibility-family transfer] [Transfersteuerung]` | Einen vorher erzeugten Plan anwenden. | `PLAN` ist Positionsargument; Familienbestätigung vor Plan-/Quellen-/Basislesen. |
+| `experience inspect` | `bruce experience inspect SNAPSHOT [--compatibility-family management] [--max-management-checkpoints N] [--management-cancellation none\|checkpoints]` | Snapshot prüfen und anzeigen; optional die bestehende Management-Familie bestätigen oder den read-only Prüfpunktcontroller aktivieren. | Nur `management` als Familienwert; kein allgemeines `replay`. |
+| `compatibility` | `bruce compatibility (--rules FILE|--rule-store STORE) (--candidates CSV|--from-run RUN --at X) [Budgets] [Sitzungsoptionen] [--compatibility-family session] [--output RUN]` | Kandidaten nach lokalen Regeln auswählen. | Jeweils genau eine Regel- und eine Quellenform; Bestätigung nur mit `session`, vor Regel-/Kandidaten-/Run-Lesen. |
+| `compatibility-plan` | `bruce compatibility-plan --from-run RUN (--rules FILE|--rule-store STORE) --at X --output PLAN [Budgets] [--compatibility-family transfer] [Transfersteuerung]` | Prüfbaren Übergabeplan von Forschung zur Z-Auswahl erzeugen. | Quelle, Regeln/Store, Stelle und Ausgabe erforderlich; Familienbestätigung vor Quellen-/Regellesen. |
+| `compatibility-apply` | `bruce compatibility-apply PLAN --from-run RUN (--rules FILE|--rule-store STORE) [--output RUN] [--compatibility-family transfer] [Transfersteuerung]` | Einen Kompatibilitätsplan anwenden. | `PLAN` ist Positionsargument; Familienbestätigung vor Plan-/Quellen-/Regellesen. |
 
 ### Laufprüfung
 
@@ -133,7 +142,7 @@ Forschungsbudgets haben die Code-Standardwerte `--max-candidates 100000`, `--max
 | `inspect-run` | `bruce inspect-run RUN.bruce` | Metadaten und Ergebnis eines allgemeinen Bundles darstellen. |
 | `assess-run` | `bruce assess-run RUN.bruce` | Einen Lauf nach den eingebauten Gate-Regeln bewerten. |
 | `replay` | `bruce replay RUN.bruce` | Ein allgemeines BRUCE-Anwendungsbundle semantisch wiederholen. Nicht für Language-, NanoCell- oder Experience-Dateien. |
-| `gate-run` | `bruce gate-run RUN.bruce [--max-session-checkpoints N] [--max-replay-bytes N] [--cancellation none|checkpoints]` | Einen konkreten Lauf mit optionaler Checkpoint-/Replaybyte-Grenze für ein Gate prüfen. |
+| `gate-run` | `bruce gate-run RUN.bruce [--compatibility-family gate] [--max-session-checkpoints N] [--max-replay-bytes N] [--cancellation none|checkpoints]` | Einen konkreten Lauf mit optionaler Checkpoint-/Replaybyte-Grenze für ein Gate prüfen; `--compatibility-family gate` bestätigt die bestehende Familie ohne Descriptor-Ausgabe. |
 
 ## Formate und sichere Verwendung
 

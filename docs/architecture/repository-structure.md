@@ -14,7 +14,7 @@ cmake/                        Build-information and version templates
 docs/                         Reader documentation, contracts, evidence, and context
 examples/                     Reproducible input data and local data-mod example
 include/bruce/                Public C++ headers, grouped by domain
-mods/                         Optional static Language and NanoCell mod sources
+mods/                         Optional static Language, NanoCell, and MCP sources
 scripts/                      Dependency wrapper and verification tooling
 src/                          C++20 implementation, grouped by domain
 tests/
@@ -50,14 +50,19 @@ lives in `mods/`.
 | `experience` | Experience records, corrections, and snapshots. Application code performs source audit and routing; the store is not a general learning system. |
 | `io` | Local Linux file operations, exclusive publication, atomic replacement, rule-store access, and explicit confirmation handoff. It supplies no terminal UI or mathematical planning. |
 | `math` | Exact values, bounded number domains, polynomial, power-affine, rational-function, expression, normalization, and domain-cache mechanics used by research application paths. |
-| `mod` | Fixed static-mod manifest/catalog interfaces and the signed runtime data-mod package, trust-store, registry, and local builder APIs. |
+| `mod` | Fixed built-in catalog plus signed Data/Logic packages, trust, durable registries, common installed host, worker boundary, and local builders. |
 | `token` | Versioned token/task-spec structures and parsing for tokenized task runs. |
-| `tree` | Normalized route input, the immutable Core Tree, child mounts, and deterministic routing used by runtime data mods. |
+| `tree` | Normalized route input, the immutable Core Tree, child mounts, and deterministic routing used by installed Data/Logic mods. |
 
-`include/bruce/mods/language/` and `include/bruce/mods/nanocell/` define the
-two optional static-mod APIs. Their sources live below `mods/language/` and
-`mods/nanocell/`, and their CMake files create static libraries consumed by the
-fixed catalog and `bruce` executable.
+`include/bruce/mods/language/`, `include/bruce/mods/nanocell/`, and
+`include/bruce/mods/mcp/` define the three optional static-mod APIs.
+Their corresponding `mods/` directories create static libraries consumed by
+the fixed catalog and `bruce` executable. `include/bruce/phase_dag/` and
+`src/phase_dag/` supply the separate bounded V2 and V3 execution/replay
+contracts. Their fixed catalogs live in
+`mods/nanocell/src/phase_dag_adapter_v2.cpp` and
+`mods/nanocell/src/phase_dag_adapter_v3.cpp`, compiled into
+`bruce_phase_dag_nanocell` for the CLI and MCP inspector.
 
 ## Build dependency flow
 
@@ -67,10 +72,15 @@ flowchart LR
     CMake --> Runtime[bruce_mod_runtime]
     CMake --> Language[bruce_mod_language when enabled]
     CMake --> NanoCell[bruce_mod_nanocell when enabled]
+    CMake --> MCP[bruce_mod_mcp when enabled with NanoCell]
+    NanoCell --> DAG[bruce_phase_dag_nanocell V2/V3]
+    DAG --> MCP
     Core --> Runtime
     Runtime --> Catalog[bruce_mod_catalog]
     Language --> Catalog
     NanoCell --> Catalog
+    MCP --> Catalog
+    MCP --> CLI
     Core --> CLI[bruce]
     Catalog --> CLI
     Core --> Builder[bruce-mod-builder]
@@ -85,10 +95,69 @@ Python integration and mod workflows. CI configures a Release Ninja build on
 Ubuntu 24.04, runs CTest, verifies generated CLI artifacts in a temporary copy,
 checks local documentation links, and scans for secrets.
 
-**NOT DERIVABLE FROM THE REPOSITORY:** a current static Cockpit target. The
-configuration declares only `BRUCE_BUILD_MOD_LANGUAGE` and
-`BRUCE_BUILD_MOD_NANOCELL`; do not document a `BRUCE_BUILD_MOD_COCKPIT` switch
-or an available Cockpit command as part of the current build.
+## MCP Inspector
+
+**IMPLEMENTIERT UND BELEGT:** `BRUCE_BUILD_MOD_MCP=ON` configures
+the optional static `bruce_mod_mcp` and requires `BRUCE_BUILD_MOD_NANOCELL=ON`.
+Its `bruce mcp [--port 1..65535]` command defaults to 8080 and binds only
+`127.0.0.1`; an unavailable requested port causes controlled failure.
+Only `GET /`, `GET /api/v1/health`, `POST /api/v1/inspect`,
+`POST /api/v3/inspect` and `POST /api/dag-scheduler-v4/inspect` are registered.
+
+The read-only Phase-DAG V2 and Phase-DAG V3 inspector uses fixed NanoCell
+catalogs: NanoCell/Evidence-Gate for V2 and NanoCell/Payload-Gate for V3.
+`POST /api/v1/inspect` retains its 1 MiB (1048576 bytes) limit and response
+model; `POST /api/v3/inspect` accepts V3 bundles up to 5 MiB (5242880 bytes).
+These two routes replay existing bundles; no new DAG executions, no jobs or
+imports. Wrong-version bundles are rejected. The browser requires explicit
+selection of Phase-DAG V2, Phase-DAG V3 or DAG-Scheduler V4, with no automatic
+detection from file bytes. Its JSON and DOM expose metadata only;
+`request_bytes`, `context_bytes`, `output_bytes`, `evidence_bytes` and
+`payload_bytes` are never exposed. There are no adapter plugins.
+Replay/digest establishes bundle consistency, not author identity or a general
+mathematical proof. The 5-MiB limit does not override tighter core/catalog limits.
+
+The `mcp_inspector_*` service/server/assets remain separate from preserved,
+unbuilt historical `cockpit_assets.cpp`, `cockpit_tests.cpp` and `test_cockpit.py`.
+See the [command contract](../cli/commands.md#mcp-inspector) and
+[HTTP/DOM contracts](../../tests/mods/mcp/test_mcp_inspector.py).
+
+**IMPLEMENTIERT UND BELEGT:** DAG-Scheduler V4 is a separate read-only
+structural inspector at exact `POST /api/dag-scheduler-v4/inspect`, with
+explicit selection and a 5 MiB (5242880 bytes) limit on local `127.0.0.1`.
+It checks the V4 header, complete bundle digest, decoding and canonical
+repacking; no callbacks and no re-execution. `VALID` confirms structural
+bundle consistency only, not successful replay, callback purity, author
+identity or a mathematical proof. A structurally valid alteration with a
+recomputed digest may pass; the inspector does not establish that the recorded
+receipts or trace were executed. Phase-DAG V2/V3 keep their existing
+replay-based routes and independent 1-MiB-V2/5-MiB-V3 limits.
+
+V4 JSON and text-safe DOM show metadata only: `scheduler_version` is
+`dag-scheduler-v2`; the overview contains DAG ID, start/receipt budgets and
+node count. Nodes expose IDs, dependencies, `callback_id`, `request_size`
+and `request_digest`; receipts add outcome/failure code and direct input
+references (`producer_node_id`, `result_code`, `payload_size`, `payload_digest`),
+plus output version, result code, size and digest or null. Trace entries
+contain event and node ID. V4 has no `scheduler_explanation`; the V3 logical
+explanation stays hidden and cleared when V4 is selected. No request,
+context, output, evidence, input or payload bytes, hex/base64 encodings,
+source paths or raw bundle text are returned. Bundles are local confidential
+artifacts containing raw requests and payloads; metadata filtering provides
+no encryption and no authentication or access control. Bytes remain only in
+request memory with no persistence. Reset/version change clears selection
+and views and invalidates pending replies; release does not promise physical
+memory erasure.
+
+There are no new DAG executions, no jobs or imports, no adapter plugins,
+no replay buttons or routes, no persistent uploads, no payload download,
+no dynamic plugins and no external access. Free language, a general prover,
+GPU/network execution, external payload stores, Redis/Language management,
+process starts, filesystem browsing and general runtime orchestration remain
+**DOKUMENTIERT / KONZEPT**. The unchanged CLI example verifier covers MCP
+argument parsing and V2/V3 examples; V4 structural HTTP/DOM/privacy evidence
+comes from the dedicated MCP contracts, not generated examples.
+
 
 ## Conceptual execution flow
 
@@ -110,22 +179,23 @@ exit status means the command completed its processing path; readers must
 interpret the result status, scope, completeness, and evidence fields before
 making mathematical claims.
 
-## Static mods and runtime data mods
+## Built-in and installable Mods
 
-| Mechanism | Static Language/NanoCell mods | Runtime data mods |
-| --- | --- | --- |
-| How supplied | C++ sources compiled by CMake | Signed, schema-checked package data |
-| How selected | `BRUCE_BUILD_MOD_LANGUAGE` or `BRUCE_BUILD_MOD_NANOCELL` at configure time | Explicit `mods` lifecycle commands and an explicitly selected registry |
-| What changes | Which built-in command capabilities are registered | The active Tree routing data |
-| Executable code from package | No | No |
-| Activation | Built into the configured executable | Installed packages remain inactive until explicit activation |
-| Runtime effect | Fixed C++ implementation runs | `route` selects a template deterministically; it does not execute that template |
+| Mechanism | Built-in Language/NanoCell/MCP | Installed Data Mod | Installed Logic Mod |
+| --- | --- | --- | --- |
+| How supplied | C++ sources compiled by CMake | Signed, schema-checked routing package | Signed routing package plus one hash-bound worker |
+| How selected | CMake build options | Explicit local `mods` lifecycle | Same explicit local lifecycle |
+| Runtime effect | Fixed C++ implementation | `route` selects a template | `route` selects; `mods run` uses the isolated worker host |
+| Activation | Build-time availability | Inactive install, explicit activation | Inactive install, explicit activation |
 
-The runtime data-mod builder reads canonical manifest, Tree, and golden-case
-JSON and a protected local seed, then emits a package plus trust-store output.
-It does not install or activate the result. The reproducible example under
+The local builder reads canonical Data inputs or a prepared Logic source,
+plus an explicit protected signing file, then emits a package and trust store.
+It does not install or activate the result and invokes no compiler or shell.
+The common installed host retains side-by-side versions under an explicit
+user-owned root. The reproducible Data example under
 [`examples/local-data-mods/`](../../examples/local-data-mods/math-rational-power/README.md)
-demonstrates the full explicit lifecycle.
+demonstrates the explicit lifecycle. The complete contract is
+[Local Mod Lifecycle V2](../contracts/10-local-mod-lifecycle-v2.md).
 
 ## Documentation and evidence authority
 
@@ -145,7 +215,16 @@ demonstrates the full explicit lifecycle.
 - `docs/cli/source-index.md`, `docs/cli/examples.json`, and
   `docs/cli/validation.md` are generated CLI artifacts. Do not edit them by
   hand; use `docs/cli/verify_examples.py` in a temporary copy.
-- `runs/`, `build*/`, and `.worktrees/` are ignored local working areas.
+- `build*/` are local generated build products. A local executable is
+  implementation evidence only for the exact source revision and configuration
+  that produced it; it is not current-source evidence after relevant source or
+  build changes. Use `scripts/verify_current_source.sh` from a safe native path
+  for a fresh verification.
+- `build-host-deps/` is a local dependency root used by the supplied wrapper,
+  not a source-of-truth implementation directory. The wrapper requires a path
+  without `:` or whitespace because the bundled `pkg-config` otherwise cannot
+  construct safe search paths.
+- `runs/` and `.worktrees/` are ignored local working areas.
 - `runs/retired-semantic-index/` is a reversible archive of a Python
   experiment, not an active build component.
 - `benchmarks/` keeps only compact, versioned reports and profiles in Git; raw

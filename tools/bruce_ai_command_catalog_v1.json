@@ -1,0 +1,244 @@
+{
+  "schema": "bruce-ai-command-catalog-v1",
+  "entries": [
+    {
+      "command_id": "calculate", "argv": ["calculate"],
+      "synopsis": "Berechne exakt mit ganzen oder rationalen Zahlen: plus, minus, mal, geteilt durch, Rest und Potenz. Begrenzte Rechenaufgaben mit calculate. Berechne modulare Potenzen: Basis hoch Exponent modulo positiver Modulus.",
+      "syntax": "calculate --op OP --left NUMBER --right NUMBER [--domain bigint|rational] [--max-bits N] [--modulus N]",
+      "side_effect": "compute",
+      "arguments": {"type": "object", "additionalProperties": false, "required": ["op", "left", "right"], "properties": {
+        "op": {"type": "string", "enum": ["add", "sub", "mul", "div", "divmod", "pow", "modpow"]},
+        "left": {"type": "string", "minLength": 1, "maxLength": 16384, "pattern": "^-?[0-9]+(?:/[0-9]+)?$"},
+        "right": {"type": "string", "minLength": 1, "maxLength": 16384, "pattern": "^-?[0-9]+(?:/[0-9]+)?$"},
+        "domain": {"type": "string", "enum": ["bigint", "rational"]},
+        "max_bits": {"type": "integer", "minimum": 1, "maximum": 16384},
+        "modulus": {"type": "string", "minLength": 1, "maxLength": 16384, "pattern": "^0*[1-9][0-9]*$"}
+      }},
+      "sources": ["apps/bruce_cli.cpp", "tests/integration/test_exact_domains.py"]
+    },
+    {
+      "command_id": "coordinate", "argv": ["coordinate"],
+      "synopsis": "Z-Ordnung: nichtnegative uint64-Koordinaten x,y paaren oder z entpaaren. Entweder x und y oder ausschließlich z angeben.",
+      "syntax": "coordinate --x N --y N | coordinate --z N", "side_effect": "compute",
+      "arguments": {"type": "object", "additionalProperties": false, "required": [], "properties": {
+        "x": {"type": "string", "minLength": 1, "maxLength": 20, "pattern": "^[0-9]+$"},
+        "y": {"type": "string", "minLength": 1, "maxLength": 20, "pattern": "^[0-9]+$"},
+        "z": {"type": "string", "minLength": 1, "maxLength": 20, "pattern": "^[0-9]+$"}
+      }},
+      "sources": ["apps/bruce_cli.cpp", "tests/integration/test_cli.py"]
+    },
+    {
+      "command_id": "grid", "argv": ["grid"],
+      "synopsis": "Expliziten Grid-Pfad lokal in exact-, modular- oder metric-Modus auswerten, ohne Export. stage erfordert scaled-exponential-v1, modulus erfordert modular.",
+      "syntax": "grid --path X,Y[/X,Y] [--mode MODE] [--rule RULE] [--stage N] [--modulus N] [--max-bits N] [--zero-zero one|stop]", "side_effect": "compute",
+      "arguments": {"type": "object", "additionalProperties": false, "required": ["path"], "properties": {
+        "path": {"type": "string", "minLength": 1, "maxLength": 4096, "pattern": "^[0-9]+,[0-9]+(?:/[0-9]+,[0-9]+)*$"},
+        "mode": {"type": "string", "enum": ["exact", "modular", "metric"]},
+        "rule": {"type": "string", "enum": ["leaf-local-power", "scaled-exponential-v1"]},
+        "stage": {"type": "integer", "minimum": 0, "maximum": 57},
+        "modulus": {"type": "string", "minLength": 1, "maxLength": 20, "pattern": "^0*[1-9][0-9]*$"},
+        "max_bits": {"type": "integer", "minimum": 1, "maximum": 64},
+        "zero_zero": {"type": "string", "enum": ["one", "stop"]}
+      }},
+      "sources": ["apps/bruce_cli.cpp", "tests/integration/test_grid_replay.py"]
+    },
+    {
+      "command_id": "grid-batch", "argv": ["grid-batch"],
+      "synopsis": "Explizite, durch Semikolon getrennte Grid-Pfade begrenzt auswerten. Optionaler Cache und Query-Grenze; keine Ausgabedatei. stage erfordert scaled-exponential-v1, modulus erfordert modular.",
+      "syntax": "grid-batch --paths PATH;PATH [--mode MODE] [--rule RULE] [--stage N] [--modulus N] [--max-bits N] [--zero-zero one|stop] [--cache-bytes N] [--max-query-steps N]", "side_effect": "compute",
+      "arguments": {"type": "object", "additionalProperties": false, "required": ["paths"], "properties": {
+        "paths": {"type": "string", "minLength": 1, "maxLength": 65536, "pattern": "^[0-9]+,[0-9]+(?:/[0-9]+,[0-9]+)*(?:;[0-9]+,[0-9]+(?:/[0-9]+,[0-9]+)*)*$"},
+        "mode": {"type": "string", "enum": ["exact", "modular", "metric"]},
+        "rule": {"type": "string", "enum": ["leaf-local-power", "scaled-exponential-v1"]},
+        "stage": {"type": "integer", "minimum": 0, "maximum": 57},
+        "modulus": {"type": "string", "minLength": 1, "maxLength": 20, "pattern": "^0*[1-9][0-9]*$"},
+        "max_bits": {"type": "integer", "minimum": 1, "maximum": 64},
+        "zero_zero": {"type": "string", "enum": ["one", "stop"]},
+        "cache_bytes": {"type": "integer", "minimum": 0, "maximum": 1048576},
+        "max_query_steps": {"type": "integer", "minimum": 0, "maximum": 1024}
+      }},
+      "sources": ["apps/bruce_cli.cpp", "tests/integration/test_grid_resume.py", "tests/integration/test_grid_cache.py"]
+    },
+    {
+      "command_id": "grid-resume", "argv": ["grid-resume"],
+      "synopsis": "Vorhandenes partielles Grid-Batch-Bundle mit expliziter zusätzlicher Query-Grenze lokal fortsetzen; ohne Veröffentlichung einer Datei.",
+      "syntax": "grid-resume --from-run PARTIAL --additional-queries N", "side_effect": "compute",
+      "arguments": {"type": "object", "additionalProperties": false, "required": ["from_run", "additional_queries"], "properties": {
+        "from_run": {"type": "string", "format": "input-file", "minLength": 1, "maxLength": 4096},
+        "additional_queries": {"type": "integer", "minimum": 1, "maximum": 1024}
+      }},
+      "sources": ["apps/bruce_cli.cpp", "tests/integration/test_grid_resume.py"]
+    },
+    {
+      "command_id": "compare", "argv": ["compare"],
+      "synopsis": "Rationale Funktionen über Q anhand expliziter Koeffizienten in aufsteigender Reihenfolge vergleichen. Definitionsbereiche und begrenzte Witness-Verfahren bleiben BRUCE maßgeblich.",
+      "syntax": "compare --left-numerator COEFFS --left-denominator COEFFS --right-numerator COEFFS --right-denominator COEFFS [--domain-policy POLICY] [--max-bits N] [--max-operations N]", "side_effect": "compute",
+      "arguments": {"type": "object", "additionalProperties": false, "required": ["left_numerator", "left_denominator", "right_numerator", "right_denominator"], "properties": {
+        "left_numerator": {"type": "string", "minLength": 1, "maxLength": 4096, "pattern": "^-?[0-9]+(?:,-?[0-9]+)*$"},
+        "left_denominator": {"type": "string", "minLength": 1, "maxLength": 4096, "pattern": "^-?[0-9]+(?:,-?[0-9]+)*$"},
+        "right_numerator": {"type": "string", "minLength": 1, "maxLength": 4096, "pattern": "^-?[0-9]+(?:,-?[0-9]+)*$"},
+        "right_denominator": {"type": "string", "minLength": 1, "maxLength": 4096, "pattern": "^-?[0-9]+(?:,-?[0-9]+)*$"},
+        "domain_policy": {"type": "string", "enum": ["quadratic", "modular", "modular-witness"]},
+        "max_bits": {"type": "integer", "minimum": 1, "maximum": 16384},
+        "max_operations": {"type": "integer", "minimum": 1, "maximum": 1000000}
+      }},
+      "sources": ["apps/bruce_cli.cpp", "tests/integration/test_fraction_compare.py", "tests/integration/test_modular_compare.py"]
+    },
+    {
+      "command_id": "research", "argv": ["research"],
+      "synopsis": "Begrenzte affine Forschung auf expliziter Trainings-CSV und optionaler Holdout-CSV. Kandidaten, Operationen, Trace und Resultate begrenzen; keine Datei schreiben und keinen allgemeinen Beweis behaupten. Bei domain bigint ist max_denominator nur 1; bei rational 1 bis 16.",
+      "syntax": "research --train FILE [--holdout FILE] [--domain int64|bigint|rational] [--min N] [--max N] [--max-bits N] [--max-denominator N] [--max-candidates N] [--max-operations N] [--max-trace N] [--max-results N] [--max-trace-bytes N]", "side_effect": "compute",
+      "arguments": {"type": "object", "additionalProperties": false, "required": ["train"], "properties": {
+        "train": {"type": "string", "format": "input-file", "minLength": 1, "maxLength": 4096},
+        "holdout": {"type": "string", "format": "input-file", "minLength": 1, "maxLength": 4096},
+        "domain": {"type": "string", "enum": ["int64", "bigint", "rational"]},
+        "min": {"type": "string", "minLength": 1, "maxLength": 16384, "pattern": "^-?[0-9]+$"},
+        "max": {"type": "string", "minLength": 1, "maxLength": 16384, "pattern": "^-?[0-9]+$"},
+        "max_bits": {"type": "integer", "minimum": 1, "maximum": 16384},
+        "max_denominator": {"type": "integer", "minimum": 1, "maximum": 16},
+        "max_candidates": {"type": "integer", "minimum": 1, "maximum": 100000},
+        "max_operations": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "max_trace": {"type": "integer", "minimum": 2, "maximum": 100002},
+        "max_results": {"type": "integer", "minimum": 1, "maximum": 128},
+        "max_trace_bytes": {"type": "integer", "minimum": 256, "maximum": 1048576}
+      }},
+      "sources": ["apps/bruce_cli.cpp", "tests/integration/test_cli.py", "tests/integration/test_exact_domains.py"]
+    },
+    {
+      "command_id": "inspect-run", "argv": ["inspect-run"],
+      "synopsis": "Vorhandenes BRUCE-Bundle lesend prüfen und Lifecycle, Status und Replay-Prüfung berichten.",
+      "syntax": "inspect-run RUN", "side_effect": "read",
+      "arguments": {"type": "object", "additionalProperties": false, "required": ["run"], "properties": {
+        "run": {"type": "string", "format": "input-file", "minLength": 1, "maxLength": 4096}
+      }},
+      "sources": ["apps/bruce_cli.cpp", "tests/integration/test_run_inspection.py"]
+    },
+    {
+      "command_id": "replay", "argv": ["replay"],
+      "synopsis": "Vorhandenes BRUCE-Bundle lokal reproduzieren und seine eingebetteten Daten und Digests prüfen; keine Veröffentlichung.",
+      "syntax": "replay RUN", "side_effect": "compute",
+      "arguments": {"type": "object", "additionalProperties": false, "required": ["run"], "properties": {
+        "run": {"type": "string", "format": "input-file", "minLength": 1, "maxLength": 4096}
+      }},
+      "sources": ["apps/bruce_cli.cpp", "tests/integration/test_run_inspection.py", "tests/integration/test_grid_replay.py"]
+    },
+    {
+      "command_id": "assess-run", "argv": ["assess-run"],
+      "synopsis": "Vorhandenen BRUCE-Lauf lokal bewerten; Laufstatus ist keine allgemeine mathematische Beweisbehauptung.",
+      "syntax": "assess-run RUN", "side_effect": "read",
+      "arguments": {"type": "object", "additionalProperties": false, "required": ["run"], "properties": {
+        "run": {"type": "string", "format": "input-file", "minLength": 1, "maxLength": 4096}
+      }},
+      "sources": ["apps/bruce_cli.cpp", "tests/integration/test_result_assessment.py"]
+    },
+    {
+      "command_id": "gate-run", "argv": ["gate-run"],
+      "synopsis": "Application-Gates eines expliziten lokalen BRUCE-Bundles prüfen. Keine Freigabe, Trust-Transition oder Regelaktivierung.",
+      "syntax": "gate-run RUN", "side_effect": "read",
+      "arguments": {"type": "object", "additionalProperties": false, "required": ["run"], "properties": {
+        "run": {"type": "string", "format": "input-file", "minLength": 1, "maxLength": 4096}
+      }},
+      "sources": ["apps/bruce_cli.cpp", "tests/integration/test_common_runtime_compatibility_v1_stage1_gate.py"]
+    },
+    {
+      "command_id": "signed-affine-dag-v1-merge", "argv": ["signed-affine-dag-v1", "demo", "merge"],
+      "synopsis": "Feste Signed-Affine-DAG-Demo: zwei Pfade zum Wert 4 mit Provenienz und signierter Balance 2. Keine freien Graphen oder Dateien.",
+      "syntax": "signed-affine-dag-v1 demo merge", "side_effect": "fixed-demo",
+      "arguments": {"type": "object", "additionalProperties": false, "required": [], "properties": {}},
+      "sources": ["apps/signed_affine_dag_v1_cli.hpp", "tests/integration/test_signed_affine_dag_v1_cli.py"]
+    },
+    {
+      "command_id": "signed-affine-dag-v1-cancellation", "argv": ["signed-affine-dag-v1", "demo", "cancellation"],
+      "synopsis": "Feste Signed-Affine-DAG-Demo: beide Provenienzen am Wert 4 bleiben bei signierter Balance 0 erhalten. Keine freien Graphen oder Dateien.",
+      "syntax": "signed-affine-dag-v1 demo cancellation", "side_effect": "fixed-demo",
+      "arguments": {"type": "object", "additionalProperties": false, "required": [], "properties": {}},
+      "sources": ["apps/signed_affine_dag_v1_cli.hpp", "tests/integration/test_signed_affine_dag_v1_cli.py"]
+    },
+    {
+      "command_id": "signed-affine-relation-v1-merge", "argv": ["signed-affine-relation-v1", "demo", "merge"],
+      "synopsis": "Feste lokale Toy-Witness-Brücke vom Signed-Affine-DAG zur Relation, mit unabhängig geprüftem öffentlichen Kandidaten 2. Kein DLP-Solver.",
+      "syntax": "signed-affine-relation-v1 demo merge", "side_effect": "fixed-demo",
+      "arguments": {"type": "object", "additionalProperties": false, "required": [], "properties": {}},
+      "sources": ["apps/signed_affine_relation_v1_cli.hpp", "tests/integration/test_signed_affine_relation_v1_cli.py"]
+    },
+    {
+      "command_id": "toy-relation-v1-collision", "argv": ["toy-relation-v1", "demo", "collision"],
+      "synopsis": "Feste Toy-Gruppen-Kollision bei 53 mit unabhängig geprüftem öffentlichem Kandidaten 17. Keine Geheimnisrekonstruktion oder echte Kryptographie.",
+      "syntax": "toy-relation-v1 demo collision", "side_effect": "fixed-demo",
+      "arguments": {"type": "object", "additionalProperties": false, "required": [], "properties": {}},
+      "sources": ["apps/toy_relation_v1_cli.hpp", "tests/integration/test_toy_relation_v1_cli.py"]
+    },
+    {
+      "command_id": "toy-relation-v1-noninvertible", "argv": ["toy-relation-v1", "demo", "noninvertible"],
+      "synopsis": "Feste Toy-Kollision mit nichtinvertierbarer Differenz; berichtet NO_UNIQUE_RELATION und keinen Kandidaten.",
+      "syntax": "toy-relation-v1 demo noninvertible", "side_effect": "fixed-demo",
+      "arguments": {"type": "object", "additionalProperties": false, "required": [], "properties": {}},
+      "sources": ["apps/toy_relation_v1_cli.hpp", "tests/integration/test_toy_relation_v1_cli.py"]
+    },
+    {
+      "command_id": "dag-scheduler-v1-mixed", "argv": ["dag-scheduler-v1", "demo", "mixed"],
+      "synopsis": "Feste serielle Scheduler-V1-Demo mit READY, Fehler und blockierten Knoten; deterministische Belege ohne freie Callbacks, Dateien oder Threads.",
+      "syntax": "dag-scheduler-v1 demo mixed", "side_effect": "fixed-demo",
+      "arguments": {"type": "object", "additionalProperties": false, "required": [], "properties": {}},
+      "sources": ["apps/dag_scheduler_v1_cli.hpp", "tests/integration/test_dag_scheduler_v1_cli.py"]
+    },
+    {
+      "command_id": "dag-scheduler-v1-budget", "argv": ["dag-scheduler-v1", "demo", "budget"],
+      "synopsis": "Feste serielle Scheduler-V1-Demo für erschöpftes Startbudget. Keine freien Graphen, Ressourcenbudgets oder Dateien.",
+      "syntax": "dag-scheduler-v1 demo budget", "side_effect": "fixed-demo",
+      "arguments": {"type": "object", "additionalProperties": false, "required": [], "properties": {}},
+      "sources": ["apps/dag_scheduler_v1_cli.hpp", "tests/integration/test_dag_scheduler_v1_cli.py"]
+    },
+    {
+      "command_id": "dag-scheduler-v1-cancelled", "argv": ["dag-scheduler-v1", "demo", "cancelled"],
+      "synopsis": "Feste serielle Scheduler-V1-Demo für kontrollierten Abbruch und deterministische Terminalbelege.",
+      "syntax": "dag-scheduler-v1 demo cancelled", "side_effect": "fixed-demo",
+      "arguments": {"type": "object", "additionalProperties": false, "required": [], "properties": {}},
+      "sources": ["apps/dag_scheduler_v1_cli.hpp", "tests/integration/test_dag_scheduler_v1_cli.py"]
+    },
+    {
+      "command_id": "dag-scheduler-v2-flow", "argv": ["dag-scheduler-v2", "demo", "flow"],
+      "synopsis": "Feste serielle Vier-Knoten-Demo mit begrenztem direktem Byte-Payload-Fluss. JSON zeigt Größen und Digests ohne Roh-Payloads; keine Dateien.",
+      "syntax": "dag-scheduler-v2 demo flow", "side_effect": "fixed-demo",
+      "arguments": {"type": "object", "additionalProperties": false, "required": [], "properties": {}},
+      "sources": ["apps/dag_scheduler_v2_cli.hpp", "tests/integration/test_dag_scheduler_v2_cli.py"]
+    },
+    {
+      "command_id": "mods-list", "argv": ["mods", "list"],
+      "synopsis": "Statische Mods und optional einen ausdrücklich benannten vorhandenen lokalen Mod-Katalog lesend auflisten.",
+      "syntax": "mods list [--mod-root ROOT]", "side_effect": "read",
+      "arguments": {"type": "object", "additionalProperties": false, "required": [], "properties": {
+        "mod_root": {"type": "string", "format": "input-directory", "minLength": 1, "maxLength": 4096}
+      }},
+      "sources": ["apps/runtime_mod_cli.hpp", "tests/integration/test_runtime_mods.py"]
+    },
+    {
+      "command_id": "mods-inspect", "argv": ["mods", "inspect"],
+      "synopsis": "Explizites lokales Data/Logic-Mod-Paket lesend inspizieren; keine Installation, Aktivierung oder Worker-Ausführung.",
+      "syntax": "mods inspect PACKAGE", "side_effect": "read",
+      "arguments": {"type": "object", "additionalProperties": false, "required": ["package"], "properties": {
+        "package": {"type": "string", "format": "input-file", "minLength": 1, "maxLength": 4096}
+      }},
+      "sources": ["apps/runtime_mod_cli.hpp", "tests/integration/test_mod_package_inspection.py"]
+    },
+    {
+      "command_id": "mods-verify", "argv": ["mods", "verify"],
+      "synopsis": "Mod-Paket gegen einen expliziten lokalen Trust-Store verifizieren. Liest Dateien, ohne ein Paket zu installieren oder Trust zu ändern.",
+      "syntax": "mods verify PACKAGE --trust-store PATH", "side_effect": "read",
+      "arguments": {"type": "object", "additionalProperties": false, "required": ["package", "trust_store"], "properties": {
+        "package": {"type": "string", "format": "input-file", "minLength": 1, "maxLength": 4096},
+        "trust_store": {"type": "string", "format": "input-file", "minLength": 1, "maxLength": 4096}
+      }},
+      "sources": ["apps/runtime_mod_cli.hpp", "tests/integration/test_runtime_mods.py"]
+    },
+    {
+      "command_id": "mods-trust-status", "argv": ["mods", "trust", "status"],
+      "synopsis": "Vorhandenen lokalen Runtime-Trust-Zustand lesen. Kein Import, Prepare, Verify-Übergang, Activate oder Rollback.",
+      "syntax": "mods trust status --mod-root ROOT", "side_effect": "read",
+      "arguments": {"type": "object", "additionalProperties": false, "required": ["mod_root"], "properties": {
+        "mod_root": {"type": "string", "format": "input-directory", "minLength": 1, "maxLength": 4096}
+      }},
+      "sources": ["apps/runtime_mod_cli.hpp", "tests/integration/test_runtime_mods.py"]
+    }
+  ]
+}

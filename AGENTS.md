@@ -30,10 +30,11 @@ Implementierungsbehauptung. Kennzeichne Ergebnisse immer als:
   `docs/cli/examples.json` und `docs/cli/validation.md` nur über
   `docs/cli/verify_examples.py` in einer temporären Kopie prüfen bzw.
   aktualisieren; nicht von Hand ändern.
-- `scripts/with-host-deps.sh` nur aus einem nativen Projektpfad ohne `:`
-  ausführen. Eine GVFS-SFTP-Ansicht zerlegt die Suchpfade; der Wrapper weist
-  sie deshalb mit Exitcode 2 ab. Für die Abnahme den nativen SSH-Pfad oder
-  eine vollständige temporäre Kopie außerhalb von GVFS verwenden.
+- `scripts/with-host-deps.sh` nur aus einem nativen Projektpfad ohne `:` oder
+  Leerraum ausführen. Eine GVFS-SFTP-Ansicht oder Leerraum im Pfad kann die
+  Suchpfade des gebündelten `pkg-config` zerlegen; der Wrapper weist solche
+  Pfade deshalb mit Exitcode 2 ab. Für die Abnahme einen nativen sicheren
+  Pfad oder eine vollständige temporäre Kopie ohne diese Zeichen verwenden.
 - `runs/`, `build*/` und `.worktrees/` sind lokale, ignorierte Arbeitsbereiche.
   Das semantische Python-Index-Experiment ist reversibel unter
   `runs/retired-semantic-index/` archiviert und kein aktiver Buildbestand.

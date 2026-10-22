@@ -28,7 +28,7 @@ Countercheck + Hold-out + Replay
 Evidence / Experience Store
         |
         v
-Explanation + Research Cockpit
+Explanation + Research MCP
 ```
 
 ## Verantwortlichkeiten
@@ -39,7 +39,7 @@ Explanation + Research Cockpit
 | `coordinate` | reversible Adressen | `core` | Token, UI, Store |
 | `compatibility` | Regeln, Filter, Score, Auswahl | `core`, `coordinate` | UI, Gate-Entscheidung |
 | `token` | Tabellen, Tokens, Relationen | `core`, `compatibility` | PublishGate |
-| `math` | Strategien und Gegenchecks | `core`, `coordinate`, `evidence` | Cockpit |
+| `math` | Strategien und Gegenchecks | `core`, `coordinate`, `evidence` | MCP |
 | `evidence` | Trace, Replay, Experiences | `core` | Strategiewahl |
 | `application` | Run-Orchestrierung und Gates | alle Kernmodule | UI-Details |
 | `cli` | Ein-/Ausgabe | `application` | direkte Storemutation |
@@ -63,7 +63,7 @@ apps/bruce_cli.cpp
 
 ## Status
 
-**Zielarchitektur mit fortgeschrittenem mathematischem Teilkern (Core 0.81).** `core`, `coordinate`, `compatibility`, `math`, `evidence`, `application`, eine begrenzte `experience`-Implementierung und die CLI sind vorhanden. Token-/NanoCell-/Phase-DAG-/Cockpit-Runtime und allgemeine Gate-/Strategieverträge bleiben offen. Die oben gezeigte Zielpipeline ist noch nicht vollständig umgesetzt.
+**Zielarchitektur mit fortgeschrittenem mathematischem Teilkern (Core 0.81).** `core`, `coordinate`, `compatibility`, `math`, `evidence`, `application`, eine begrenzte `experience`-Implementierung und die CLI sind vorhanden. Token-/NanoCell-/Phase-DAG-/MCP-Runtime und allgemeine Gate-/Strategieverträge bleiben offen. Die oben gezeigte Zielpipeline ist noch nicht vollständig umgesetzt.
 
 Der [aktuelle Architekturstand mit konkreten M0–M2-Abnahmelücken](../implementation/75-current-architecture-and-milestones.md) unterscheidet ausgeführten Code und weitere Planung. Die [Versionsauswahl des Fünferportfolios](../adr/009-five-family-wire-versions.md) ist für Ausgabe, Export und Replay vereinheitlicht.
 

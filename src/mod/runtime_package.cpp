@@ -1,4 +1,5 @@
 #include "bruce/mod/runtime_package.hpp"
+#include "bruce/mod/logic_mod_plugin_v1.hpp"
 #include "bruce/core/json.hpp"
 #include "bruce/core/types.hpp"
 #include "bruce/evidence/bundle.hpp"
@@ -337,5 +338,73 @@ TreeFragmentV1 RuntimeDataModPackageV1::tree_fragment(const RuntimeModTrustStore
 std::vector<RuntimeModGoldenCaseV1> RuntimeDataModPackageV1::golden_cases(const RuntimeModTrustStoreV1& trust) const {
     verify_runtime_data_mod_package_v1(*this, trust);
     return parse_golden(golden_bytes_);
+}
+LogicModPackageV1 unpack_logic_mod_package_v1(std::string_view bytes) {
+    constexpr std::string_view header = "BRUCE_LOGIC_MOD_PLUGIN_V1\n";
+    if (bytes.size() > max_runtime_mod_package_bytes_v1) throw Error("RuntimeModPackageTooLarge");
+    if (!bytes.starts_with(header)) throw Error("InvalidLogicModContainer");
+    std::size_t offset = header.size();
+    if (take_field(bytes, offset) != "data.brucemod") throw Error("InvalidLogicModMember");
+    LogicModPackageV1 result(unpack_runtime_data_mod_package_v1(take_field(bytes, offset)));
+    if (take_field(bytes, offset) != "logic.json") throw Error("InvalidLogicModMember");
+    const auto config = parse_json(take_field(bytes, offset));
+    fields(config, {"capabilities", "template_ids", "worker_path", "worker_sha256"});
+    result.capabilities_ = strings(get(config, "capabilities"));
+    if (result.capabilities_ != std::vector<std::string>{"worker.execute"} &&
+        result.capabilities_ != std::vector<std::string>{"artifact.input.v1", "worker.execute"} &&
+        result.capabilities_ != std::vector<std::string>{"artifact.output.v1", "worker.execute"} &&
+        result.capabilities_ != std::vector<std::string>{"artifact.input.v1", "artifact.output.v1", "worker.execute"})
+        throw Error("UnsupportedLogicModCapability");
+    result.template_ids_ = strings(get(config, "template_ids"));
+    if (result.template_ids_.empty() || result.template_ids_.size() > 128) throw Error("InvalidLogicModTemplates");
+    std::string previous;
+    for (const auto& id : result.template_ids_) {
+        if (!safe_id(id) || id <= previous) throw Error("InvalidLogicModTemplates");
+        previous = id;
+    }
+    result.worker_path_ = text(get(config, "worker_path"));
+    result.worker_sha256_ = text(get(config, "worker_sha256"));
+    // One direct filename, no subdirectories, external paths or reserved members.
+    if (!safe_id(result.worker_path_) || result.worker_path_ == "data.brucemod" ||
+        result.worker_path_ == "logic.json" || result.worker_path_ == "signature.ed25519" ||
+        !hex_string(result.worker_sha256_, 32)) throw Error("InvalidLogicModWorker");
+    if (take_field(bytes, offset) != result.worker_path_) throw Error("InvalidLogicModMember");
+    result.worker_bytes_ = take_field(bytes, offset);
+    if (result.worker_bytes_.empty() || sha256(result.worker_bytes_) != result.worker_sha256_) throw Error("LogicModWorkerDigestMismatch");
+    result.unsigned_bytes_ = bytes.substr(0, offset);
+    if (take_field(bytes, offset) != "signature.ed25519") throw Error("InvalidLogicModMember");
+    result.signature_hex_ = take_field(bytes, offset);
+    if (!hex_string(result.signature_hex_, 64)) throw Error("InvalidRuntimeModSignatureEncoding");
+    if (offset + 1 != bytes.size() || bytes[offset] != '\n') throw Error("UnexpectedLogicModMember");
+    result.bytes_ = bytes;
+    result.package_digest_ = sha256(bytes);
+    return result;
+}
+void verify_logic_mod_package_v1(const LogicModPackageV1& package, const RuntimeModTrustStoreV1& trust) {
+    const auto found = trust.public_keys().find(package.manifest().signing_key_id);
+    if (found == trust.public_keys().end()) throw Error("RuntimeModSigningKeyUntrusted");
+    const auto public_bytes = decode_hex(found->second);
+    const auto signature = decode_hex(package.signature_hex_);
+    std::unique_ptr<EVP_PKEY, decltype(&EVP_PKEY_free)> key(EVP_PKEY_new_raw_public_key(EVP_PKEY_ED25519, nullptr, public_bytes.data(), public_bytes.size()), EVP_PKEY_free);
+    std::unique_ptr<EVP_MD_CTX, decltype(&EVP_MD_CTX_free)> ctx(EVP_MD_CTX_new(), EVP_MD_CTX_free);
+    if (!key || !ctx || EVP_DigestVerifyInit(ctx.get(), nullptr, nullptr, nullptr, key.get()) != 1) throw Error("RuntimeModCryptoFailure");
+    if (EVP_DigestVerify(ctx.get(), signature.data(), signature.size(), reinterpret_cast<const unsigned char*>(package.unsigned_bytes_.data()), package.unsigned_bytes_.size()) != 1) throw Error("RuntimeModSignatureInvalid");
+    verify_runtime_data_mod_package_v1(package.data_, trust);
+    std::set<std::string> templates;
+    for (const auto& node : package.data_.tree_fragment(trust).nodes)
+        if (!node.template_id.empty()) templates.insert(node.template_id);
+    if (std::vector<std::string>(templates.begin(), templates.end()) != package.template_ids_) throw Error("LogicModTemplateMismatch");
+}
+std::string LogicModPackageV1::worker_bytes(const RuntimeModTrustStoreV1& trust) const {
+    verify_logic_mod_package_v1(*this, trust);
+    return worker_bytes_;
+}
+TreeFragmentV1 LogicModPackageV1::tree_fragment(const RuntimeModTrustStoreV1& trust) const {
+    verify_logic_mod_package_v1(*this, trust);
+    return data_.tree_fragment(trust);
+}
+std::vector<RuntimeModGoldenCaseV1> LogicModPackageV1::golden_cases(const RuntimeModTrustStoreV1& trust) const {
+    verify_logic_mod_package_v1(*this, trust);
+    return data_.golden_cases(trust);
 }
 }

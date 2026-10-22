@@ -55,21 +55,61 @@ with tempfile.TemporaryDirectory(prefix='bruce-cli-reference-') as directory:
         'many.rules': 'BRUCE_RULES_V1\nsnapshot many\n' + ''.join(f'rule r{i} positive value ge 0 0 1 manual -\n' for i in range(128)),
         'candidates.csv': 'id,domain,layer,x,y,value\n1,demo,0,2,6,64\n2,demo,0,4,3,64\n',
         'nanocell-context.txt': 'nanocell-reference-context-v1',
+        'phase-context-a.txt': 'nanocell-reference-context-v1',
+        'phase-context-b.txt': 'private-phase-context-v1',
+        'phase-dag-v2.spec': (
+            'BRUCE_PHASE_DAG_SPEC_V1\ndag-id=cli-example\nmax-started-nodes=3\n'
+            'max-receipt-bytes=65536\nmax-trace-entries=32\n\n'
+            'node=a\ndepends=\ncore=1020a54050607080\nactive-index=2\n'
+            'context-id=reference.context_1\ncontext-file=phase-context-a.txt\n'
+            'technique=masked-match-v1\nmax-operations=16\nmax-trace-entries=18\n\n'
+            'node=b\ndepends=a\ncore=1020a54050607080\nactive-index=2\n'
+            'context-id=private.context_1\ncontext-file=phase-context-b.txt\n'
+            'technique=rotate-match-v1\nmax-operations=16\nmax-trace-entries=18\n\n'
+            'node=gate\ndepends=a,b\nadapter=evidence-gate-v1\n'),
+        'phase-dag-v2-invalid.spec': 'BRUCE_PHASE_DAG_SPEC_INVALID\n',
+        'phase-context-v3.txt': 'nanocell-reference-context-v1',
+        'phase-dag-v3.spec': (
+            'BRUCE_PHASE_DAG_SPEC_V3\ndag-id=cli-example-v3\nmax-started-nodes=3\n'
+            'max-receipt-bytes=65536\nmax-trace-entries=32\n\n'
+            'node=a\ndepends=\ncore=1020a54050607080\nactive-index=2\n'
+            'context-id=reference.context_1\ncontext-file=phase-context-v3.txt\n'
+            'technique=masked-match-v1\nmax-operations=16\nmax-trace-entries=18\n\n'
+            'node=gate1\ndepends=a\nadapter=payload-gate-v1\n\n'
+            'node=gate2\ndepends=gate1\nadapter=payload-gate-v1\n'),
+        'phase-dag-v3-invalid.spec': 'BRUCE_PHASE_DAG_SPEC_V1\n',
+        # Public RFC 8032 vector 2; no private seed is needed for trust rotation.
+        'test-only-next-trust.pub': (
+            'BRUCE_RUNTIME_MOD_TRUSTSTORE_V1\n'
+            'test-next-rfc8032:3d4017c3e843895a92b70aa74d1b7ebc9c982ccf2ec4968cc0cd55f12af4660c\n'),
+
     }.items():
         (work / name).write_text(text)
     inputs = {p.name: p.read_text() for p in sorted(work.iterdir())}
+    call('mcp-invalid-port', ['mcp', '--port', '0'], 2, {'error': 'InvalidMcpPort'})
+    call('mcp-extra-arguments', ['mcp', '--jobs'], 2, {'error': 'InvalidMcpArguments'})
     version = call('version', ['--version'])
     assert version['version'] == '0.102.0'
     # Public test-only RFC 8032 fixtures. No fixture key is implicitly trusted.
     fixture_dir = ROOT / 'tests/fixtures/runtime_mods'
     (work / 'test-data.brucemod').write_bytes((fixture_dir / 'math-rational-power-v1.brucemod').read_bytes())
     (work / 'test-only-trust.pub').write_bytes((fixture_dir / 'test-truststore-v1.pub').read_bytes())
+    for name in ('test-only-trust.pub', 'test-only-next-trust.pub'):
+        (work / name).chmod(0o600)
+    call('mods-inspect', ['mods', 'inspect', 'test-data.brucemod'],
+         expected={'contract': 'mod-package-inspection-v2', 'kind': 'data'})
     call('mods-verify', ['mods', 'verify', 'test-data.brucemod', '--trust-store', 'test-only-trust.pub'],
-         expected={'verified': True})
+         expected={'contract': 'mod-package-verification-v2', 'verified': True})
+    builtin_catalog = call('mods-list-builtins', ['mods', 'list'],
+                           expected={'contract': 'bruce-mod-catalog-v2'})
+    assert [entry['id'] for entry in builtin_catalog['entries']] == ['language', 'mcp', 'nanocell']
     installed = call('mods-install', ['mods', 'install', 'test-data.brucemod', '--mod-root', 'runtime-mods',
         '--trust-store', 'test-only-trust.pub'])
-    assert installed['records'][0]['state'] == 'installed_inactive'
+    installed_entry = next(entry for entry in installed['entries'] if entry['id'] == 'user.math-rational-power')
+    assert installed_entry['lifecycle_state'] == 'installed_inactive'
     call('mods-list', ['mods', 'list', '--mod-root', 'runtime-mods'])
+    call('mods-status', ['mods', 'status', 'user.math-rational-power', '--mod-root', 'runtime-mods'],
+         expected={'contract': 'bruce-mod-catalog-v2'})
     call('route-inactive', ['route', '--text', '3/4 hoch 2', '--mod-root', 'runtime-mods'],
          expected={'status': 'UNKNOWN', 'selected_template': None})
     call('mods-activate', ['mods', 'activate', 'user.math-rational-power', '1.0.0', '--mod-root', 'runtime-mods'])
@@ -77,10 +117,89 @@ with tempfile.TemporaryDirectory(prefix='bruce-cli-reference-') as directory:
          expected={'status': 'MATCHED', 'selected_template': 'math.rational.power.v1'})
     assert routed['candidate_addresses'] == [[1, 1, 5]]
     assert call('route-replay', ['route', 'replay', 'route.report', '--mod-root', 'runtime-mods']) == routed
+    routed_v2 = call('route-active-details', ['route', '--text', '3/4 hoch 2', '--mod-root',
+        'runtime-mods', '--output', 'route-v2.report', '--mod-details'],
+        expected={'contract': 'route-report-v2', 'status': 'MATCHED',
+                  'selected_owner.kind': 'data'})
+    assert call('route-replay-details', ['route', 'replay', 'route-v2.report', '--mod-root',
+        'runtime-mods', '--mod-details']) == routed_v2
     call('mods-disable', ['mods', 'disable', 'user.math-rational-power', '--mod-root', 'runtime-mods'])
     call('route-disabled', ['route', '--text', '3/4 hoch 2', '--mod-root', 'runtime-mods'], expected={'status': 'UNKNOWN'})
     call('route-stale-report', ['route', 'replay', 'route.report', '--mod-root', 'runtime-mods'],
          code=2, expected={'error': 'RouteRegistryDigestMismatch'})
+    # A distinct temporary root isolates the generation workflow from V1 routing.
+    call('trust-example-install', ['mods', 'install', 'test-data.brucemod',
+        '--mod-root', 'trust-example-mods', '--trust-store', 'test-only-trust.pub'])
+    call('trust-example-activate-mod', ['mods', 'activate', 'user.math-rational-power',
+        '1.0.0', '--mod-root', 'trust-example-mods'])
+    def trust(label, action, *extra, code=0, expected=None):
+        return call(label, ['mods', 'trust', action, *extra, '--mod-root',
+                           'trust-example-mods'], code, expected)
+    trust('trust-v1-status-rejected', 'status', code=2,
+          expected={'error': 'RuntimeTrustNotImported'})
+    trust('trust-import-v1', 'import-v1', expected={
+        'contract': 'runtime-mod-trust-v2', 'action': 'import-v1', 'result': 'ok'})
+    imported = trust('trust-status', 'status', expected={
+        'state.active.generation': '00000000000000000001',
+        'state.active.trust_sha256': hashlib.sha256((work / 'test-only-trust.pub').read_bytes()).hexdigest(),
+        'state.prepared': None, 'state.previous': None})
+    trust('trust-duplicate-import', 'import-v1', code=2,
+          expected={'error': 'RuntimeTrustAlreadyImported'})
+    for action in ('activate', 'rollback'):
+        trust('trust-missing-' + action, action, code=2,
+              expected={'error': 'RuntimeTrustTransitionMissing'})
+    trust('trust-prepare-retained-key', 'prepare', 'test-only-trust.pub',
+          expected={'result': 'ok'})
+    trust('trust-verify-retained-key', 'verify', expected={
+        'active_incompatible': [], 'prepared_incompatible': [],
+        'state.active.generation': '00000000000000000001',
+        'state.prepared.generation': '00000000000000000002'})
+    trust('trust-safe-activate', 'activate', expected={
+        'deactivated': [], 'state.active.generation': '00000000000000000002'})
+    trust('trust-safe-rollback', 'rollback', expected={
+        'deactivated': [], 'state.active': imported['state']['active']})
+    trust('trust-prepare-replacement-key', 'prepare', 'test-only-next-trust.pub',
+          expected={'result': 'ok'})
+    affected = [{'kind': 'data', 'mod_id': 'user.math-rational-power',
+                 'version': '1.0.0', 'signing_key_id': 'test-rfc8032'}]
+    trust('trust-verify-replacement-key', 'verify', expected={
+        'active_incompatible': [], 'prepared_incompatible': affected,
+        'state.prepared.generation': '00000000000000000003'})
+    call('trust-external-store-cannot-override', ['mods', 'install', 'test-data.brucemod',
+        '--mod-root', 'trust-example-mods', '--trust-store', 'test-only-next-trust.pub'],
+        code=2, expected={'error': 'RuntimeModSigningKeyUntrusted'})
+    trust('trust-safe-replacement-blocked', 'activate', code=2,
+          expected={'error': 'RuntimeTrustActiveModsIncompatible', 'affected': affected})
+    trust('trust-emergency-activate', 'activate', '--deactivate-untrusted', expected={
+        'deactivated': affected, 'state.active.generation': '00000000000000000003'})
+    call('trust-removed-key-activation-rejected', ['mods', 'activate', 'user.math-rational-power',
+        '1.0.0', '--mod-root', 'trust-example-mods'], code=2,
+        expected={'error': 'RuntimeModSigningKeyUntrusted'})
+    call('trust-stale-external-store-rejected', ['mods', 'install', 'test-data.brucemod',
+        '--mod-root', 'trust-example-mods', '--trust-store', 'test-only-trust.pub'],
+        code=2, expected={'error': 'RuntimeModTrustStoreChanged'})
+    trust('trust-verify-historical-package', 'verify', expected={
+        'active_incompatible': affected, 'prepared_incompatible': []})
+    trust('trust-emergency-rollback-flag', 'rollback', '--deactivate-untrusted', expected={
+        'deactivated': [], 'state.active': imported['state']['active']})
+    disabled = call('trust-rollback-keeps-mod-disabled', ['mods', 'status',
+        'user.math-rational-power', '--mod-root', 'trust-example-mods'])
+    assert next(entry for entry in disabled['entries'] if entry['id'] ==
+                'user.math-rational-power')['lifecycle_state'] == 'disabled'
+    for label, args, error in [
+        ('trust-missing-action', ['mods', 'trust'], 'MissingRuntimeTrustAction'),
+        ('trust-unknown-action', ['mods', 'trust', 'unknown'], 'UnknownRuntimeTrustAction'),
+        ('trust-missing-store', ['mods', 'trust', 'prepare'], 'MissingRuntimeTrustStore'),
+        ('trust-missing-root', ['mods', 'trust', 'status'], 'MissingOption'),
+        ('trust-missing-root-value', ['mods', 'trust', 'status', '--mod-root'], 'MissingOptionValue'),
+        ('trust-duplicate-option', ['mods', 'trust', 'status', '--mod-root', 'trust-example-mods',
+                                  '--mod-root', 'trust-example-mods'], 'DuplicateOption'),
+        ('trust-unexpected-flag', ['mods', 'trust', 'verify', '--deactivate-untrusted',
+                                 '--mod-root', 'trust-example-mods'], 'UnknownOption'),
+        ('trust-duplicate-flag', ['mods', 'trust', 'activate', '--deactivate-untrusted',
+                                '--deactivate-untrusted', '--mod-root', 'trust-example-mods'], 'DuplicateOption'),
+    ]:
+        call(label, args, code=2, expected={'error': error})
     call('rules-propose', ['rules-propose', 'old.rules', 'rules.txt', 'change.proposal'], expected={'approved': False})
     call('rules-unchanged', ['rules-propose', 'old.rules', 'old.rules', 'same.proposal'], code=2, expected={'error': 'RuleProposalUnchanged'})
     call('rules-no-terminal', ['rules-approve', 'change.proposal', 'old.rules', 'approved.rules'], code=2, expected={'error': 'RuleApprovalRequiresTerminal'})
@@ -107,7 +226,9 @@ with tempfile.TemporaryDirectory(prefix='bruce-cli-reference-') as directory:
     call('int64-research', ['research', '--train', 'train.csv', '--holdout', 'hold.csv', '--min', -3, '--max', 3, '--verification', 'replay', '--output', 'affine.bruce'], expected={'result.status': 'VERIFIED_ON_SAMPLES'})
     call('inspect-run', ['inspect-run', 'affine.bruce'], expected={'replay_checked': True})
     call('assess-run', ['assess-run', 'affine.bruce'], expected={'replay_checked': True, 'proof_established': False, 'claim_scope': 'declared-family-sample-evidence'})
-    call('gate-run', ['gate-run', 'affine.bruce'], expected={'replay_checked': True, 'applicable': True, 'selection.allowed': True, 'experience_source.allowed': False})
+    gate_report = call('gate-run', ['gate-run', 'affine.bruce'], expected={'replay_checked': True, 'applicable': True, 'selection.allowed': True, 'experience_source.allowed': False})
+    explicit_gate_report = call('gate-compatibility-family', ['gate-run', 'affine.bruce', '--compatibility-family', 'gate'], expected={'replay_checked': True, 'applicable': True, 'selection.allowed': True, 'experience_source.allowed': False})
+    assert explicit_gate_report == gate_report
     call('gate-byte-budget', ['gate-run', 'affine.bruce', '--max-replay-bytes', 33554432], expected={'replay_checked': True})
     call('gate-cancellation', ['gate-run', 'affine.bruce', '--cancellation', 'checkpoints'], expected={'replay_checked': True})
     call('gate-budget', ['gate-run', 'affine.bruce', '--max-session-checkpoints', 1000000], expected={'contract': 'application-gates-budget-v1', 'result.replay_checked': True})
@@ -197,6 +318,85 @@ with tempfile.TemporaryDirectory(prefix='bruce-cli-reference-') as directory:
         code=2, expected={'error': 'InvalidNanoCellCoreHex'})
     call('nanocell-unknown-technique', nanocell_args[:-1] + ['invented-v1'],
         code=2, expected={'error': 'UnknownNanoCellTechnique'})
+    phase_run = call('phase-dag-v2-execute', ['phase-dag-v2', 'execute',
+        'phase-dag-v2.spec', '--output', 'phase-dag-v2.bundle'],
+        expected={'contract': 'phase-dag-v2-cli-v1', 'action': 'execute',
+                  'dag_version': 'phase-dag-v2', 'dag_id': 'cli-example', 'node_count': 3})
+    phase_bytes = (work / 'phase-dag-v2.bundle').read_bytes()
+    assert phase_bytes.startswith(b'BRUCE_PHASE_DAG_RUN_V2\n')
+    assert set(phase_run) == {'contract', 'action', 'dag_version', 'dag_id',
+                              'node_count', 'bundle_digest', 'receipts'}
+    assert phase_run['bundle_digest'] == hashlib.sha256(phase_bytes).hexdigest()
+    assert phase_run['receipts'] == [
+        {'node_id': node, 'outcome': 'READY', 'failure_code': ''} for node in ('a', 'b', 'gate')]
+    # Portability: both readers must confirm the embedded requests, not reopen
+    # the original Spec or context files. Their recorded inputs remain above.
+    for name in ('phase-dag-v2.spec', 'phase-context-a.txt', 'phase-context-b.txt'):
+        (work / name).unlink()
+    for action in ('inspect', 'replay'):
+        view = call('phase-dag-v2-' + action,
+            ['phase-dag-v2', action, 'phase-dag-v2.bundle'])
+        assert view == {**phase_run, 'action': action}
+        assert (work / 'phase-dag-v2.bundle').read_bytes() == phase_bytes
+    call('phase-dag-v2-invalid-spec', ['phase-dag-v2', 'execute',
+        'phase-dag-v2-invalid.spec', '--output', 'phase-dag-v2-invalid.bundle'],
+        code=2, expected={'error': 'InvalidPhaseDagSpecHeader'})
+    assert not (work / 'phase-dag-v2-invalid.bundle').exists()
+    phase_v3_run = call('phase-dag-v3-execute', ['phase-dag-v3', 'execute',
+        'phase-dag-v3.spec', '--output', 'phase-dag-v3.bundle'],
+        expected={'contract': 'phase-dag-v3-cli-v1', 'action': 'execute',
+                  'dag_version': 'phase-dag-v3', 'dag_id': 'cli-example-v3', 'node_count': 3})
+    phase_v3_bytes = (work / 'phase-dag-v3.bundle').read_bytes()
+    assert phase_v3_bytes.startswith(b'BRUCE_PHASE_DAG_RUN_V3\n')
+    assert set(phase_v3_run) == {'contract', 'action', 'dag_version', 'dag_id',
+                                 'node_count', 'bundle_digest', 'receipts'}
+    assert phase_v3_run['bundle_digest'] == hashlib.sha256(phase_v3_bytes).hexdigest()
+    assert phase_v3_run['receipts'] == [
+        {'node_id': node, 'outcome': 'READY', 'failure_code': ''}
+        for node in ('a', 'gate1', 'gate2')]
+    # The saved receipts prove both gates emitted COMPLETE and transported
+    # their reusable payloads. The report deliberately contains neither bytes.
+    assert b'nanocell-phase-payload-v1' in phase_v3_bytes
+    assert b'payload-gate-payload-v1' in phase_v3_bytes
+    assert phase_v3_bytes.count(b'22:payload-gate-output-v18:COMPLETE1:1') == 2
+    for name in ('phase-dag-v3.spec', 'phase-context-v3.txt'):
+        (work / name).unlink()
+    phase_v3_views = [phase_v3_run]
+    for action in ('inspect', 'replay'):
+        view = call('phase-dag-v3-' + action,
+            ['phase-dag-v3', action, 'phase-dag-v3.bundle'])
+        assert view == {**phase_v3_run, 'action': action}
+        assert (work / 'phase-dag-v3.bundle').read_bytes() == phase_v3_bytes
+        phase_v3_views.append(view)
+    for view in phase_v3_views:
+        rendered = json.dumps(view)
+        for raw in ('nanocell-phase-payload-v1', 'payload-gate-payload-v1',
+                    'nanocell-reference-context-v1', '1020a54050607080'):
+            assert raw not in rendered
+    call('phase-dag-v3-invalid-spec', ['phase-dag-v3', 'execute',
+        'phase-dag-v3-invalid.spec', '--output', 'phase-dag-v3-invalid.bundle'],
+        code=2, expected={'error': 'InvalidPhaseDagSpecHeader'})
+    assert not (work / 'phase-dag-v3-invalid.bundle').exists()
+    call('phase-dag-v3-reject-v2', ['phase-dag-v3', 'inspect', 'phase-dag-v2.bundle'],
+        code=2, expected={'error': 'InvalidPhaseDagBundleHeader'})
+    call('phase-dag-v2-reject-v3', ['phase-dag-v2', 'inspect', 'phase-dag-v3.bundle'],
+        code=2, expected={'error': 'InvalidPhaseDagBundleHeader'})
+    header, digest, contents = phase_v3_bytes.split(b'\n', 2)
+    forged_contents = contents.replace(b'5:READY', b'6:FAILED', 1)
+    assert forged_contents != contents
+    forged = header + b'\n' + hashlib.sha256(forged_contents).hexdigest().encode() + b'\n' + forged_contents
+    corrupt = phase_v3_bytes[:-1] + bytes([phase_v3_bytes[-1] ^ 1])
+    for label, bundle, error in (
+        ('corrupt', corrupt, 'PhaseDagBundleDigestMismatch'),
+        ('forged-receipt', forged, 'PhaseDagReplayMismatch'),
+    ):
+        name = 'phase-dag-v3-' + label + '.bundle'
+        (work / name).write_bytes(bundle)
+        for action in ('inspect', 'replay'):
+            reply = call('phase-dag-v3-' + label + '-' + action,
+                ['phase-dag-v3', action, name], code=2, expected={'error': error})
+            assert set(reply) == {'error'}
+            assert (work / name).read_bytes() == bundle
     for strategy in contracts['strategies']:
         for planner in strategy['planners']:
             if planner == 'experience-order':
@@ -310,8 +510,11 @@ with tempfile.TemporaryDirectory(prefix='bruce-cli-reference-') as directory:
 
 source = (ROOT / 'apps/bruce_cli.cpp').read_text()
 nanocell_source = (ROOT / 'apps/nanocell_cli.hpp').read_text()
+phase_dag_source = (ROOT / 'apps/phase_dag_v2_cli.hpp').read_text()
+phase_dag_v3_source = (ROOT / 'apps/phase_dag_v3_cli.hpp').read_text()
 runtime_mod_source = (ROOT / 'apps/runtime_mod_cli.hpp').read_text()
-options = sorted(set(re.findall(r'"(--[a-z][a-z-]*)"', source + nanocell_source + runtime_mod_source)))
+mcp_source = (ROOT / 'mods/mcp/src/mod.cpp').read_text()
+options = sorted(set(re.findall(r'"(--[a-z][a-z-]*)"', source + nanocell_source + phase_dag_source + phase_dag_v3_source + runtime_mod_source + mcp_source)))
 manual = '\n'.join((HERE / f).read_text() for f in ['README.md', 'commands.md', 'formats.md', 'results-and-control.md'])
 missing = [option for option in options if option not in manual]
 if missing:
@@ -328,16 +531,16 @@ for line in source.splitlines():
         names = re.findall(r'"(--[a-z-]+)"', line)
         index += [f'### `{command}`', '', ', '.join(f'`{name}`' for name in names), '']
 index += ['### `compatibility-plan`', '',
-          '`--from-run`, `--rules`, `--rule-store`, `--at`, `--max-source-bytes`, `--max-candidates`, `--max-checks`, `--max-trace`, `--output`, `--max-transfer-checkpoints`, `--transfer-cancellation`.', '',
+          '`--from-run`, `--rules`, `--rule-store`, `--at`, `--max-source-bytes`, `--max-candidates`, `--max-checks`, `--max-trace`, `--output`, `--max-transfer-checkpoints`, `--transfer-cancellation`, `--compatibility-family`.', '',
           '### `compatibility-apply`', '',
-          'Plan als Positionsargument, danach `--from-run`, `--rules`, `--rule-store`, `--output`, `--max-transfer-checkpoints`, `--transfer-cancellation`.', '',
+          'Plan als Positionsargument, danach `--from-run`, `--rules`, `--rule-store`, `--output`, `--max-transfer-checkpoints`, `--transfer-cancellation`, `--compatibility-family`.', '',
           '### `experience`', '',
-          '`add`: `--store`, `--from-run`, `--output`, `--max-transfer-checkpoints`, `--transfer-cancellation`.', '',
-          '`revoke`: `--store`, `--id`, `--reason`, `--output`, `--max-transfer-checkpoints`, `--transfer-cancellation`.', '',
-          '`replace`: `--store`, `--id`, `--reason`, `--from-run`, `--output`, `--max-transfer-checkpoints`, `--transfer-cancellation`.', '',
-          '`inspect`: genau ein Positionsargument; keine Optionen.', '',
-          '`plan-add`: `--from-run`, `--store`, `--max-source-bytes`, `--max-store-bytes`, `--output`, `--max-transfer-checkpoints`, `--transfer-cancellation`.', '',
-          '`apply-add`: Plan als Positionsargument, danach `--from-run`, `--store`, `--output`, `--max-transfer-checkpoints`, `--transfer-cancellation`.', '',
+          '`add`: `--store`, `--from-run`, `--output`, `--max-transfer-checkpoints`, `--transfer-cancellation`, `--compatibility-family`.', '',
+          '`revoke`: `--store`, `--id`, `--reason`, `--output`, `--max-transfer-checkpoints`, `--transfer-cancellation`, `--compatibility-family`.', '',
+          '`replace`: `--store`, `--id`, `--reason`, `--from-run`, `--output`, `--max-transfer-checkpoints`, `--transfer-cancellation`, `--compatibility-family`.', '',
+          '`inspect`: `--compatibility-family`, `--max-management-checkpoints`, `--management-cancellation`.', '',
+          '`plan-add`: `--from-run`, `--store`, `--max-source-bytes`, `--max-store-bytes`, `--output`, `--max-transfer-checkpoints`, `--transfer-cancellation`, `--compatibility-family`.', '',
+          '`apply-add`: Plan als Positionsargument, danach `--from-run`, `--store`, `--output`, `--max-transfer-checkpoints`, `--transfer-cancellation`, `--compatibility-family`.', '',
           '### `language`', '',
           '`interpret`: `--text`, `--train`, `--holdout`, `--grammar`, `--train-alias`, `--holdout-alias`, `--max-bits`, `--max-denominator`, `--max-candidates`, `--max-operations`, `--max-trace`, `--max-results`, `--output`.', '',
           '`select`: Entwurf als Positionsargument; `--alternative`, `--output`.', '',
@@ -351,14 +554,31 @@ index += ['### `compatibility-plan`', '',
           '### `nanocell`', '',
           '`run`: ' + ', '.join(f'`{name}`' for name in sorted(set(re.findall(r'"(--[a-z][a-z-]*)"', nanocell_source)))) + '.', '',
           '`replay`: Lauf als Positionsargument; keine Optionen.', '',
+          '### `phase-dag-v2`', '',
+          'Quelle: [apps/phase_dag_v2_cli.hpp](../../apps/phase_dag_v2_cli.hpp). Optional mit NanoCell ON; fester Adapterkatalog `nanocell-phase-v1`/`v1` und `evidence-gate-v1`/`v1`, seriell und begrenzt.', '',
+          '`execute`: Spec als Positionsargument, danach verpflichtend ' + ', '.join(f'`{name}`' for name in sorted(set(re.findall(r'"(--[a-z][a-z-]*)"', phase_dag_source)))) + ' mit neuem Bundleziel; exklusiver Export.', '',
+          '`inspect` und `replay`: genau ein Bundle als Positionsargument; keine Optionen. Beide bestätigen gespeicherte Belege durch Replay.', '',
+          '### `phase-dag-v3`', '',
+          'Quelle: [apps/phase_dag_v3_cli.hpp](../../apps/phase_dag_v3_cli.hpp). Optional mit NanoCell ON; getrennte V3-Marker, fester Katalog `nanocell-phase-v3`/`v1` und `payload-gate-v1`/`v1`, direkte Payloads bis 65536 Bytes. MCP prüft bestehende V2-/V3-Bundles read-only über getrennte Inspect-Routen.', '',
+          '`execute`: V3-Spec als Positionsargument, danach verpflichtend `--output` mit neuem Bundleziel, anschließend optional `--max-parallel-nodes N` (Standard 1, Bereich 1..4); exklusiver atomarer Export.', '',
+          '`inspect` und `replay`: genau ein V3-Bundle als Positionsargument; keine Optionen. Beide bestätigen tatsächliches Replay ohne Originaldateien und ohne Payload-Rohbytes im Report.', '',
+          '### `mcp`', '',
+          'Keine Zusatzargumente oder genau `--port` mit dezimalem Wert 1..65535; Standard 8080. Optionaler statischer Mod, nur read-only Loopback-Inspector; `POST /api/v1/inspect` für V2 bis 1 MiB und `POST /api/v3/inspect` für V3 bis 5 MiB. Explizite Auswahl, nur Metadaten einschließlich Payloadgrößen und Digests, keine Rohpayloads, Jobs oder Importe.', '',
           '### `mods` und `route`', '',
+          '`mods inspect`: Data-/Logic-Paket als Positionsargument; keine Optionen.', '',
           '`mods verify`: Paket als Positionsargument; `--trust-store`.', '',
           '`mods install`: Paket als Positionsargument; `--mod-root`, `--trust-store`.', '',
-          '`mods list`: `--mod-root`.', '',
+          '`mods update`: Paket als Positionsargument; `--mod-root`, `--trust-store`.', '',
+          '`mods list`: optional `--mod-root`; ohne Root nur Built-ins.', '',
+          '`mods status`: Mod-ID und optional Version als Positionsargumente; optional `--mod-root`.', '',
+          '`mods run`: Mod-ID als Positionsargument; `--template`, `--input`, `--mod-root`.', '',
           '`mods activate`: Mod-ID und Version als Positionsargumente; `--mod-root`.', '',
           '`mods disable`: Mod-ID als Positionsargument; `--mod-root`.', '',
-          '`route`: `--text`, `--mod-root`, optional `--output`.', '',
-          '`route replay`: Report als Positionsargument; `--mod-root`.', '',
+          '`mods trust status|import-v1|verify`: `--mod-root`; status ist read-only.', '',
+          '`mods trust prepare`: kanonischer V1-Truststore als Positionsargument; `--mod-root`; keine Aktivierung.', '',
+          '`mods trust activate|rollback`: `--mod-root`, optional einmaliges Flag `--deactivate-untrusted`; standardmäßig Ablehnung bei Vertrauensverlust aktiver Mods.', '',
+          '`route`: `--text`, `--mod-root`, optional `--output` und Flag `--mod-details`.', '',
+          '`route replay`: Report als Positionsargument; `--mod-root`, optional Flag `--mod-details`.', '',
           '## Diagnose-Literale', '',
           'Aus `Error("…")`, Stopaufrufen und Zuweisungen von `stop_reason` in `src/`, `include/` und der CLI. Dies sind vollständige gefundene Textliterale bzw. Präfixe; dynamisch zusammengesetzte Suffixe und Betriebssystemmeldungen sind nicht enumerierbar. Nicht jeder interne Fehler ist bei jedem CLI-Aufruf erreichbar. Quellverweise zeigen die Entstehungsstelle.', '',
           '| Literal / Präfix | Quelle |', '| --- | --- |']
@@ -389,8 +609,12 @@ for path in HERE.glob('*.md'):
     f'- {len(diagnostics)} Diagnose-Literale/Präfixe mit Quellverweis erfasst.\n'
     '- Relative Markdown-Dateilinks im Handbuch geprüft.\n'
     '- Eingaben, Argumente und vollständige JSON-Antworten stehen in `examples.json`.\n'
+    '- MCP-Beispiele prüfen ungültige Ports und nicht unterstützte Job-Argumente; HTTP, Loopback, getrennte V2/V3-Inspect-Routen, 1-MiB-V2-/5-MiB-V3-Grenzen, Replay und Metadatenschutz ohne Rohpayloads werden in den separaten MCP-CTest-Verträgen geprüft.\n'
     '- NanoCell-Beispiele prüfen den äußeren Mod-Export, identisches Replay, `INCOMPLETE`, Kontextablehnung, ungültiges Hex und unbekannte Technik.\n'
-    '- Runtime-Daten-Mod-Beispiele prüfen explizites Testvertrauen, inaktive Installation, Aktivierung, Route-Export, identisches Replay, Deaktivierung und Ablehnung einer veralteten Registry-Version.\n'
+    '- Phase-DAG-V2-Beispiele prüfen einen seriellen Drei-Knoten-Spec mit zwei Kontexten, V2-Export, vollständigen Bundle-SHA-256, READY-Receipts, identische bestätigte inspect/replay-Ansichten ohne ursprüngliche Eingaben und die Ablehnung eines ungültigen Spec ohne Export.\n'
+    '- Phase-DAG-V3-Beispiele prüfen NanoCell → Payload-Gate → Payload-Gate, COMPLETE-Gateoutputs mit wiederverwendbaren Payloads, getrennte V3-Marker, vollständigen Bundle-SHA-256, READY-Receipts, identisches inspect/replay ohne Originaldateien und Reports ohne Payload-Rohbytes; ungültiger Spec, Versionsverwechslung in beide Richtungen, Korruption und neu gehashtes gefälschtes Receipt werden abgelehnt.\n'
+    '- Mod-Beispiele prüfen Data-Paketinspektion, explizites Testvertrauen, Built-in-Katalog, inaktive Installation, Status, Aktivierung, bytekompatibles V1-Routing, opt-in V2-Besitzdetails, identisches Replay, Deaktivierung und Ablehnung einer veralteten Registry-Version; Logic-Build, Update und Worker-Ausführung bleiben den dedizierten CTests vorbehalten.\n'
+    '- Trust-V2-Beispiele prüfen ausdrücklichen V1-Import, Generationenstatus, Prepare ohne Aktivierung, Verifikation, sicheren Wechsel und Rollback, blockierten Vertrauensverlust, explizite Notfalldeaktivierung, historische inkompatible Pakete, aktive Trust-Bindung trotz externer Datei und Parserfehler; ausschließlich öffentliche RFC-8032-Testschlüssel und isolierte temporäre Roots. Crash-Recovery, V1-Binary-Fence, Logic-Mod-Notfallrollback und laufende Worker werden durch dedizierte CTests geprüft, nicht durch diese Beispiele.\n'
     '- TaskSpec-Beispiele prüfen explizite Rollen, Asset-Digests, native Evidenz ohne Lern-/Publikations-Gates, identisches Replay und Ablehnung eines Spec als Lauf.\n'
     '- Negative Beispiele prüfen Parserfehler, doppelte Optionen, Holdout-Überlappung, BigInt-Division, Exportverweigerung, die drei Sitzungsbudgets sowie ungewählte und nicht unterstützte Spracheingaben.\n'
     '- Signaloptionen wurden auf gültige Konfiguration und erfolgreiches Replay geprüft; diese Dokumentationsprüfung misst keine Signallatenz und injiziert keine Signale.\n'

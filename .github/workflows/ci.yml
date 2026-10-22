@@ -14,7 +14,9 @@ concurrency:
 jobs:
   release-check:
     runs-on: ubuntu-24.04
+    timeout-minutes: 60
     env:
+      CMAKE_BUILD_PARALLEL_LEVEL: "2"
       CCACHE_BASEDIR: ${{ github.workspace }}
       CCACHE_COMPILERCHECK: content
     steps:
@@ -22,11 +24,25 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Install build dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y cmake ninja-build g++ ccache pkg-config libgmp-dev libssl-dev python3 python3-dev
+
+      - name: Check changed-file whitespace errors
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          BEFORE_SHA: ${{ github.event.before }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$GITHUB_EVENT_NAME" = pull_request ]; then
+            git diff --check "$BASE_SHA" "$GITHUB_SHA"
+          elif [ "$GITHUB_EVENT_NAME" = push ] && [ "$BEFORE_SHA" != 0000000000000000000000000000000000000000 ]; then
+            git diff --check "$BEFORE_SHA" "$GITHUB_SHA"
+          fi
 
       - name: Restore compiler cache
         uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
@@ -40,12 +56,30 @@ jobs:
         run: >-
           cmake -S . -B build-ci -G Ninja -DBUILD_TESTING=ON
           -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+          -DBRUCE_BUILTIN_MOD_MATRIX_PARALLEL=2
 
       - name: Build
         run: cmake --build build-ci --parallel 4
 
-      - name: Run full test suite
-        run: ctest --test-dir build-ci --output-on-failure --parallel 4
+      - name: Run mandatory built-in Mod matrix
+        run: >-
+          ctest --test-dir build-ci --output-on-failure --no-tests=error
+          -R '^builtin_mod_build_matrix$'
+
+      - name: Run remaining Release test suite
+        run: >-
+          ctest --test-dir build-ci --output-on-failure --no-tests=error
+          --parallel 4 -E '^builtin_mod_build_matrix$'
+
+      - name: Verify relocated Release installation and local package
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$(build-ci/bruce --version | python3 -c 'import json,sys; print(json.load(sys.stdin)["version"])')"
+          python3 scripts/verify_install.py --build-dir build-ci --config Release \
+            --fixtures tests/fixtures --version "$version" --package \
+            --archive-out "${RUNNER_TEMP}/bruce-release-tested.tar.gz" \
+            --report "${RUNNER_TEMP}/bruce-release-install-audit.json"
 
       - name: Show compiler-cache statistics
         if: always()
@@ -84,3 +118,98 @@ jobs:
           GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
           GITLEAKS_ENABLE_COMMENTS: "false"
           GITLEAKS_ENABLE_UPLOAD_ARTIFACT: "false"
+
+  debug-check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      CMAKE_BUILD_PARALLEL_LEVEL: "2"
+      CCACHE_BASEDIR: ${{ github.workspace }}
+      CCACHE_COMPILERCHECK: content
+    steps:
+      - name: Check out source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build g++ ccache pkg-config libgmp-dev libssl-dev python3 python3-dev
+
+      - name: Restore compiler cache
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        with:
+          path: ~/.cache/ccache
+          key: ccache-debug-${{ runner.os }}-${{ hashFiles('CMakeLists.txt', 'cmake/**') }}-${{ github.sha }}
+          restore-keys: |
+            ccache-debug-${{ runner.os }}-${{ hashFiles('CMakeLists.txt', 'cmake/**') }}-
+
+      - name: Configure unsanitized Debug build
+        run: >-
+          cmake -S . -B build-debug -G Ninja -DBUILD_TESTING=ON
+          -DCMAKE_BUILD_TYPE=Debug -DBRUCE_ENABLE_ASAN_UBSAN=OFF
+          -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DBRUCE_BUILTIN_MOD_MATRIX_PARALLEL=2
+
+      - name: Build Debug
+        run: cmake --build build-debug --parallel 4
+
+      - name: Run Debug tests outside static fixtures including Debug built-in Mod matrix
+        run: >-
+          ctest --test-dir build-debug --output-on-failure --no-tests=error
+          --parallel 4 -LE '^static-fixture-dependent$'
+
+      - name: Verify unsanitized static sandbox fixture partition explicitly
+        run: >-
+          ctest --test-dir build-debug --output-on-failure --no-tests=error
+          --parallel 4 -L '^static-fixture-dependent$'
+
+      - name: Show compiler-cache statistics
+        if: always()
+        run: ccache --show-stats
+
+  sanitizer-check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      CMAKE_BUILD_PARALLEL_LEVEL: "2"
+      CCACHE_BASEDIR: ${{ github.workspace }}
+      CCACHE_COMPILERCHECK: content
+      ASAN_OPTIONS: halt_on_error=1:detect_leaks=1
+      UBSAN_OPTIONS: halt_on_error=1:print_stacktrace=1
+    steps:
+      - name: Check out source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build g++ ccache pkg-config libgmp-dev libssl-dev python3 python3-dev
+
+      - name: Restore compiler cache
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        with:
+          path: ~/.cache/ccache
+          key: ccache-sanitizer-${{ runner.os }}-${{ hashFiles('CMakeLists.txt', 'cmake/**') }}-${{ github.sha }}
+          restore-keys: |
+            ccache-sanitizer-${{ runner.os }}-${{ hashFiles('CMakeLists.txt', 'cmake/**') }}-
+
+      - name: Configure scoped ASan and UBSan Debug build
+        run: >-
+          cmake -S . -B build-sanitizer -G Ninja -DBUILD_TESTING=ON
+          -DCMAKE_BUILD_TYPE=Debug -DBRUCE_ENABLE_ASAN_UBSAN=ON
+          -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+
+      - name: Build sanitizer targets
+        run: cmake --build build-sanitizer --parallel 2
+
+      - name: Run complete sanitizer-compatible partition including MCP loopback
+        run: >-
+          ctest --test-dir build-sanitizer --output-on-failure --no-tests=error
+          --parallel 2 -L '^sanitizer-compatible$'
+
+      - name: Show compiler-cache statistics
+        if: always()
+        run: ccache --show-stats

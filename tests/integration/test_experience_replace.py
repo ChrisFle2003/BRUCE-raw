@@ -17,6 +17,12 @@ class ReplaceTests(unittest.TestCase):
   p=self.root/'store';r=self.call('experience','add','--from-run',self.source('first'),'--output',p);return p,r
  def replace(self,store,target,source,out,ok=True,reason='new holdout'):
   return self.call('experience','replace','--store',store,'--id',target,'--from-run',source,'--reason',reason,'--output',out,ok=ok)
+ def test_zero_budget_error_preserves_cli_lifetime(self):
+  missing=self.root/'missing-source';output=self.root/'not-published'
+  error=self.call('experience','replace','--id','0'*64,'--reason','probe','--from-run',missing,
+                  '--max-transfer-checkpoints',0,'--output',output,ok=False)
+  self.assertEqual(error,{'error':'TransferCheckpointBudgetExceeded: checkpoints=0 limit=0'})
+  self.assertFalse(output.exists())
  def test_chain_votes_and_selfcontained(self):
   store,r=self.initial();original=store.read_bytes();target=r['records'][0]['id']
   for n in range(2):

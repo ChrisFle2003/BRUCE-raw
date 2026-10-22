@@ -4,6 +4,8 @@
 #include "bruce/application/exact_research.hpp"
 #include "bruce/application/grid_resume.hpp"
 #include "bruce/application/grid_research.hpp"
+#include "bruce/application/grid_stage_sweep.hpp"
+#include "bruce/application/grid_stage_verify.hpp"
 #include "bruce/application/fraction_compare.hpp"
 #include "bruce/application/compatibility.hpp"
 #include <variant>
@@ -15,10 +17,10 @@ struct GridResearchTask {
     std::optional<std::uint64_t> total_operations;
 };
 using ApplicationTask=std::variant<Task,ExactResearchTask,GridTask,GridBatchTask,
-    GridResumeTask,GridResearchTask,FractionComparisonTask,CompatibilityTask>;
+    GridResumeTask,GridResearchTask,FractionComparisonTask,CompatibilityTask,GridStageSweepTask,GridStageVerifyTask>;
 using ApplicationRun=std::variant<Run,ExactResearchRun,GridRun,GridBatchRun,
-    GridResumeRun,GridResearchRun,FractionComparisonRun,CompatibilityRun>;
-enum class ClaimScope { sample_evidence,grid_evaluation,rational_fraction_comparison,numeric_selection };
+    GridResumeRun,GridResearchRun,FractionComparisonRun,CompatibilityRun,GridStageSweepRun,GridStageVerifyRun>;
+enum class ClaimScope { sample_evidence,grid_evaluation,rational_fraction_comparison,numeric_selection,finite_grid_stage_domain };
 struct ApplicationAssessment {
     std::string_view kind;
     std::string status,stop_reason;

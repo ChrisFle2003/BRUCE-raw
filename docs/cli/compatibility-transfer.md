@@ -9,8 +9,9 @@ Die Übergabe bindet ein Forschungsbundle, die kanonische Regelfassung, eine Aus
 ```text
 bruce compatibility-plan --from-run SOURCE --rules RULES --at X
     [--max-source-bytes N] [--max-candidates N] [--max-checks N]
-    [--max-trace N] --output PLAN
+    [--max-trace N] --output PLAN [--compatibility-family transfer]
 bruce compatibility-apply PLAN --from-run SOURCE --rules RULES [--output RUN]
+    [--compatibility-family transfer]
 ```
 
 Bei beiden Befehlen kann `--rule-store STORE` anstelle von `--rules RULES` verwendet werden. Beide Optionen zugleich sind verboten. Der aktive Speicher wird vollständig geprüft und seine aktuelle Regelfassung einmal eingelesen. Es gibt keine automatische Regelaktivierung.
@@ -29,8 +30,30 @@ Bei beiden Befehlen kann `--rule-store STORE` anstelle von `--rules RULES` verwe
 | `--max-trace N` | Nur Planung, 1..65536, Standard 65536 |
 | `--output` | Planung: Pflicht, neue Plandatei. Ausführung: optionales neues mathematisches Ergebnisbundle |
 | `PLAN` | Bei Ausführung erster Positionsparameter; maximal 4096 Bytes |
+| `--compatibility-family transfer` | Optional auf beiden Routen; read-only Familienbestätigung. Der einzige gültige Wert ist `transfer`. |
 
 Keine Kandidaten-CSV, keine anderen Strategieparameter, kein allgemeiner Sitzungscontroller und keine zusätzlichen Replayoptionen. Die separate [Transfersteuerung](transfer-control.md) ergänzt seit Core 0.94 optionale Prüfpunkte und Signalprüfung bei der Ausführung. Die Auswahlbudgets zählen die bestehende Z-Auswahlarbeit; sie begrenzen nicht pauschal Quellenreplay, Projektion, Prozessspeicher oder Laufzeit. Native Importgrenzen gelten zusätzlich. Ohne Ausgabepfad liefert die Ausführung nur den JSON-Bericht.
+
+## Common-Runtime-Familienbestätigung
+
+**IMPLEMENTIERT UND BELEGT:** Beide Routen akzeptieren optional exakt
+`--compatibility-family transfer`. Die CLI lädt den bestehenden read-only
+Descriptor, prüft die Transferbindung und führt danach den unveränderten
+Planungs- oder Anwendungspfad aus. Die Prüfung erfolgt nach dem Routenparsing,
+aber vor jedem Quellen-, Regel-, Regelspeicher-, Plan- oder Ausgabepfadzugriff;
+ein falscher Familienwert darf deshalb keinen Datei-/Storefehler maskieren und
+legt keine Ausgabe an.
+
+`session`, `gate`, `management` und unbekannte Werte werden kontrolliert
+abgewiesen. Doppelte oder wertlose Optionen behalten die bestehenden
+Parserfehler. Ein gültiger Wert ist nur eine Auswahlbestätigung: Er ist kein
+Berechtigungsnachweis, ändert keine Plan- oder Bundlebytes, aktiviert keinen
+Transfercontroller, fügt keinen Descriptor oder neuen Ergebniswrapper ein und
+ändert weder die fachliche Prüfung noch die exklusive Veröffentlichung. Die
+Legacy-Ausgabe, Fehlerhülle und Exit-Codes bleiben bytegleich zum Aufruf ohne
+die Option. Die Bestätigung ist ausschließlich auf diese beiden
+Compatibility-Transfer-Routen und die fünf mutierenden Experience-Transfer-
+Routen begrenzt.
 
 ## Was gebunden und erneut geprüft wird
 

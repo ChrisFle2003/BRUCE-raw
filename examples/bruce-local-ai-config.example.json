@@ -1,0 +1,18 @@
+{
+  "schema": "bruce-local-ai-config-v1",
+  "active_profile": "local",
+  "bruce_program": "/absolute/path/to/bruce",
+  "index_path": "/absolute/private/bruce-ai-index.json",
+  "allowed_roots": ["/absolute/path/to/bruce-data"],
+  "require_confirmation": true,
+  "profiles": {
+    "local": {
+      "ollama_url": "http://127.0.0.1:11434",
+      "embedding_model": "all-minilm:latest",
+      "response_model": "qwen3.5:latest",
+      "top_k": 5,
+      "connect_timeout_ms": 1000,
+      "request_timeout_ms": 30000
+    }
+  }
+}

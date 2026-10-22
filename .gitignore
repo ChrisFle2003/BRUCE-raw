@@ -3,6 +3,18 @@
 /runs/
 /.worktrees/
 
+# Lokale Automations-, Assistenz- und Zugangsdatenbereiche.  Veröffentlichte
+# Beispiele bleiben außerhalb dieser Wurzelverzeichnisse prüfbar.
+/.agents/
+/.aws/
+/.codex/
+/.superpowers/
+/.ollama/
+/ollama/
+/assistant.json
+/bruce-ai-index*.json
+/bruce-ai-transcript*.json
+
 # CMake- und Compiler-Ausgaben außerhalb der üblichen Build-Verzeichnisse.
 CMakeCache.txt
 CMakeFiles/

@@ -28,5 +28,12 @@ feature or publish a reliable private reporting channel.
 
 Relevant areas include the build and installation path, parsers for local
 input files, stored replay and export files, and GitHub Actions configuration.
+They also include the [offline release-signing boundary](docs/implementation/150-release-signing-contract.md)
+and [local installed-Mod Trust V2 lifecycle](docs/cli/README.md#local-mod-trust-v2).
+**IMPLEMENTIERT UND BELEGT:** These operate as the invoking Linux user or
+administrator with explicit paths; there is no BRUCE system user, daemon or
+multi-user administration service. Release verification requires an
+independently pinned public key. Production key establishment remains
+**OFFENE ENTSCHEIDUNG**, and public fixture keys are not production trust.
 Reviewing a reported problem guarantees neither an immediate fix nor a
 Security Advisory publication.

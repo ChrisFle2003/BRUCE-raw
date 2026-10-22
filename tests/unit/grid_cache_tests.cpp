@@ -1,5 +1,6 @@
 #include "bruce/application/grid_batch.hpp"
 #include "bruce/application/grid_resume.hpp"
+#include "bruce/application/application_task.hpp"
 #include "bruce/evidence/bundle.hpp"
 #include <iostream>
 #include <set>
@@ -9,11 +10,106 @@ template<class F> void rejected(F call) {
     bool failed=false;try {call();} catch(const bruce::Error&) {failed=true;}
     require(failed,"Invalid grid cache input accepted");
 }
+std::string body_of(const std::string& bundle) {
+    return bundle.substr(bundle.find('\n',bundle.find('\n')+1)+1);
+}
+std::string rehashed(std::string_view header,const std::string& body) {
+    return std::string(header)+"\n"+bruce::sha256(body)+"\n"+body;
+}
 }
 int main() {
     using namespace bruce;
     try {
+        // A stage must participate in cache identity even at the same address.
+        GridTask explicit_task;explicit_task.path="2,6";explicit_task.rule=GridSpec::scaled_exponential_rule;
+        GridCache stage_cache(65536);explicit_task.stage=6;
+        const auto stage6=stage_cache.evaluate(explicit_task);
+        explicit_task.stage=57;const auto stage57=stage_cache.evaluate(explicit_task);
+        require(stage6.run.value==6300 && stage57.run.value==14411518807585587100ULL,"Stage cache values wrong");
+        require(stage6.key_digest!=stage57.key_digest,"Explicit stages share cache identity");
+        require(stage6.cache_event=="MISS_INSERT" && stage57.cache_event=="MISS_INSERT" &&
+            stage_cache.stats().misses==2 && stage_cache.stats().entries==2,"Explicit stages share cache entry");
+        require(stage_cache.evaluate(explicit_task).cache_event=="HIT","Explicit stage cache not retained");
+        GridBatchTask explicit_batch;explicit_batch.spec.rule=GridSpec::scaled_exponential_rule;
+        explicit_batch.spec.stage=57;explicit_batch.paths={"2,6","02,06","4,3","2,6"};
+        const auto explicit_run=evaluate_grid_batch(explicit_batch);
+        const auto explicit_bundle=pack_grid_batch(explicit_run);
+        require(explicit_bundle.starts_with("BRUCE_GRID_BATCH_BUNDLE_V3\n"),"Explicit complete batch header wrong");
+        require(explicit_bundle.find("spec grid-spec-v2\n")!=std::string::npos &&
+            explicit_bundle.find("zero_zero one\nstage_source explicit\nstage 57\ncache_bytes ")!=std::string::npos,
+            "Explicit batch stage fields missing or out of order");
+        require(explicit_run.queries[1].cache_event=="HIT" &&
+            explicit_run.queries[2].run.value==14411518807585587100ULL,"Batch stage not shared by all addresses");
+        require(pack_grid_batch(replay_grid_batch(explicit_bundle))==explicit_bundle,"Explicit batch replay differs");
+        require(std::holds_alternative<GridBatchRun>(replay_application(explicit_bundle)),"V3 dispatcher failed");
+        for(const auto* mutation:{"stage_source leaf-y\nstage 57\n","stage 57\n", "stage_source explicit\nstage 057\n",
+                "stage_source explicit\nstage 58\n", "stage_source explicit\nstage 6\n",
+                "stage 57\nstage_source explicit\n", "stage_source explicit\nstage 57\nstage 57\n"}) {
+            auto changed=body_of(explicit_bundle);
+            const auto at=changed.find("stage_source explicit\nstage 57\n");
+            changed.replace(at,std::string("stage_source explicit\nstage 57\n").size(),mutation);
+            rejected([&]{(void)replay_grid_batch(rehashed("BRUCE_GRID_BATCH_BUNDLE_V3",changed));});
+        }
+        rejected([&]{(void)replay_grid_batch(rehashed("BRUCE_GRID_BATCH_BUNDLE_V1",body_of(explicit_bundle)));});
+        rejected([&]{(void)replay_grid_batch(rehashed("BRUCE_GRID_BATCH_BUNDLE_V5",body_of(explicit_bundle)));});
+        explicit_batch.query_steps=1;
+        const auto explicit_parent=pack_grid_batch(evaluate_grid_batch(explicit_batch));
+        require(explicit_parent.starts_with("BRUCE_GRID_BATCH_BUNDLE_V4\n"),"Explicit partial batch header wrong");
+        require(pack_grid_batch(replay_grid_batch(explicit_parent))==explicit_parent,"Explicit partial batch replay differs");
+        require(std::holds_alternative<GridBatchRun>(replay_application(explicit_parent)),"V4 dispatcher failed");
+        auto changed_parent=body_of(explicit_parent);
+        changed_parent.replace(changed_parent.find("stage 57\n"),9,"stage 6\n");
+        rejected([&]{(void)replay_grid_batch(rehashed("BRUCE_GRID_BATCH_BUNDLE_V4",changed_parent));});
+        const auto explicit_child=resume_grid_batch(explicit_parent,1);
+        const auto explicit_child_bundle=pack_grid_resume(explicit_child);
+        require(explicit_child_bundle.starts_with("BRUCE_GRID_RESUME_BUNDLE_V2\n"),"Explicit resume header wrong");
+        require(body_of(explicit_child_bundle).starts_with("policy verified-prefix-cache-rebuild-v1\nstage_source explicit\nstage 57\nadditional_queries "),
+            "Resume derived stage fields missing or out of order");
+        require(explicit_child.batch.task.spec.stage==57 && explicit_child.batch.queries[1].cache_event=="HIT" &&
+            explicit_child.new_evaluations==0,"Resume lost stage or prefix cache");
+        require(pack_grid_resume(replay_grid_resume(explicit_child_bundle))==explicit_child_bundle,"Explicit resume replay differs");
+        require(std::holds_alternative<GridResumeRun>(replay_application(explicit_child_bundle)),"Resume V2 dispatcher failed");
+        require(replay_grid_source(explicit_child_bundle).task.spec.stage==57,"Resume V2 source not recognized");
+        const auto explicit_grandchild=resume_grid_batch(explicit_child_bundle,2);
+        require(explicit_grandchild.generation==2 && explicit_grandchild.batch.task.spec.stage==57 &&
+            explicit_grandchild.batch.queries[2].run.value==14411518807585587100ULL &&
+            explicit_grandchild.batch.queries[3].cache_event=="HIT","Chained resume lost stage/cache");
+        require(pack_grid_resume(replay_grid_resume(pack_grid_resume(explicit_grandchild)))==pack_grid_resume(explicit_grandchild),
+            "Chained explicit resume replay differs");
+        for(const auto* mutation:{"stage_source leaf-y\nstage 57\n","stage 57\n", "stage_source explicit\nstage 057\n",
+                "stage_source explicit\nstage 6\n", "stage 57\nstage_source explicit\n",
+                "stage_source explicit\nstage 58\n", "stage_source explicit\nstage 18446744073709551616\n",
+                "stage_source explicit\nstage 57\nstage 57\n", "stage_source explicit\n"}) {
+            auto changed=body_of(explicit_child_bundle);
+            changed.replace(changed.find("stage_source explicit\nstage 57\n"),std::string("stage_source explicit\nstage 57\n").size(),mutation);
+            rejected([&]{(void)replay_grid_resume(rehashed("BRUCE_GRID_RESUME_BUNDLE_V2",changed));});
+        }
+        rejected([&]{(void)replay_grid_resume(rehashed("BRUCE_GRID_RESUME_BUNDLE_V1",body_of(explicit_child_bundle)));});
+        rejected([&]{(void)replay_grid_resume(rehashed("BRUCE_GRID_RESUME_BUNDLE_V3",body_of(explicit_child_bundle)));});
+        auto downgraded_resume=body_of(explicit_child_bundle);
+        downgraded_resume.erase(downgraded_resume.find("stage_source explicit\nstage 57\n"),
+            std::string("stage_source explicit\nstage 57\n").size());
+        rejected([&]{(void)replay_grid_resume(rehashed("BRUCE_GRID_RESUME_BUNDLE_V1",downgraded_resume));});
+        explicit_batch.spec.stage=0;
+        const auto zero_parent=pack_grid_batch(evaluate_grid_batch(explicit_batch));
+        const auto zero_resume=resume_grid_batch(zero_parent,3);
+        require(zero_parent.starts_with("BRUCE_GRID_BATCH_BUNDLE_V4\n") && zero_resume.batch.task.spec.stage==0 &&
+            zero_resume.batch.queries[2].run.value==0,"Explicit zero stage treated as absent");
+        require(pack_grid_resume(zero_resume).starts_with("BRUCE_GRID_RESUME_BUNDLE_V2\n") &&
+            pack_grid_resume(replay_grid_resume(pack_grid_resume(zero_resume)))==pack_grid_resume(zero_resume),
+            "Explicit zero resume lost version or replay");
         GridTask t;t.path="2,6";
+        GridCache rule_cache(65536);
+        const auto leaf=rule_cache.evaluate(t);
+        t.rule=GridSpec::scaled_exponential_rule;
+        const auto scaled=rule_cache.evaluate(t);
+        require(leaf.run.value==64 && scaled.run.value==6300,"Rule-specific cache values wrong");
+        require(leaf.key_digest!=scaled.key_digest,"Rules share a cache identity");
+        require(leaf.cache_event=="MISS_INSERT" && scaled.cache_event=="MISS_INSERT" &&
+            rule_cache.stats().misses==2 && rule_cache.stats().entries==2,"Rules share a cache entry");
+        require(rule_cache.evaluate(t).cache_event=="HIT","Scaled entry not retained");
+        t.rule=GridSpec::leaf_local_power_rule;
+        require(rule_cache.evaluate(t).run.value==64,"Scaled entry polluted legacy cache");
         std::set<std::string> keys{grid_cache_key(t)};
         t.path="02,06";require(keys.contains(grid_cache_key(t)),"Equivalent address spelling split");
         for(const auto* path:{"4,3","1,1/2,6","2,6/1,1"}) {t.path=path;require(keys.insert(grid_cache_key(t)).second,"Address collision");}
@@ -43,7 +139,42 @@ int main() {
         require(disabled.stats().entries==0 && disabled.stats().evaluations==2,"Disabled cache retained value");
         GridBatchTask batch;batch.paths={"2,6","02,06","4,3"};
         auto run=evaluate_grid_batch(batch);const auto bundle=pack_grid_batch(run);
+        require(bundle.starts_with("BRUCE_GRID_BATCH_BUNDLE_V1\n"),"Legacy complete batch header changed");
         require(render_grid_batch(replay_grid_batch(bundle))==render_grid_batch(run),"Batch replay differs");
+        GridBatchTask scaled_batch;scaled_batch.spec.rule=GridSpec::scaled_exponential_rule;
+        scaled_batch.paths={"2,6","02,06","4,3"};
+        const auto scaled_run=evaluate_grid_batch(scaled_batch);
+        const auto scaled_bundle=pack_grid_batch(scaled_run);
+        require(scaled_bundle.find("value_rule SCALED_EXPONENTIAL_V1\n")!=std::string::npos,
+            "Batch evidence lost selected rule");
+        require(render_grid_batch(replay_grid_batch(scaled_bundle))==render_grid_batch(scaled_run),
+            "Scaled batch replay differs");
+        require(scaled_run.queries[0].run.value==6300 && scaled_run.queries[1].cache_event=="HIT" &&
+            scaled_run.queries[2].run.value==700,"Scaled batch values or cache reuse wrong");
+        const auto scaled_body=scaled_bundle.substr(scaled_bundle.find('\n',scaled_bundle.find('\n')+1)+1);
+        for(const auto* replacement:{GridSpec::leaf_local_power_rule,"UNKNOWN_RULE"}) {
+            auto changed=scaled_body;
+            const auto at=changed.find("value_rule SCALED_EXPONENTIAL_V1\n");
+            changed.replace(at,std::string("value_rule SCALED_EXPONENTIAL_V1").size(),
+                "value_rule "+std::string(replacement));
+            rejected([&]{(void)replay_grid_batch("BRUCE_GRID_BATCH_BUNDLE_V1\n"+sha256(changed)+"\n"+changed);});
+        }
+        scaled_batch.query_steps=1;
+        const auto scaled_parent=pack_grid_batch(evaluate_grid_batch(scaled_batch));
+        require(scaled_parent.starts_with("BRUCE_GRID_BATCH_BUNDLE_V2\n") &&
+            scaled_parent.find("stage_source ")==std::string::npos,"Legacy partial batch changed");
+        const auto scaled_child=resume_grid_batch(scaled_parent,2);
+        require(pack_grid_resume(scaled_child).starts_with("BRUCE_GRID_RESUME_BUNDLE_V1\n"),"Legacy resume header changed");
+        rejected([&]{(void)replay_grid_batch(rehashed("BRUCE_GRID_BATCH_BUNDLE_V4",body_of(scaled_parent)));});
+        rejected([&]{(void)replay_grid_resume(rehashed("BRUCE_GRID_RESUME_BUNDLE_V2",body_of(pack_grid_resume(scaled_child))));});
+        auto promoted_resume=body_of(pack_grid_resume(scaled_child));
+        promoted_resume.insert(promoted_resume.find('\n')+1,"stage_source explicit\nstage 57\n");
+        rejected([&]{(void)replay_grid_resume(rehashed("BRUCE_GRID_RESUME_BUNDLE_V2",promoted_resume));});
+        require(scaled_child.batch.task.spec.rule==GridSpec::scaled_exponential_rule &&
+            scaled_child.batch.queries[1].cache_event=="HIT" && scaled_child.batch.queries[2].run.value==700,
+            "Resume lost selected rule or cache prefix");
+        require(render_grid_resume(replay_grid_resume(pack_grid_resume(scaled_child)))==render_grid_resume(scaled_child),
+            "Scaled resume replay differs");
         const auto body=bundle.substr(bundle.find('\n',bundle.find('\n')+1)+1);
         for(std::size_t n=0;n<body.size();++n) {
             const auto part=body.substr(0,n);
